@@ -10,16 +10,19 @@
   // Regra exclusiva do Peça e retire: o cadastro mestre e Encomendas não são alterados.
   const RETIRADA_SKUS_OCULTOS = new Set(['SOB-009']);
   const BOLO_COPO_CREMES = ['Creme de Leite Ninho', 'Creme de Nutela'];
-  const FONDUE_FRUTAS = ['Morango', 'Banana', 'Uva', 'Kiwi', 'Abacaxi', 'Cereja'];
-  const FONDUE_CREMES = ['Nutella', 'Creme de Ninho', 'Geleia de Morango', 'Creme de Amendoim', 'Goiabada', 'Creme de Pistache', 'Mel'];
-  const FONDUE_GULOSEIMAS = ['Granola', 'Paçoca', 'Leite em Pó', 'Ovomaltine', 'Confete', 'Chocoball', 'Chantilly', 'Granulado', 'Leite Condensado'];
-  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, selectedFlavors: [], flavorCounts: {}, flavorPreferences: [], activeFlavorPreference: 0, popsiclePreferences: [], activePopsiclePreference: 0, popsicleQuantity: 1, boxAddOnCounts: {}, acaiDoubleChoices: {}, includedCustomizationChoices: {}, serviceMode: '', containerType: '', cakeChoice: '', creamChoice: '', fondueChoices: { frutas: [], cremes: [], guloseima: '' }, query: '', lastCatalogSku: null, lastCatalogViewport: null };
+  const FONDUE_FRUTAS = ['Morango', 'Banana', 'Uva'];
+  const FONDUE_CREMES = ['Creme de Leite Ninho', 'Creme de Nutela'];
+  const FONDUE_GULOSEIMAS = ['Marshmallow', 'Canudinho Wafer'];
+  const emptyFondueChoices = () => ({ frutas: {}, cremes: {}, guloseimas: {} });
+  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, selectedFlavors: [], flavorCounts: {}, flavorPreferences: [], activeFlavorPreference: 0, popsiclePreferences: [], activePopsiclePreference: 0, popsicleQuantity: 1, boxAddOnCounts: {}, acaiDoubleChoices: {}, includedCustomizationChoices: {}, serviceMode: '', containerType: '', cakeChoice: '', creamChoice: '', fondueChoices: emptyFondueChoices(), query: '', lastCatalogSku: null, lastCatalogViewport: null };
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const money = (value) => `R$ ${Number(value || 0).toFixed(2).replace('.', ',')}`;
   const normalize = (text) => String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const ACAI_DOUBLE_ADD_ON_PRICE = 3;
   const escape = (text) => String(text || '').replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+  const fondueCount = (group) => Object.values(group || {}).reduce((sum, qty) => sum + Math.max(0, Number(qty) || 0), 0);
+  const fondueSummary = (group) => Object.entries(group || {}).filter(([, qty]) => Number(qty) > 0).map(([item, qty]) => Number(qty) > 1 ? `${Number(qty)}x ${item}` : item).join(' e ');
   function normalizeCart(items) {
     return (Array.isArray(items) ? items : []).filter((item) => item && !RETIRADA_SKUS_OCULTOS.has(item.sku)).map((item) => {
       const quantity = Math.max(0, Math.floor(Number(item.quantity) || 0));
@@ -179,7 +182,7 @@
   function isTraditionalMilkshake(product) { return normalize(product?.category) === 'milkshake'; }
   function isAcaiMilkshake(product) { return normalize(product?.category).includes('milk-shake de acai'); }
   function allowsIncludedCustomizations(product) { const name = normalize(product?.name); return name.includes('copo recheado') || name.includes('cestinha'); }
-  function isBoloCopo(product) { return product?.sku === 'SOB-003' || product?.sku === 'SOB-004'; }
+  function isBoloCopo(product) { return product?.sku === 'SOB-004'; }
   function isFondue(product) { return product?.sku === 'SOB-002'; }
   function isAcaiGourmetCup(product) { return String(product?.sku || '').startsWith('ACA-TCG-'); }
   function isAcaiCup(product) { return /^ACA-(?:250|300|400|500|600|700)-\d+$/.test(String(product?.sku || '')) && /^Açaí\s*[—-]\s*\d+\s*ml$/i.test(String(product?.category || '').trim()); }
@@ -211,7 +214,7 @@
     const selected = selectedAcaiDoubleAddOns(product); ui.total.textContent = selected.length ? `Itens em dobro: ${selected.map((item) => item.name).join(' · ')} · Acréscimo: ${money(selected.reduce((sum, item) => sum + item.price, 0))}.` : 'Nenhum item em dobro selecionado. O preço base e o SKU não mudam.';
   }
   function beginAcaiDouble(product) {
-    state.flavorProduct = product; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.acaiDoubleChoices = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = { frutas: [], cremes: [], guloseima: '' }; state.flavorDistribution = ''; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = '';
+    state.flavorProduct = product; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.acaiDoubleChoices = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = emptyFondueChoices(); state.flavorDistribution = ''; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = '';
     $('#flavor-title').textContent = displayName(product.name); $('#flavor-subtitle').textContent = 'Marque “Em dobro (+ R$ 3,00)” na frente de cada complemento que deseja duplicar. Cada marcação vira um item separado no pedido.';
     $('#flavor-grid').hidden = true; $('#flavor-grid').innerHTML = ''; $('#flavor-distribution').hidden = true; $('#flavor-preferences').hidden = true; $('#item-mode').hidden = true; $('#cake-choice').hidden = true; ensureBoxAddOnsUi().section.hidden = true; ensureIncludedCustomizationsUi().section.hidden = true; ensureBoloCopoCreme().section.hidden = true; ensureFondueUi().section.hidden = true; renderMilkshakeOvomaltine(product, false); renderAcaiDoubleUi(product); $('#flavor-status').textContent = 'Escolha os itens que deseja em dobro ou confirme sem adicionais.'; $('#flavor-status').classList.add('ready'); $('#confirm-flavors').disabled = false; openDialog('flavor-dialog');
   }
@@ -303,7 +306,7 @@
   function buildProductList(products) {
     const list = document.createElement('div'); list.className = 'product-list'; products.forEach((product, index) => {
       const row = document.createElement('article'); row.className = 'product'; row.dataset.catalogSku = product.sku; const hasFlavor = needsMassFlavors(product) || product.category === 'Milkshake'; const hasAcaiDouble = isAcaiCup(product) && acaiDoubleOptions(product).length > 0;
-      const meta = isIceCreamCake(product) ? `Escolha 3 sabores · Retirada com antecedência mínima de 48 horas.` : isFondue(product) ? 'Escolha 2 frutas, 2 cremes e 1 guloseima · Tudo incluído no preço.' : isBoloCopo(product) ? `${flavorRule(product).label} · depois escolha o creme (Leite Ninho ou Nutela).` : hasFlavor ? flavorRule(product).label : hasAcaiDouble ? 'Escolha quais complementos do copo podem ser pedidos em dobro.' : 'Produto pronto para retirada';
+      const meta = isIceCreamCake(product) ? `Escolha 3 sabores · Retirada com antecedência mínima de 48 horas.` : isFondue(product) ? 'Escolha 2 frutas, 2 cremes e 2 guloseimas (pode repetir) · Tudo incluído no preço.' : isBoloCopo(product) ? `${flavorRule(product).label} · depois escolha o creme (Leite Ninho ou Nutela).` : hasFlavor ? flavorRule(product).label : hasAcaiDouble ? 'Escolha quais complementos do copo podem ser pedidos em dobro.' : 'Produto pronto para retirada';
       const extras = product.includedExtras?.length ? ` · Inclui ${product.includedExtras.join(' e ')}.` : '';
       const fixedIngredients = product.fixedIngredients?.length ? `<p class="product__ingredients"><strong>Ingredientes fixos:</strong> ${escape(product.fixedIngredients.filter((item) => !/sabores? de sorvete/i.test(item)).join(', '))}</p>` : '';
       const ballCount = productBallCount(product); const ballRule = usesFlavorDistribution(product) && ballCount ? `<p class="product__ball-rule"><strong>${ballCount} bola${ballCount > 1 ? 's' : ''}:</strong> ${ballCount === 1 ? 'escolha 1 sabor.' : `pode distribuir ${ballCount} bolas entre os sabores que quiser — todas do mesmo sabor ou em sabores diferentes.`}</p>` : '';
@@ -469,7 +472,7 @@
     let section = $('#fondue-choices');
     if (!section) {
       section = document.createElement('section'); section.id = 'fondue-choices'; section.className = 'box-addons'; section.hidden = true; section.setAttribute('aria-labelledby', 'fondue-choices-title');
-      section.innerHTML = '<p class="box-addons__title" id="fondue-choices-title">Monte seu Fondue (incluído no preço)</p><p class="box-addons__hint">Escolha 2 frutas, 2 cremes e 1 guloseima. Todas as escolhas estão incluídas no preço de R$ 25,00.</p><div id="fondue-choices-body"></div><p class="box-addons__total" id="fondue-choices-total" aria-live="polite"></p>';
+      section.innerHTML = '<p class="box-addons__title" id="fondue-choices-title">Monte seu Fondue (incluído no preço)</p><p class="box-addons__hint">Escolha 2 frutas, 2 cremes e 2 guloseimas. Você pode repetir o mesmo item ou combinar 1 de cada. Tudo incluído no preço de R$ 25,00.</p><div id="fondue-choices-body"></div><p class="box-addons__total" id="fondue-choices-total" aria-live="polite"></p>';
       $('#item-mode').before(section);
     }
     return { section, body: $('#fondue-choices-body'), total: $('#fondue-choices-total') };
@@ -477,44 +480,65 @@
   function renderFondueUi() {
     const ui = ensureFondueUi(); ui.section.hidden = false;
     const body = ui.body; body.innerHTML = '';
-    const makeGroup = (title, items, selected, max, onToggle) => {
+    const makeGroup = (title, items, selected, max, key) => {
       const wrap = document.createElement('div'); wrap.className = 'box-addons'; wrap.style.marginBottom = '12px';
       const heading = document.createElement('p'); heading.className = 'box-addons__title'; heading.textContent = `${title} (escolha ${max})`;
       const list = document.createElement('div'); list.className = 'box-addons__list';
+      const currentTotal = fondueCount(selected);
       items.forEach((item) => {
-        const label = document.createElement('label'); label.className = 'choice';
-        const isChecked = selected.includes(item);
-        const input = document.createElement('input'); input.type = max === 1 ? 'radio' : 'checkbox'; input.name = `fondue-${title}`; input.value = item; input.checked = isChecked;
-        if (max > 1) { input.disabled = !isChecked && selected.length >= max; }
-        input.addEventListener('change', () => { onToggle(item, input.checked); renderFondueUi(); });
-        const text = document.createElement('span'); text.textContent = item; label.append(input, text); list.append(label);
+        const quantity = Math.max(0, Number(selected[item] || 0));
+        const row = document.createElement('div'); row.className = 'box-addon-row';
+        const info = document.createElement('div');
+        const name = document.createElement('p'); name.className = 'box-addon-row__name'; name.textContent = item;
+        const meta = document.createElement('p'); meta.className = 'box-addon-row__meta'; meta.textContent = quantity > 0 ? `${quantity} porção(ões)` : 'Ainda não selecionado';
+        info.append(name, meta);
+        const control = document.createElement('div'); control.className = 'qty';
+        const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${item}`); minus.disabled = quantity <= 0;
+        minus.addEventListener('click', () => {
+          const next = Math.max(0, quantity - 1);
+          if (next > 0) state.fondueChoices[key][item] = next; else delete state.fondueChoices[key][item];
+          renderFondueUi();
+        });
+        const count = document.createElement('span'); count.textContent = String(quantity); count.setAttribute('aria-label', `${quantity} porção(ões) de ${item}`);
+        const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar ${item}`); plus.disabled = currentTotal >= max;
+        plus.addEventListener('click', () => {
+          if (fondueCount(state.fondueChoices[key]) >= max) return;
+          state.fondueChoices[key][item] = quantity + 1;
+          renderFondueUi();
+        });
+        control.append(minus, count, plus);
+        row.append(info, control);
+        list.append(row);
       });
-      const count = document.createElement('small'); count.style.display = 'block'; count.style.marginTop = '4px'; count.textContent = `${selected.length} de ${max} escolhido${max !== 1 ? 's' : ''}`;
+      const count = document.createElement('small'); count.style.display = 'block'; count.style.marginTop = '4px'; count.textContent = `${currentTotal} de ${max} porções escolhidas`;
       wrap.append(heading, list, count); return wrap;
     };
-    body.append(makeGroup('Frutas', FONDUE_FRUTAS, state.fondueChoices.frutas, 2, (item, checked) => { if (checked && state.fondueChoices.frutas.length < 2) state.fondueChoices.frutas.push(item); else state.fondueChoices.frutas = state.fondueChoices.frutas.filter((f) => f !== item); }));
-    body.append(makeGroup('Cremes', FONDUE_CREMES, state.fondueChoices.cremes, 2, (item, checked) => { if (checked && state.fondueChoices.cremes.length < 2) state.fondueChoices.cremes.push(item); else state.fondueChoices.cremes = state.fondueChoices.cremes.filter((c) => c !== item); }));
-    body.append(makeGroup('Guloseima', FONDUE_GULOSEIMAS, state.fondueChoices.guloseima ? [state.fondueChoices.guloseima] : [], 1, (item, checked) => { state.fondueChoices.guloseima = checked ? item : ''; }));
-    const ready = state.fondueChoices.frutas.length === 2 && state.fondueChoices.cremes.length === 2 && state.fondueChoices.guloseima;
-    ui.total.textContent = ready ? `Pronto! Frutas: ${state.fondueChoices.frutas.join(' e ')} · Cremes: ${state.fondueChoices.cremes.join(' e ')} · Guloseima: ${state.fondueChoices.guloseima}. Tudo incluído no R$ 25,00.` : 'Escolha 2 frutas, 2 cremes e 1 guloseima para confirmar.';
-    const status = $('#flavor-status'); status.textContent = ready ? 'Tudo certo! Confirme para adicionar o Fondue ao pedido.' : `Faltam: ${state.fondueChoices.frutas.length < 2 ? `${2 - state.fondueChoices.frutas.length} fruta(s)` : ''}${state.fondueChoices.cremes.length < 2 ? `${state.fondueChoices.frutas.length < 2 ? ', ' : ''}${2 - state.fondueChoices.cremes.length} creme(s)` : ''}${!state.fondueChoices.guloseima ? `${(state.fondueChoices.frutas.length < 2 || state.fondueChoices.cremes.length < 2) ? ', ' : ''}1 guloseima` : ''}.`;
+    body.append(makeGroup('Frutas', FONDUE_FRUTAS, state.fondueChoices.frutas, 2, 'frutas'));
+    body.append(makeGroup('Cremes', FONDUE_CREMES, state.fondueChoices.cremes, 2, 'cremes'));
+    body.append(makeGroup('Guloseimas', FONDUE_GULOSEIMAS, state.fondueChoices.guloseimas, 2, 'guloseimas'));
+    const frutasCount = fondueCount(state.fondueChoices.frutas);
+    const cremesCount = fondueCount(state.fondueChoices.cremes);
+    const guloseimasCount = fondueCount(state.fondueChoices.guloseimas);
+    const ready = frutasCount === 2 && cremesCount === 2 && guloseimasCount === 2;
+    ui.total.textContent = ready ? `Pronto! Frutas: ${fondueSummary(state.fondueChoices.frutas)} · Cremes: ${fondueSummary(state.fondueChoices.cremes)} · Guloseimas: ${fondueSummary(state.fondueChoices.guloseimas)}. Tudo incluído no R$ 25,00.` : 'Escolha 2 frutas, 2 cremes e 2 guloseimas para confirmar.';
+    const status = $('#flavor-status'); status.textContent = ready ? 'Tudo certo! Confirme para adicionar o Fondue ao pedido.' : `Faltam: ${frutasCount < 2 ? `${2 - frutasCount} fruta(s)` : ''}${cremesCount < 2 ? `${frutasCount < 2 ? ', ' : ''}${2 - cremesCount} creme(s)` : ''}${guloseimasCount < 2 ? `${(frutasCount < 2 || cremesCount < 2) ? ', ' : ''}${2 - guloseimasCount} guloseima(s)` : ''}.`;
     status.classList.toggle('ready', Boolean(ready));
     $('#confirm-flavors').disabled = !ready;
   }
   function beginFondue(product) {
-    state.flavorProduct = product; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.acaiDoubleChoices = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = { frutas: [], cremes: [], guloseima: '' }; state.flavorDistribution = ''; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = '';
-    $('#flavor-title').textContent = 'Fondue de Sorvete'; $('#flavor-subtitle').textContent = 'Escolha 2 frutas, 2 cremes e 1 guloseima. Tudo incluído no preço de R$ 25,00.';
+    state.flavorProduct = product; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.acaiDoubleChoices = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = emptyFondueChoices(); state.flavorDistribution = ''; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = '';
+    $('#flavor-title').textContent = 'Fondue de Sorvete'; $('#flavor-subtitle').textContent = 'Escolha 2 frutas, 2 cremes e 2 guloseimas. Pode repetir o mesmo item ou escolher 1 de cada.';
     $('#flavor-grid').hidden = true; $('#flavor-grid').innerHTML = ''; $('#flavor-distribution').hidden = true; $('#flavor-preferences').hidden = true; $('#item-mode').hidden = true; $('#cake-choice').hidden = true;
     ensureBoxAddOnsUi().section.hidden = true; ensureIncludedCustomizationsUi().section.hidden = true; ensureBoloCopoCreme().section.hidden = true;
     renderMilkshakeOvomaltine(product, false); renderAcaiDoubleUi(product); renderFondueUi(); openDialog('flavor-dialog');
   }
   function confirmFondue() {
     if (!state.flavorProduct || !isFondue(state.flavorProduct)) return;
-    const { frutas, cremes, guloseima } = state.fondueChoices;
-    if (frutas.length !== 2 || cremes.length !== 2 || !guloseima) return;
-    const includedCustomizations = [`Frutas: ${frutas.join(' e ')}`, `Cremes: ${cremes.join(' e ')}`, `Guloseima: ${guloseima}`];
+    const { frutas, cremes, guloseimas } = state.fondueChoices;
+    if (fondueCount(frutas) !== 2 || fondueCount(cremes) !== 2 || fondueCount(guloseimas) !== 2) return;
+    const includedCustomizations = [`Frutas: ${fondueSummary(frutas)}`, `Cremes: ${fondueSummary(cremes)}`, `Guloseimas: ${fondueSummary(guloseimas)}`];
     addProduct(state.flavorProduct, [], '', true, '', '', '', [], [], includedCustomizations);
-    closeDialog('flavor-dialog'); state.flavorProduct = null; state.fondueChoices = { frutas: [], cremes: [], guloseima: '' }; ensureFondueUi().section.hidden = true;
+    closeDialog('flavor-dialog'); state.flavorProduct = null; state.fondueChoices = emptyFondueChoices(); ensureFondueUi().section.hidden = true;
   }
   function renderBoxAddOns() {
     const ui = ensureBoxAddOnsUi(); ui.list.innerHTML = '';
@@ -526,7 +550,7 @@
     });
     const selected = selectedBoxAddOns(); const subtotal = selected.reduce((sum, addOn) => sum + addOn.quantity * addOn.price, 0); ui.total.textContent = selected.length ? `Complementos selecionados: ${selected.reduce((sum, addOn) => sum + addOn.quantity, 0)} un. · Total parcial: ${money(subtotal)}` : 'Nenhum complemento selecionado. Você pode adicionar depois em um novo pedido.';
   }
-  function beginFlavors(product) { state.flavorProduct = product; ensureAcaiDoubleUi().section.hidden = true; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = needsFlavorPreferences(product) ? [[], [], []] : []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = { frutas: [], cremes: [], guloseima: '' }; state.flavorDistribution = ''; state.serviceMode = isTravelOnlyBox(product) ? 'travel' : ''; state.containerType = ''; state.cakeChoice = ''; ensureBoloCopoCreme().section.hidden = true; ensureFondueUi().section.hidden = true; const rule = flavorRule(product); const sizeBadge = productSizeBadge(product); const travelText = isLargeIceCreamBox(product) ? `Primeiro consulte disponibilidade pronta ou escolha encomendar com 48 horas. Depois, selecione ${rule.label.toLowerCase()}.` : 'Caixa exclusiva para viagem: distribua os sabores e, se quiser, adicione complementos.'; $('#flavor-title').textContent = displayName(product.name); $('#flavor-subtitle').textContent = `${sizeBadge ? `${sizeBadge.label} · ` : ''}${isTravelOnlyBox(product) ? travelText : isIceCreamCake(product) ? 'Primeiro consulte disponibilidade pronta ou escolha encomendar com 48 horas.' : needsFlavorPreferences(product) ? `${rule.label}. Depois informe duas alternativas diferentes.` : needsContainerChoice(product) ? 'Escolha primeiro o recipiente e depois os sabores.' : isBoloCopo(product) ? `${rule.label}. Depois escolha o creme — incluído no preço.` : rule.label + '.'}`; renderFlavorGrid(); openDialog('flavor-dialog'); }
+  function beginFlavors(product) { state.flavorProduct = product; ensureAcaiDoubleUi().section.hidden = true; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = needsFlavorPreferences(product) ? [[], [], []] : []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = emptyFondueChoices(); state.flavorDistribution = ''; state.serviceMode = isTravelOnlyBox(product) ? 'travel' : ''; state.containerType = ''; state.cakeChoice = ''; ensureBoloCopoCreme().section.hidden = true; ensureFondueUi().section.hidden = true; const rule = flavorRule(product); const sizeBadge = productSizeBadge(product); const travelText = isLargeIceCreamBox(product) ? `Primeiro consulte disponibilidade pronta ou escolha encomendar com 48 horas. Depois, selecione ${rule.label.toLowerCase()}.` : 'Caixa exclusiva para viagem: distribua os sabores e, se quiser, adicione complementos.'; $('#flavor-title').textContent = displayName(product.name); $('#flavor-subtitle').textContent = `${sizeBadge ? `${sizeBadge.label} · ` : ''}${isTravelOnlyBox(product) ? travelText : isIceCreamCake(product) ? 'Primeiro consulte disponibilidade pronta ou escolha encomendar com 48 horas.' : needsFlavorPreferences(product) ? `${rule.label}. Depois informe duas alternativas diferentes.` : needsContainerChoice(product) ? 'Escolha primeiro o recipiente e depois os sabores.' : isBoloCopo(product) ? `${rule.label}. Depois escolha o creme — incluído no preço.` : rule.label + '.'}`; renderFlavorGrid(); openDialog('flavor-dialog'); }
   function renderFlavorGrid() {
     const product = state.flavorProduct; if (!product) return;
     const rule = flavorRule(product); const grid = $('#flavor-grid'); const status = $('#flavor-status'); const preferencesBox = $('#flavor-preferences'); const preferenceTabs = $('#flavor-preferences-tabs'); const distributionBox = $('#flavor-distribution'); const distributionList = $('#flavor-distribution-list'); const distributionHint = $('#flavor-distribution-hint'); const distributionCounter = $('#flavor-distribution-counter');     const addOnsUi = ensureBoxAddOnsUi(); const customizationsUi = ensureIncludedCustomizationsUi(); ensureFondueUi().section.hidden = true; renderMilkshakeOvomaltine(product, false); const travelBox = isTravelOnlyBox(product); const needsContainer = needsContainerChoice(product); const needsChoice = needsAvailabilityChoice(product); const cakeBox = $('#cake-choice'); cakeBox.hidden = !needsChoice; $('#cake-choice-title').textContent = isLargeIceCreamBox(product) ? 'Disponibilidade da caixa grande' : 'Disponibilidade da torta'; $('#cake-choice-hint').textContent = isLargeIceCreamBox(product) ? 'Consulte a disponibilidade pronta pelo WhatsApp ou encomende a caixa com 48 horas de antecedência.' : 'Consulte a disponibilidade pronta pelo WhatsApp ou encomende a torta com 48 horas de antecedência.'; $$('[data-cake-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.cakeChoice === state.cakeChoice)); $$('input[name="cake-choice"]').forEach((input) => { input.checked = input.value === state.cakeChoice; }); const containerBox = $('#item-container'); containerBox.hidden = !needsContainer; $$('[data-container-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.containerChoice === state.containerType)); $$('input[name="item-container"]').forEach((input) => { input.checked = input.value === state.containerType; }); if (needsChoice && !state.cakeChoice) { preferencesBox.hidden = true; grid.hidden = true; grid.innerHTML = ''; distributionBox.hidden = true; addOnsUi.section.hidden = true; customizationsUi.section.hidden = true; $('#item-mode').hidden = true; status.textContent = 'Escolha: consultar disponibilidade no WhatsApp ou encomendar com 48 horas de antecedência.'; status.classList.remove('ready'); $('#confirm-flavors').disabled = true; return; } if (needsContainer && !state.containerType) { preferencesBox.hidden = true; grid.hidden = true; grid.innerHTML = ''; distributionBox.hidden = true; addOnsUi.section.hidden = true; customizationsUi.section.hidden = true; $('#item-mode').hidden = true; status.textContent = 'Escolha o formato oficial do produto.'; status.classList.remove('ready'); $('#confirm-flavors').disabled = true; return; }
@@ -574,7 +598,7 @@
     });
     const ready = count >= rule.min && count <= rule.max; renderMilkshakeOvomaltine(product, ready); renderIncludedCustomizations(product, ready); renderBoloCopoCreme(product, ready); const requiresMode = needsPackagingChoice(product); const modeBox = $('#item-mode'); modeBox.hidden = !(ready && requiresMode); $$('[data-mode-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.modeChoice === state.serviceMode)); $$('input[name="item-mode"]').forEach((input) => { input.checked = input.value === state.serviceMode; }); const missing = rule.min - count; const optional = rule.max - count; const availabilityLabel = needsChoice ? ' Depois, informe data e horário no mínimo 48 horas à frente.' : ''; status.textContent = missing > 0 ? `Escolha mais ${missing} sabor${missing !== 1 ? 'es' : ''}.` : (optional > 0 ? `Você pode adicionar mais ${optional} sabor${optional !== 1 ? 'es' : ''} ou continuar com a escolha atual.${availabilityLabel}` : (requiresMode && !state.serviceMode ? 'Agora escolha como deseja receber este produto.' : isBoloCopo(product) && !state.creamChoice ? 'Sabores prontos! Agora escolha o creme abaixo.' : `Tudo certo! Revise e adicione este produto ao pedido.${availabilityLabel}`)); status.classList.toggle('ready', ready && (!requiresMode || Boolean(state.serviceMode)) && (!isBoloCopo(product) || Boolean(state.creamChoice))); $('#confirm-flavors').disabled = !(ready && (!requiresMode || state.serviceMode) && (!needsChoice || Boolean(state.cakeChoice)) && (!isBoloCopo(product) || Boolean(state.creamChoice)));
   }
-  function confirmFlavors() { if (!state.flavorProduct) return; if (isFondue(state.flavorProduct)) { confirmFondue(); return; } if (isAcaiCup(state.flavorProduct)) { const acaiProduct = state.flavorProduct; addProduct(acaiProduct, [], '', true, '', '', '', selectedAcaiDoubleAddOns(acaiProduct), [], []); closeDialog('flavor-dialog'); state.flavorProduct = null; state.acaiDoubleChoices = {}; return; } const rule = flavorRule(state.flavorProduct); const hasPreferences = needsFlavorPreferences(state.flavorProduct); if (hasPreferences) { if (!state.flavorPreferences.every((set) => preferenceReady(set, rule))) return; state.selectedFlavors = state.flavorPreferences[0].slice(); } else if (rule.distribution) { state.selectedFlavors = selectedFlavorEntries(); state.flavorDistribution = countedFlavorText(); } const validSelection = hasPreferences || (rule.distribution ? countedFlavorTotal() === rule.ballCount : state.selectedFlavors.length >= rule.min && state.selectedFlavors.length <= rule.max); if (!validSelection) return; if (isBoloCopo(state.flavorProduct) && !state.creamChoice) return; if (needsAvailabilityChoice(state.flavorProduct) && !state.cakeChoice) return; if (needsContainerChoice(state.flavorProduct) && !state.containerType) return; if (needsPackagingChoice(state.flavorProduct) && !state.serviceMode) return; const orderAddOns = allowsBoxAddOns(state.flavorProduct) ? selectedBoxAddOns() : selectedMilkshakeAddOn(state.flavorProduct); const includedCustomizations = isBoloCopo(state.flavorProduct) ? (state.creamChoice ? [state.creamChoice] : []) : (allowsIncludedCustomizations(state.flavorProduct) ? selectedIncludedCustomizations() : []); addProduct(state.flavorProduct, state.selectedFlavors.slice(), state.serviceMode, true, state.containerType, state.cakeChoice, state.flavorDistribution, orderAddOns, hasPreferences ? state.flavorPreferences.map((set) => set.slice()) : [], includedCustomizations); closeDialog('flavor-dialog'); state.flavorProduct = null; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.acaiDoubleChoices = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = { frutas: [], cremes: [], guloseima: '' }; state.flavorDistribution = ''; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = ''; }
+  function confirmFlavors() { if (!state.flavorProduct) return; if (isFondue(state.flavorProduct)) { confirmFondue(); return; } if (isAcaiCup(state.flavorProduct)) { const acaiProduct = state.flavorProduct; addProduct(acaiProduct, [], '', true, '', '', '', selectedAcaiDoubleAddOns(acaiProduct), [], []); closeDialog('flavor-dialog'); state.flavorProduct = null; state.acaiDoubleChoices = {}; return; } const rule = flavorRule(state.flavorProduct); const hasPreferences = needsFlavorPreferences(state.flavorProduct); if (hasPreferences) { if (!state.flavorPreferences.every((set) => preferenceReady(set, rule))) return; state.selectedFlavors = state.flavorPreferences[0].slice(); } else if (rule.distribution) { state.selectedFlavors = selectedFlavorEntries(); state.flavorDistribution = countedFlavorText(); } const validSelection = hasPreferences || (rule.distribution ? countedFlavorTotal() === rule.ballCount : state.selectedFlavors.length >= rule.min && state.selectedFlavors.length <= rule.max); if (!validSelection) return; if (isBoloCopo(state.flavorProduct) && !state.creamChoice) return; if (needsAvailabilityChoice(state.flavorProduct) && !state.cakeChoice) return; if (needsContainerChoice(state.flavorProduct) && !state.containerType) return; if (needsPackagingChoice(state.flavorProduct) && !state.serviceMode) return; const orderAddOns = allowsBoxAddOns(state.flavorProduct) ? selectedBoxAddOns() : selectedMilkshakeAddOn(state.flavorProduct); const includedCustomizations = isBoloCopo(state.flavorProduct) ? (state.creamChoice ? [state.creamChoice] : []) : (allowsIncludedCustomizations(state.flavorProduct) ? selectedIncludedCustomizations() : []); addProduct(state.flavorProduct, state.selectedFlavors.slice(), state.serviceMode, true, state.containerType, state.cakeChoice, state.flavorDistribution, orderAddOns, hasPreferences ? state.flavorPreferences.map((set) => set.slice()) : [], includedCustomizations); closeDialog('flavor-dialog'); state.flavorProduct = null; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.acaiDoubleChoices = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = emptyFondueChoices(); state.flavorDistribution = ''; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = ''; }
   function renderCartSummary() { const bar = $('#summary-bar'); const count = totalItems(); bar.classList.toggle('is-visible', count > 0); $('#summary-small').textContent = count ? `${count} item${count !== 1 ? 's' : ''} selecionado${count !== 1 ? 's' : ''}` : 'Seu pedido está vazio'; $('#summary-large').textContent = count ? `Ver pedido · ${money(total())}` : `Ver pedido · ${money(0)}`; if (typeof syncGuidedForm === 'function') syncGuidedForm(); }
   function renderCart() {
     const list = $('#cart-list'); list.innerHTML = '';
