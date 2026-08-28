@@ -10,9 +10,9 @@
   // Regra exclusiva do Peça e retire: o cadastro mestre e Encomendas não são alterados.
   const RETIRADA_SKUS_OCULTOS = new Set(['SOB-009']);
   const BOLO_COPO_CREMES = ['Creme de Leite Ninho', 'Creme de Nutela'];
-  const FONDUE_FRUTAS = ['Morango', 'Banana', 'Uva', 'Kiwi', 'Abacaxi', 'Cereja'];
-  const FONDUE_CREMES = ['Nutella', 'Creme de Ninho', 'Geleia de Morango', 'Creme de Amendoim', 'Goiabada', 'Creme de Pistache', 'Mel'];
-  const FONDUE_GULOSEIMAS = ['Granola', 'Paçoca', 'Leite em Pó', 'Ovomaltine', 'Confete', 'Chocoball', 'Chantilly', 'Granulado', 'Leite Condensado'];
+  const FONDUE_FRUTAS = ['Morango', 'Banana', 'Uva'];
+  const FONDUE_CREMES = ['Nutella', 'Creme de Ninho'];
+  const FONDUE_GULOSEIMAS = ['Marshmallow', 'Canudinho Wafer'];
   const emptyFondueChoices = () => ({ frutas: {}, cremes: {}, guloseimas: {} });
   const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, selectedFlavors: [], flavorCounts: {}, flavorPreferences: [], activeFlavorPreference: 0, popsiclePreferences: [], activePopsiclePreference: 0, popsicleQuantity: 1, boxAddOnCounts: {}, acaiDoubleChoices: {}, includedCustomizationChoices: {}, serviceMode: '', containerType: '', cakeChoice: '', creamChoice: '', fondueChoices: emptyFondueChoices(), query: '', lastCatalogSku: null, lastCatalogViewport: null };
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -70,7 +70,7 @@
     return isIceCreamCake(product) || product.category === 'Tortas por encomenda' || isLargeIceCreamBox(product);
   }
   function usesFlavorDistribution(product) {
-    return !hasFixedThreeFlavorLimit(product) && product.category !== 'Milkshake' && productBallCount(product) > 0;
+    return !hasFixedThreeFlavorLimit(product) && !isBoloCopo(product) && product.category !== 'Milkshake' && productBallCount(product) > 0;
   }
   function needsMassFlavors(product) {
     if (product.fixedAcai) return false;
@@ -95,6 +95,7 @@
   function displayName(name) { return String(name || ''); }
   function flavorRule(product) {
     if (product.category === 'Milkshake') return { source: 'milkshake', min: 1, max: 2, label: 'Escolha 1 sabor ou até 2 sabores para o milkshake' };
+    if (isBoloCopo(product)) return { source: 'massa', min: 1, max: 2, label: '2 BOLAS · Escolha até 2 sabores de sorvete' };
     if (hasFixedThreeFlavorLimit(product)) { const limit = fixedFlavorLimit(product); return { source: 'massa', min: limit, max: limit, label: `Escolha ${limit} sabores de sorvete` }; }
     const required = productBallCount(product) || 1;
     if (usesFlavorDistribution(product)) return { source: 'massa', min: required, max: required, ballCount: required, distribution: true, label: `Distribua ${required} bola${required > 1 ? 's' : ''} entre os sabores que quiser` };
