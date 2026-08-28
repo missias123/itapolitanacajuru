@@ -1720,6 +1720,52 @@ html.chat-open,body.chat-open{position:fixed;width:100%;height:100dvh;overflow:h
  transform: translateY(-2px);
  box-shadow: 0 0 0 2px rgba(255,255,255,.96), 0 0 13px color-mix(in srgb, var(--sabor-accent, #94A3B8) 28%, transparent), 0 5px 14px rgba(15,23,42,.10);
 }
+/* ── SABOR ESGOTADO — chip-inline (padrão iFood/Rappi: fundo cinza, riscado, badge) ── */
+.chip-inline.is-esgotado {
+ background: linear-gradient(180deg, #F3F4F6 0%, #E5E7EB 100%) !important;
+ border-color: #9CA3AF !important;
+ border-left-color: #6B7280 !important;
+ color: #6B7280 !important;
+ text-decoration: line-through;
+ opacity: 1;
+ cursor: default;
+ pointer-events: none;
+ box-shadow: none !important;
+}
+.chip-inline.is-esgotado::before { background: #9CA3AF !important; }
+.chip-inline.is-esgotado:hover,
+.chip-inline.is-esgotado:focus-visible { transform: none; box-shadow: none; }
+/* ── SABOR ESGOTADO — chip-sabor (modal milkshake etc.) ── */
+.chip-sabor.is-esgotado {
+ background: linear-gradient(135deg, #F3F4F6, #E5E7EB) !important;
+ border-color: #9CA3AF !important;
+ color: #6B7280 !important;
+ text-decoration: line-through;
+ opacity: 1;
+ cursor: default;
+ pointer-events: none;
+}
+/* ── TARJA DIAGONAL no card de produto esgotado ── */
+.prod-card.is-esgotado { position: relative; overflow: hidden; }
+.prod-card.is-esgotado::after {
+ content: 'ESGOTADO';
+ position: absolute;
+ top: 16px;
+ right: -28px;
+ width: 110px;
+ padding: 4px 0;
+ background: #B42318;
+ color: #fff;
+ font-size: 9px;
+ font-weight: 900;
+ letter-spacing: .08em;
+ text-align: center;
+ transform: rotate(45deg);
+ transform-origin: center;
+ box-shadow: 0 2px 6px rgba(180,35,24,.4);
+ pointer-events: none;
+ z-index: 2;
+}
 @media (prefers-reduced-motion: reduce) {
  .chip-inline { transition: none; }
  .chip-inline:hover, .chip-inline:focus-visible { transform: none; }
@@ -5882,10 +5928,10 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
   }
   var nomeNormalizado = String(nome || '').trim().toLowerCase();
   var isSaborNovo = isMassa && ['cheesecake', 'passas ao rum', 'bem casado'].includes(nomeNormalizado);
-  var extraClass = (isMassa ? 'sabor-massa-premium ' : '') + (isSaborNovo ? 'sabor-novo' : '');
-  var paletteStyle = isMassa ? getSaborMassaStyle(nome) : '';
+  var extraClass = (isMassa ? 'sabor-massa-premium ' : '') + (isSaborNovo ? 'sabor-novo' : '') + (esgotado ? ' is-esgotado' : '');
+  var paletteStyle = (isMassa && !esgotado) ? getSaborMassaStyle(nome) : '';
   var novoBadge = isSaborNovo ? '<span class="sabor-novo-badge" aria-label="Novo sabor">NOVO</span>' : '';
-  return '<span class="chip-inline ' + extraClass.trim() + '" style="' + paletteStyle + (esgotado ? 'opacity:.45;text-decoration:line-through;' : '') + '">' + novoBadge + nome + (esgotado ? ' ✕' : '') + '</span>';
+  return '<span class="chip-inline ' + extraClass.trim() + '" style="' + paletteStyle + '">' + novoBadge + nome + '</span>';
  }).join('') : '<div style="font-size:12px;color:#888;padding:10px">Sabores indisponíveis no momento.</div>';
 
  _semPulo(function() {
@@ -6029,10 +6075,13 @@ function mostrarDuasSecoes(accBodyEl, titulo1, sub1, chips1, titulo2, sub2, chip
  if (accId) _nivelAnterior[accId] = accBodyEl.innerHTML;
  if (acc) _menuFocoAtivar(acc);
 
- var chips1Html = chips1.map(function(s) { return '<span class="chip-inline">' + s + '</span>'; }).join('');
- var chips2Html = chips2.map(function(s) { 
-  var extraClass = getSaborMassaClass(s);
-  return '<span class="chip-inline ' + extraClass + '">' + s + '</span>'; 
+ var chips1Html = chips1.map(function(s) { return '<span class="chip-inline">' + (typeof s === 'object' ? s.nome : s) + '</span>'; }).join('');
+ var chips2Html = chips2.map(function(s) {
+  var nome = typeof s === 'object' ? (s.nome || '') : String(s);
+  var esgotado = typeof s === 'object' && !!s.esgotado;
+  var extraClass = (esgotado ? 'is-esgotado' : getSaborMassaClass(nome));
+  var paletteStyle = (!esgotado) ? getSaborMassaStyle(nome) : '';
+  return '<span class="chip-inline ' + extraClass + '" style="' + paletteStyle + '">' + nome + '</span>';
  }).join('');
 
  _semPulo(function() {

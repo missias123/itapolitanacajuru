@@ -7509,6 +7509,16 @@ async function salvarSabores() {
       prod.sorvetes.todos_sabores = sabores.map(s => s.nome);
     }
 
+    // Sincronizar esgotado em sabores_sorvete (usado pelo site para exibir tarja)
+    if (Array.isArray(prod.sabores_sorvete)) {
+      const esgotadoMap = {};
+      sabores.forEach(s => { esgotadoMap[s.nome] = s.esgotado; });
+      prod.sabores_sorvete = prod.sabores_sorvete.map(item => {
+        if (typeof item === 'string') return { nome: item, esgotado: !!esgotadoMap[item] };
+        return { ...item, esgotado: item.nome in esgotadoMap ? !!esgotadoMap[item.nome] : !!item.esgotado };
+      });
+    }
+
     // Coletar picolés diretamente do STATE.produtos
     const norm = s => s.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
     const picoles = prod.picoles || {};
