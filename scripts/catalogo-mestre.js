@@ -180,6 +180,8 @@
 
     // Açaí: cada receita/tamanho é um SKU fechado e independente.
     var acai = view['açaí'] || view.acai;
+    var registroAcaiMassa = item(master, 'massas.MAS-039');
+    var acaiMassaEsgotado = Boolean(registroAcaiMassa && registroAcaiMassa.ativo === false);
     if (acai && Array.isArray(acai.categorias)) {
       acai.categorias.forEach(function (categoria) {
         (categoria.produtos || []).forEach(function (produto, index) {
@@ -193,7 +195,8 @@
         });
       });
       // Cascata: base esgotada → TODOS os produtos de açaí ficam indisponíveis
-      if (acai.esgotado_base === true) {
+      if (acai.esgotado_base === true || acaiMassaEsgotado) {
+        acai.esgotado_base = true;
         acai.categorias.forEach(function (categoria) {
           (categoria.produtos || []).forEach(function (produto) {
             produto.esgotado = true;

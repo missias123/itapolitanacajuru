@@ -126,7 +126,8 @@
   }
   function buildCatalog(data) {
     const entries = Object.values(data.cadastro_skus?.por_chave || {});
-    const acaiBaseEsgotado = Boolean(data?.açaí?.esgotado_base || data?.acai?.esgotado_base);
+    const acaiMassaSku = data?.cadastro_skus?.por_chave?.['massas.MAS-039'];
+    const acaiBaseEsgotado = Boolean(data?.açaí?.esgotado_base || data?.acai?.esgotado_base || acaiMassaSku?.ativo === false);
     const travelPackagingEntry = entries.find((item) => item.sku === 'EMB-VIAGEM');
     const travelPackagingAvailability = data?.disponibilidade?.embalagens?.['EMB-VIAGEM'];
     const travelPackaging = { sku: 'EMB-VIAGEM', name: travelPackagingEntry?.nome || 'Embalagem para viagem', price: Number(travelPackagingEntry?.preco || 1), available: travelPackagingEntry?.ativo !== false && travelPackagingAvailability?.ativo !== false };

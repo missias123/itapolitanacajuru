@@ -7498,6 +7498,7 @@ async function salvarSabores() {
   try {
     const prod = STATE.produtos;
     if (!prod) { toast('Dados não carregados. Tente novamente.', 'erro'); ocultarLoading(); return; }
+    const masterSkus = prod.cadastro_skus?.por_chave || {};
 
     // Coletar sabores de sorvete a partir do grid dinâmico
     const saboresEls = document.querySelectorAll('#sabores-sorvete-grid .sabor-item');
@@ -7522,6 +7523,13 @@ async function salvarSabores() {
         if (typeof item === 'string') return { nome: item, esgotado: !!esgotadoMap[item] };
         return { ...item, esgotado: item.nome in esgotadoMap ? !!esgotadoMap[item.nome] : !!item.esgotado };
       });
+      prod.sabores_sorvete.forEach((item) => {
+        if (!item || typeof item !== 'object') return;
+        const codigo = item.codigo;
+        if (codigo && masterSkus['massas.' + codigo]) {
+          masterSkus['massas.' + codigo].ativo = !item.esgotado;
+        }
+      });
     }
 
     // Coletar picolés diretamente do STATE.produtos
@@ -7540,9 +7548,15 @@ async function salvarSabores() {
         picoles[cat].sabores = saboresCat.map(s => {
           const sid = 'pic_' + norm(cat) + '_' + norm(s.nome);
           const cb = document.getElementById(sid);
-          return { nome: s.nome, esgotado: cb ? !cb.checked : s.esgotado };
+          const next = { ...s, nome: s.nome, esgotado: cb ? !cb.checked : s.esgotado };
+          const codigo = next.codigo;
+          const key = codigo ? ('picoles.' + cat + '.' + codigo) : '';
+          if (key && masterSkus[key]) masterSkus[key].ativo = !next.esgotado;
+          return next;
         });
       }
+      const keyGrupo = 'picoles.' + cat;
+      if (masterSkus[keyGrupo]) masterSkus[keyGrupo].ativo = picoles[cat].esgotado !== true;
     }
     prod.picoles = picoles;
     STATE.produtos = prod;
@@ -9196,9 +9210,9 @@ function _catBadge(cor, texto) {
   return `<span style="background:${cor}20;color:${cor};border:1px solid ${cor}40;border-radius:10px;padding:2px 8px;font-size:.72rem;font-weight:800">${texto}</span>`;
 }
 
-function _toggleHtml(id, checked, onchange) {
+function _toggleHtml(id, checked, onchange, extraAttrs='') {
   return `<label class="toggle" title="Ativo / Esgotado" style="display:inline-flex;align-items:center;vertical-align:middle">
-    <input type="checkbox" id="${id}" ${checked?'checked':''} onchange="${onchange}"/>
+    <input type="checkbox" id="${id}" ${checked?'checked':''} onchange="${onchange}" ${extraAttrs}/>
     <span class="toggle-slider"></span>
   </label>`;
 }
@@ -9220,12 +9234,13 @@ function _precoInp(id, valor, shared) {
 }
 
 // Linha de produto individual na tabela de catálogo
-function _linhaItem(sku, nome, precoId, precoVal, statusId, ativo, embalagem, compartilhado) {
+function _linhaItem(sku, nome, precoId, precoVal, statusId, ativo, embalagem, compartilhado, masterKey='') {
+  const safeMasterKey = String(masterKey || '').replace(/"/g, '&quot;');
   return `<tr id="linha_${sku}" style="${ativo?'':'background:#fff8f8'}">
     <td style="font-weight:700;font-size:.88rem">${nome}</td>
     <td style="font-size:.78rem;color:#555">${embalagem}</td>
     <td>${_precoInp(precoId, precoVal, compartilhado)}</td>
-    <td>${_toggleHtml(statusId, ativo, `toggleCatItem('${sku}','${statusId}')`)}</td>
+    <td>${_toggleHtml(statusId, ativo, `toggleCatItem('${sku}','${statusId}')`, masterKey ? `data-master-key="${safeMasterKey}"` : '')}</td>
     <td id="badge_${sku}">${_statusBadge(ativo)}</td>
   </tr>`;
 }
@@ -9468,7 +9483,7 @@ function renderCatalogo() {
         const skuObj = skus_sv[`sorvetes.${grupo.key}.${bola.replace(/\s/g,'_').toLowerCase()}`] || {};
         const ativo = skuObj.ativo !== false;
         const nomeProd = `${prod.nome} — ${bola}`;
-        h += _linhaItem(sku, nomeProd, precoId, precoBase, statusId, ativo, prod.emb, false);
+        h += _linhaItem(sku, nomeProd, precoId, precoBase, statusId, ativo, prod.emb, false, `sorvetes.${grupo.key}.${bola.replace(/\s/g,'_').toLowerCase()}`);
       });
     });
 
@@ -9563,9 +9578,11 @@ function renderCatalogo() {
     Object.entries(g.itens||{}).forEach(([tam, preco]) => {
       if (typeof preco !== 'number') return;
       const sku = 'MLK_'+g.label.toUpperCase()+'_'+tam.replace(/\W/g,'_');
-      const skuObj = Object.values(skus_sv).find(x => x.nome?.includes(g.label) && x.tamanho === tam) || {};
+      const skuPair = Object.entries(skus_sv).find(([, x]) => x.nome?.includes(g.label) && x.tamanho === tam);
+      const skuObj = skuPair ? skuPair[1] : {};
+      const masterKey = skuPair ? skuPair[0] : '';
       const ativo = skuObj.ativo !== false;
-      h += _linhaItem(sku, `${g.label} ${tam}`, 'cat_mlk_'+sku+'_preco', preco, 'cat_mlk_'+sku+'_status', ativo, `Milkshake ${g.label}`, false);
+      h += _linhaItem(sku, `${g.label} ${tam}`, 'cat_mlk_'+sku+'_preco', preco, 'cat_mlk_'+sku+'_status', ativo, `Milkshake ${g.label}`, false, masterKey);
     });
   });
   h += '</tbody></table></div></div></div>';
@@ -9588,9 +9605,11 @@ function renderCatalogo() {
     Object.entries(itens).forEach(([nome, preco]) => {
       if (typeof preco !== 'number') return;
       const sku = 'TAC_'+tg.key+'_'+nome.replace(/[^a-zA-Z0-9]/g,'_');
-      const skuObj = Object.values(skus_sv).find(x => x.nome?.includes(nome)) || {};
+      const skuPair = Object.entries(skus_sv).find(([, x]) => x.nome?.includes(nome));
+      const skuObj = skuPair ? skuPair[1] : {};
+      const masterKey = skuPair ? skuPair[0] : '';
       const ativo = skuObj.ativo !== false;
-      h += _linhaItem(sku, nome, 'cat_tac_'+sku+'_preco', preco, 'cat_tac_'+sku+'_status', ativo, tg.label.replace(/[🍨👑] /,''), false);
+      h += _linhaItem(sku, nome, 'cat_tac_'+sku+'_preco', preco, 'cat_tac_'+sku+'_status', ativo, tg.label.replace(/[🍨👑] /,''), false, masterKey);
     });
     h += '</tbody></table></div>';
   });
@@ -9612,7 +9631,7 @@ function renderCatalogo() {
         const skuObj = skuKey ? skus_sv[skuKey] : {};
         const ativo = skuObj.ativo !== false;
         const preco = prod.preco ?? prod.preço ?? 0;
-        h += _linhaItem(sku, prod.nome, 'cat_aca_'+sku+'_preco', preco, 'cat_aca_'+sku+'_status', ativo, cat.label||cat.id, false);
+        h += _linhaItem(sku, prod.nome, 'cat_aca_'+sku+'_preco', preco, 'cat_aca_'+sku+'_status', ativo, cat.label||cat.id, false, skuKey || '');
       });
       h += '</tbody></table></div>';
     });
@@ -9630,7 +9649,7 @@ function renderCatalogo() {
       <div style="overflow-x:auto"><table class="tabela" style="font-size:.82rem">${th}<tbody>`;
       itens.forEach(([k,v]) => {
         const ativo = v.ativo !== false;
-        h += _linhaItem(v.sku, v.nome, 'cat_aca_'+v.sku+'_preco', v.preco||0, 'cat_aca_'+v.sku+'_status', ativo, v.tamanho||'', false);
+        h += _linhaItem(v.sku, v.nome, 'cat_aca_'+v.sku+'_preco', v.preco||0, 'cat_aca_'+v.sku+'_status', ativo, v.tamanho||'', false, k);
       });
       h += '</tbody></table></div>';
     });
@@ -9650,7 +9669,7 @@ function renderCatalogo() {
     const skuPair = sobSkus.find(([k,v]) => v.nome === nome);
     const skuId = skuPair ? skuPair[1].sku : 'SOB_'+nome.replace(/[^a-zA-Z0-9]/g,'_');
     const ativo = skuPair ? skuPair[1].ativo !== false : true;
-    h += _linhaItem(skuId, nome, 'cat_sob_'+skuId+'_preco', preco, 'cat_sob_'+skuId+'_status', ativo, 'Sobremesa gelada', false);
+    h += _linhaItem(skuId, nome, 'cat_sob_'+skuId+'_preco', preco, 'cat_sob_'+skuId+'_status', ativo, 'Sobremesa gelada', false, skuPair ? skuPair[0] : '');
   });
   h += '</tbody></table></div></div></div>';
 
@@ -9725,6 +9744,7 @@ async function salvarCatalogo() {
   if (!GH_WRITE_ALLOWED) { toast('⚠️ Modo somente leitura. Adicione um token GitHub para salvar.', 'aviso'); return; }
   const p = STATE.produtos;
   if (!p) { toast('Dados não carregados.','erro'); return; }
+  const masterSkus = p.cadastro_skus?.por_chave || {};
 
   // Salvar status dos sabores de massa
   const saboresMassa = Array.isArray(p.sabores_sorvete) ? p.sabores_sorvete : [];
@@ -9732,7 +9752,11 @@ async function salvarCatalogo() {
     const codigo = s.codigo || s.nome;
     const sid = 'cat_mas_' + codigo.replace(/[^a-zA-Z0-9]/g,'_');
     const el = document.getElementById(sid);
-    if (el) s.esgotado = !el.checked;
+    if (el) {
+      s.esgotado = !el.checked;
+      const key = s.codigo ? ('massas.' + s.codigo) : '';
+      if (key && masterSkus[key]) masterSkus[key].ativo = el.checked;
+    }
   });
   p.sabores_sorvete = saboresMassa;
 
@@ -9750,11 +9774,24 @@ async function salvarCatalogo() {
       const nome = sab.nome || sab;
       const sid = 'cat_pic_' + (sab.codigo||nome).replace(/[^a-zA-Z0-9]/g,'_');
       const el = document.getElementById(sid);
-      if (el) sab.esgotado = !el.checked;
+      if (el) {
+        sab.esgotado = !el.checked;
+        const key = sab.codigo ? ('picoles.' + cat + '.' + sab.codigo) : '';
+        if (key && masterSkus[key]) masterSkus[key].ativo = el.checked;
+      }
     });
+    const keyGrupo = 'picoles.' + cat;
+    if (masterSkus[keyGrupo]) masterSkus[keyGrupo].ativo = info.esgotado !== true;
   });
   p.picolés = picolés;
   if (p['picoles']) p['picoles'] = picolés;
+
+  // Salvar status dos produtos por SKU mestre (todas as tabelas do catálogo)
+  document.querySelectorAll('#catalogo-body input[type="checkbox"][data-master-key]').forEach((el) => {
+    const key = el.getAttribute('data-master-key') || '';
+    if (!key || !masterSkus[key]) return;
+    masterSkus[key].ativo = el.checked === true;
+  });
 
   // Salvar embalagens
   const embs = p.disponibilidade?.embalagens || {};
