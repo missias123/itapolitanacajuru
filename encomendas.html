@@ -1298,7 +1298,7 @@
                              style="${style}" 
                              tabindex="${indisponivel?'-1':'0'}" 
                              role="button" 
-                             aria-pressed="${sel?'true':'false'}"
+                             aria-pressed="${!indisponivel&&sel?'true':'false'}"
                              aria-disabled="${indisponivel?'true':'false'}"
                              onclick="window.toggleSabor('${s}', this)"
                              onkeydown="if((event.key==='Enter'||event.key===' ')&&this.getAttribute('aria-disabled')!=='true'){event.preventDefault();window.toggleSabor('${s}', this)}">
