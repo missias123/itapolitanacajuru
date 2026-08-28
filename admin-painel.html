@@ -3904,7 +3904,9 @@ function renderPreços(){
   p.picolés={};
   for(const[k,v]of Object.entries(_pic_raw)){p.picolés[k]={nome:v.nome||k,preço_varejo:v.preco_varejo??v.preço_varejo??0,preço_atacado:v.preco_atacado??v.preço_atacado??0,sabores:v.sabores||[],estoque:v.estoque??200};}
   const _ac_raw=p[String.fromCharCode(97,99,97,105)]||p.açaí||{}; // 'acai' em ASCII para evitar conversão
-  p.açaí=_ac_raw.copos||_ac_raw;
+  const _ac_copos=_ac_raw.copos||_ac_raw;
+  const _ac_esgotado_base=!!(p.açaí?.esgotado_base||_ac_raw.esgotado_base);
+  p.açaí=Object.assign({esgotado_base:_ac_esgotado_base},_ac_copos);
   const _acp_raw=p[String.fromCharCode(97,99,97,105)+'_promocao']||p.açaí_promoção||[]; // 'acai_promocao'
   p.açaí_promoção=Array.isArray(_acp_raw)?_acp_raw:[];
   const sv=p.sorvetes?.preços||{};
@@ -3939,6 +3941,8 @@ function renderPreços(){
   html+='<div style="background:#fff3e0;border-left:3px solid #e65100;padding:8px 12px;border-radius:6px;margin-bottom:10px;font-size:.78rem">';
   html+='🫐 Preços dos copos de açaí sorvete Itapolitana. Alterar aqui muda o cardápio imediatamente.';
   html+='</div>';
+  const _acaiBaseEsgotado=!!(ac.esgotado_base);
+  html+=`<div style="background:${_acaiBaseEsgotado?'#fef2f2':'#f0fdf4'};border:2px solid ${_acaiBaseEsgotado?'#b91c1c':'#16a34a'};border-radius:8px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:14px;cursor:pointer" onclick="document.getElementById('acai-base-esgotado').click()"><input type="checkbox" id="acai-base-esgotado" ${_acaiBaseEsgotado?'checked':''} style="width:20px;height:20px;cursor:pointer;accent-color:#b91c1c"><div><strong style="font-size:.95rem">🫐 BASE DO AÇAÍ ESGOTADA</strong><div style="font-size:.78rem;color:#555;margin-top:2px">Ao marcar: <em>todos</em> os 66 SKUs de açaí (copos 250 ml – 700 ml, milkshakes, taças) aparecem como <strong>ESGOTADO</strong> no cardápio e na tela de retirada. Desmarque quando o açaí estiver disponível novamente.</div></div></div>`;
   html+='<div class="preço-grid">';
   for(const[tam,preço]of Object.entries(ac)){if(typeof preço==='number'){const id=`preço_açaí_${tam}`.replace(/[\s\W]/g,'_');html+=`<div class="preço-item"><label>Açaí — ${tam}</label><div class="preço-inp"><span>R$</span><input type="number" id="${id}" value="${preço}" min="0" step="0.5" title="Açaí tamanho ${tam}"/></div><div class="hint">Ex: 15.00</div></div>`;}}
   const acp=p.açaí_promoção||[];
@@ -4000,8 +4004,9 @@ async function salvarPreços(){
   if(!p[_acaiKey].copos)p[_acaiKey].copos={};
   if(!p[_acaiKey].complementos)p[_acaiKey].complementos=_açaíCompsExist;
   for(const tam of Object.keys(ac)){if(typeof ac[tam]==='number'){const id=`preço_açaí_${tam}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el){p[_acaiKey].copos[tam]=parseFloat(el.value)||0;}}}
-  // Reconstruir açaí (com acento) como estrutura nested para o render do site
-  p.açaí={copos:p[_acaiKey].copos,complementos:p[_acaiKey].complementos};
+  // Reconstruir açaí (com acento) como estrutura nested para o render do site — preservar categorias
+  const _açaíOriginal=p['açaí']||p[_acaiKey]||{};
+  p.açaí=Object.assign({},_açaíOriginal,{esgotado_base:document.getElementById('acai-base-esgotado')?.checked===true,copos:p[_acaiKey].copos,complementos:p[_acaiKey].complementos});
   const acp=p.açaí_promoção||[];
   if(Array.isArray(acp)){acp.forEach((item,i)=>{const id=`preço_açaíp_${i}`;const el=document.getElementById(id);if(el){const v=parseFloat(el.value)||0;acp[i].preco=v;acp[i].preço=v;}});p.açaí_promoção=acp;p[_acaiKey+'_promocao']=acp;}
   const pic=p.picolés||{};

@@ -126,6 +126,7 @@
   }
   function buildCatalog(data) {
     const entries = Object.values(data.cadastro_skus?.por_chave || {});
+    const acaiBaseEsgotado = Boolean(data?.açaí?.esgotado_base || data?.acai?.esgotado_base);
     const travelPackagingEntry = entries.find((item) => item.sku === 'EMB-VIAGEM');
     const travelPackagingAvailability = data?.disponibilidade?.embalagens?.['EMB-VIAGEM'];
     const travelPackaging = { sku: 'EMB-VIAGEM', name: travelPackagingEntry?.nome || 'Embalagem para viagem', price: Number(travelPackagingEntry?.preco || 1), available: travelPackagingEntry?.ativo !== false && travelPackagingAvailability?.ativo !== false };
@@ -135,7 +136,7 @@
       const meta = picoMeta.get(item.sku);
       const category = item.categoria || 'Outros produtos'; const largeBox = category === 'Caixas para encomenda'; const packagingSku = largeBox ? item.dependencias_embalagem?.[0] : ''; const packagingEntry = packagingSku ? entries.find((entry) => entry.sku === packagingSku) : null; const packagingAvailability = packagingSku ? data?.disponibilidade?.embalagens?.[packagingSku] : null;
       const largeBoxPackaging = packagingSku ? { sku: packagingSku, name: packagingEntry?.nome || packagingAvailability?.nome || packagingSku, price: 0, available: packagingEntry?.ativo !== false && packagingAvailability?.ativo !== false, included: true } : travelPackaging;
-      return { id: item.sku, sku: item.sku, category, name: item.nome, size: item.tamanho || '', price: Number(item.preco || 0), active: item.ativo !== false, available: productAvailable(data, item), type: meta ? 'picole' : productType(category), picole: meta || null, includedExtras: Array.isArray(item.acrescimos_inclusos) ? item.acrescimos_inclusos : [], fixedIngredients: Array.isArray(item.ingredientes) ? item.ingredientes : [], travelPackaging: largeBox ? largeBoxPackaging : travelPackaging, fixedAcai: normalize(category).includes('acai') || normalize(item.nome).includes('acai natureon'), selectable: category !== 'Sabores de massa' && !(category === 'Picolés' && !meta) };
+      return { id: item.sku, sku: item.sku, category, name: item.nome, size: item.tamanho || '', price: Number(item.preco || 0), active: item.ativo !== false && !(acaiBaseEsgotado && String(item.sku || '').startsWith('ACA-')), available: productAvailable(data, item), type: meta ? 'picole' : productType(category), picole: meta || null, includedExtras: Array.isArray(item.acrescimos_inclusos) ? item.acrescimos_inclusos : [], fixedIngredients: Array.isArray(item.ingredientes) ? item.ingredientes : [], travelPackaging: largeBox ? largeBoxPackaging : travelPackaging, fixedAcai: normalize(category).includes('acai') || normalize(item.nome).includes('acai natureon'), selectable: category !== 'Sabores de massa' && !(category === 'Picolés' && !meta) };
     });
   }
   function preferenceKey(preferences = []) { return (preferences || []).map((set) => (set || []).map((item) => item.code || item).sort().join('+')).join('||'); }
