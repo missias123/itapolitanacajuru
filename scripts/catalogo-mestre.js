@@ -192,6 +192,14 @@
           if (registro.tamanho) categoria.label = registro.tamanho;
         });
       });
+      // Cascata: base esgotada → TODOS os produtos de açaí ficam indisponíveis
+      if (acai.esgotado_base === true) {
+        acai.categorias.forEach(function (categoria) {
+          (categoria.produtos || []).forEach(function (produto) {
+            produto.esgotado = true;
+          });
+        });
+      }
       view['açaí'] = acai;
       view.acai = acai;
     }
