@@ -101,7 +101,7 @@
       '.msg-link-btn.secondary:active { background: #EF6C00; }',
       '/* Launcher ItaBot 3D: transparente, flutuante e reposicionável */',
       '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:0; width:188px; height:300px; max-width:calc(100vw - 20px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
-      '#itabot-launcher:hover { transform:translateY(-4px) scale(1.06); filter:drop-shadow(0 0 14px rgba(34,194,255,.65)); }',
+      '#itabot-launcher:hover { filter:drop-shadow(0 0 14px rgba(34,194,255,.65)); }',
       '#itabot-launcher:focus-visible { outline:2px solid #22c2ff; outline-offset:4px; border-radius:18px; }',
       '#itabot-launcher.itabot-launcher-icon-only { width:188px; height:300px; padding:0; justify-content:flex-start; gap:0; }',
       '.itabot-launcher-robot { position:relative; flex:0 0 164px; width:156px; height:164px; display:block; overflow:hidden; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
@@ -117,9 +117,8 @@
 
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { -webkit-animation:none; animation:none; -webkit-transition:none; transition:none; } }',
       /* Celular pequeno: até 480px (iPhone SE, Android compacto) */
-      '@media (max-width:480px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(8px + env(safe-area-inset-right, 0px)); bottom:calc(72px + env(safe-area-inset-bottom, 0px)); width:140px; height:180px; max-width:calc(100vw - 16px); } .itabot-launcher-robot { -webkit-flex-basis:120px; flex-basis:120px; width:116px; height:120px; } .itabot-launcher-led-panel { -webkit-flex:0 0 22px; flex:0 0 22px; width:85%; min-width:80px; min-height:22px; height:22px; margin-top:-7px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:20px; } }',
-      /* Celular grande / phablet: 481px – 767px (iPhone Plus, Android XL) */
-      '@media (min-width:481px) and (max-width:767px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(80px + env(safe-area-inset-bottom, 0px)); width:164px; height:220px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:148px; flex-basis:148px; width:140px; height:148px; } .itabot-launcher-led-panel { -webkit-flex:0 0 26px; flex:0 0 26px; width:80%; min-width:84px; min-height:26px; height:26px; margin-top:-8px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:12px; line-height:24px; } }',
+      '/* Em telemóveis o launcher mantém exactamente a mesma caixa e escala; só a posição muda. */',
+      '@media (max-width:767px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(72px + env(safe-area-inset-bottom, 0px)); width:140px; height:180px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:120px; flex-basis:120px; width:116px; height:120px; } .itabot-launcher-led-panel { -webkit-flex:0 0 22px; flex:0 0 22px; width:85%; min-width:80px; min-height:22px; height:22px; margin-top:-7px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:20px; } #itabot-launcher:hover { filter:none; } }',
       /* Tablet: 768px – 1024px (iPad, Android tablet) */
       '@media (min-width:768px) and (max-width:1024px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(16px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:176px; height:280px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:156px; flex-basis:156px; width:150px; height:158px; } .itabot-launcher-led-panel { -webkit-flex:0 0 28px; flex:0 0 28px; width:75%; min-width:88px; min-height:28px; height:28px; margin-top:-9px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:14px; line-height:26px; } }',
       /* Desktop: 1025px+ (PC, Mac, Chrome, Firefox, Edge, Safari) */
@@ -134,7 +133,8 @@
     if (document.getElementById('itabot-launcher')) return;
     var launcher = document.createElement('button');
     launcher.id = 'itabot-launcher';
-    launcher.className = 'ita-bot-duvidas-btn itabot-btn';
+      // Não herdar a classe do CTA do cabeçalho: ela aplica position:relative !important.
+      launcher.className = 'itabot-btn';
     launcher.type = 'button';
     launcher.setAttribute('data-role', 'duvidas');
     launcher.setAttribute('data-itabot-open', 'true');
@@ -199,10 +199,10 @@
       launcher.style.visibility = 'hidden';
       launcher.style.pointerEvents = 'none';
       launcher.classList.remove('itabot-launcher-icon-only');
-      // Tamanhos dobrados para corresponder ao CSS
-      // mobile ≤480px: 140×180, phablet 481-767: 164×220, tablet 768-1024: 176×280, desktop: 188×300
-      var fullW = vw <= 480 ? 140 : (vw <= 767 ? 164 : (vw <= 1024 ? 176 : 188));
-      var fullH = vw <= 480 ? 180 : (vw <= 767 ? 220 : (vw <= 1024 ? 280 : 300));
+      // Tamanho estável por classe de dispositivo; em telemóveis não muda entre 320–767 px.
+      // mobile ≤767px: 140×180, tablet 768-1024: 176×280, desktop: 188×300
+      var fullW = vw <= 767 ? 140 : (vw <= 1024 ? 176 : 188);
+      var fullH = vw <= 767 ? 180 : (vw <= 1024 ? 280 : 300);
       var iconW = fullW, iconH = fullH;
       var safeBottom = narrow ? 110 : (vw < 1025 ? 44 : 52);
       var margin = narrow ? 10 : 20;
