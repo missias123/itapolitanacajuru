@@ -81,11 +81,13 @@ try {
       flavorChecks.push(check);
     }
 
-    const plusButtons = await page.$$(`#lista-sabores-picole .picole-qtd-btn--plus`);
-    const brigadeiro = plusButtons[plusButtons.length - 2];
-    const prestigio = plusButtons[plusButtons.length - 1];
-    await brigadeiro.click();
-    await prestigio.click();
+    for (const { dataKey } of flavorChecks) {
+      await page.evaluate((key) => {
+        const button = document.querySelector(`[data-picole-key="${CSS.escape(key)}"] .picole-qtd-btn--plus`);
+        if (!button) throw new Error(`Botão + não encontrado para ${key}`);
+        button.click();
+      }, dataKey);
+    }
 
     const quantities = await page.evaluate(() => ['Brigadeiro', 'Prestígio'].map((targetFlavor) => {
       const row = [...document.querySelectorAll('#lista-sabores-picole [data-picole-key]')].find((item) => item.textContent.includes(targetFlavor));
