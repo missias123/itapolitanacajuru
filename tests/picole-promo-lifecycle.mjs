@@ -101,6 +101,25 @@ function campaignInitial() {
   assert.equal(env.PROMO_KV.writes.length, 0);
 }
 
+// Campanha pausada ou cancelada permanece inativa e explica o motivo.
+{
+  let env = envFor({ 'picole:campanha': JSON.stringify({ id: 'manual-pause', ativo: true, pausado: true, ativacaoAdmin: true }) });
+  let response = await t.handlePicoleStatus(req('https://api.test/api/promocao/picole/status'), env);
+  let body = await response.json();
+  assert.equal(body.status, 'inativo');
+  assert.equal(body.paused, true);
+  assert.equal(body.campaign_active, false);
+  assert.equal(body.motivo, 'campanha_pausada');
+
+  env = envFor({ 'picole:campanha': JSON.stringify({ id: 'manual-cancel', ativo: false, pausado: false, ativacaoAdmin: true, cancelado: true }) });
+  response = await t.handlePicoleStatus(req('https://api.test/api/promocao/picole/status'), env);
+  body = await response.json();
+  assert.equal(body.status, 'inativo');
+  assert.equal(body.paused, false);
+  assert.equal(body.campaign_active, false);
+  assert.equal(body.motivo, 'campanha_cancelada');
+}
+
 // Antes, dentro e depois da janela de exatamente 5 segundos; nenhum GET grava PROMO_KV.
 {
   const env = envFor(campaignInitial());
@@ -172,6 +191,33 @@ function campaignInitial() {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome: 'Teste Falso', celular: '(16) 99999-0000', aceiteTermos: true, aceiteLGPD: true }),
   }), env);
   assert.equal((await invalidReservation.json()).sucesso, false);
+}
+
+// Campanha cancelada não pode ser retomada; é preciso criar um novo ciclo.
+{
+  const env = envFor(campaignInitial());
+  env.ADMIN_SECRET = 'admin-secret';
+  let response = await t.defaultExport.fetch(req('https://api.test/api/admin/promocao/picole/campanha', {
+    method: 'DELETE',
+    headers: { 'X-Itap-Admin-Secret': 'admin-secret' },
+  }), env);
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).ok, true);
+
+  response = await t.defaultExport.fetch(req('https://api.test/api/admin/promocao/picole/retomar', {
+    method: 'POST',
+    headers: { 'X-Itap-Admin-Secret': 'admin-secret', 'Content-Type': 'application/json' },
+    body: JSON.stringify({}),
+  }), env);
+  const body = await response.json();
+  assert.equal(response.status, 409);
+  assert.equal(body.ok, false);
+  assert.equal(body.nextStep, 'criar_nova_campanha');
+  assert.match(body.error, /nova campanha/i);
+  const campanha = await env.PROMO_KV.get('picole:campanha', 'json');
+  assert.equal(campanha.ativo, false);
+  assert.equal(campanha.cancelado, true);
+  assert.equal(campanha.pausado, false);
 }
 
 // Manual helper remains explicit and creates 30 dates with 30 seconds exact distinct.
