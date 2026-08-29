@@ -316,6 +316,31 @@
     limparErroCampo(campo);
   }
 
+  /** Validação de CNPJ (formato e dígitos verificadores) */
+  function validarCNPJ(campo) {
+    var val = campo.value.replace(/\D/g, '');
+    if (!val) return;
+    if (val.length !== 14 || /^(\d)\1+$/.test(val)) {
+      mostrarErroCampo(campo, '⚠️ CNPJ inválido. Informe os 14 dígitos corretamente (ex: 00.000.000/0001-00).');
+      return;
+    }
+    function calcDigito(cnpj, len) {
+      var soma = 0, pos = len - 7;
+      for (var i = len; i >= 1; i--) {
+        soma += parseInt(cnpj.charAt(len - i)) * pos--;
+        if (pos < 2) pos = 9;
+      }
+      var res = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+      return res;
+    }
+    if (calcDigito(val, 12) !== parseInt(val.charAt(12)) ||
+        calcDigito(val, 13) !== parseInt(val.charAt(13))) {
+      mostrarErroCampo(campo, '⚠️ CNPJ inválido. Verifique os dígitos informados.');
+      return;
+    }
+    limparErroCampo(campo);
+  }
+
   /** Validação de texto alternativo de imagem */
   function validarAlt(campo) {
     var val = campo.value.trim();
