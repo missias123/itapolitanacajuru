@@ -288,7 +288,31 @@
         z-index: 1;
         animation: saborNovoPulse 1.8s ease-in-out infinite;
     }
+    .sabor-esgotado-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 6px;
+        bottom: 4px;
+        min-width: 58px;
+        height: 18px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #6B7280, #374151);
+        color: #FFFFFF;
+        font-size: .54rem;
+        font-weight: 950;
+        letter-spacing: .05em;
+        line-height: 1;
+        box-shadow: 0 0 0 2px #FFFFFF, 0 0 10px rgba(107,114,128,.35);
+        text-shadow: 0 1px 2px rgba(0,0,0,.35);
+        pointer-events: none;
+        user-select: none;
+        z-index: 1;
+    }
     .sabor-item.sabor-novo { padding-right: 36px; padding-bottom: 24px; }
+    .sabor-item.is-esgotado { padding-right: 54px; padding-bottom: 24px; opacity: .68; cursor: not-allowed; }
     @keyframes saborNovoPulse {
         0%, 100% { transform: scale(1); box-shadow: 0 0 0 2px #FFFFFF, 0 0 8px rgba(232,0,13,.42); }
         50% { transform: scale(1.08); box-shadow: 0 0 0 2px #FFFFFF, 0 0 16px rgba(232,0,13,.78); }
@@ -303,6 +327,12 @@
         border-color: var(--sabor-accent, #94A3B8);
         box-shadow: 0 0 0 2px rgba(255,255,255,.96), 0 0 13px var(--sabor-glow, rgba(148,163,184,.28)), 0 5px 14px rgba(15,23,42,.10);
         outline: none;
+    }
+    .sabor-item.is-esgotado:hover,
+    .sabor-item.is-esgotado:focus-visible {
+        transform: none;
+        border-color: var(--sabor-accent, #94A3B8);
+        box-shadow: 0 2px 8px rgba(15,23,42,.06), inset 0 0 0 1px rgba(255,255,255,.75);
     }
     .sabor-item:active { transform: translateY(0) scale(.98); }
     .sabor-item.sel {
@@ -445,6 +475,11 @@
     .picole-qtd-btn:focus-visible { outline:3px solid #FFD600; outline-offset:3px; }
     .picole-qtd-btn:active { transform:scale(.96); background:#FFF7F7; }
     .picole-linha__qtd { min-width:30px; text-align:center; font-weight:900; }
+    #lista-sabores-picole { flex:1; overflow-y:auto; overflow-x:hidden; padding:0 calc(16px + env(safe-area-inset-right, 0px)) 4px 0; display:flex; flex-direction:column; gap:10px; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; scrollbar-gutter:stable; box-sizing:border-box; }
+    .picole-card-row { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 18px 10px 14px; border:1.5px solid #E5E7EB; border-radius:12px; background:#FAFAFA; transition:all .2s; box-sizing:border-box; }
+    .picole-card-row.is-selected { background:#F0FDF4; border-color:#86EFAC; }
+    .picole-card-row__info { flex:1 1 auto; min-width:0; padding-right:10px; }
+    .picole-card-row__controls { display:flex; align-items:center; gap:8px; flex:0 0 auto; position:relative; z-index:1; padding-right:max(2px, env(safe-area-inset-right, 0px)); }
     .picole-linha.is-esgotado { background:#FAFAFA; color:#888; }
     .picole-linha.is-esgotado .picole-linha__sabor { color:#777; }
     .picole-linha__esgotado { margin-top:5px; color:#B42318; font-size:.78rem; font-weight:900; }
@@ -458,6 +493,8 @@
     .acrescimo-card .prod-card__estoque { margin-bottom: 14px; }
     @media (max-width: 380px) { .picole-linha { grid-template-columns:minmax(0,1fr); gap:8px; } .picole-linha__controle { justify-content:flex-end; } }
     @media (max-width: 480px) {
+      #lista-sabores-picole { padding-right:calc(18px + env(safe-area-inset-right, 0px)); }
+      .picole-card-row { padding-right:20px; }
       .container { padding-inline: 10px; }
       .modal-content { width: 100%; height: 100%; max-height: 100dvh; border-radius: 0; padding:16px 12px calc(16px + env(safe-area-inset-bottom)); }
       .sabor-grid { gap: 7px; }
@@ -635,7 +672,7 @@
         </div>
 
         <!-- Lista Flexível: ocupa exatamente todo o espaço restante do modal, sem desperdício e com rolagem perfeita -->
-        <div id="lista-sabores-picole" style="flex: 1; overflow-y: auto; padding: 0 4px 4px 0; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;"></div>
+        <div id="lista-sabores-picole"></div>
 
         <div id="status-picoles" class="selection-status" role="status" aria-live="polite" style="margin-top: 2px; padding: 4px 8px; flex-shrink: 0; border-radius: 8px; font-weight: 800; text-align: center; font-size: 0.82rem; line-height: 1.2; min-height: auto;">Adicione picolés para liberar a confirmação.</div>
         <div class="modal-actions" style="margin-top: 4px; padding-top: 0; display: flex; gap: 10px; flex-shrink: 0;">
@@ -751,6 +788,7 @@
     var picolesSelecionados = window.picolesSelecionados;
     // Catálogos ativos são montados exclusivamente de dados/produtos.json com cache-busting controlado.
     var SABORES_SORVETE = [];
+    var SABORES_SORVETE_ESGOTADOS = {};
     var PICOLES_CATALOGO = {};
     function precoAtacadoDoGrupo(grupo) {
         return Number(grupo && (grupo.precoAtacado ?? grupo.preco) || 0);
@@ -773,9 +811,28 @@
     var MAPA_PICOLES_ESTOQUE = {};
     var ESTOQUE_PICOLES = {};
 
+    function normalizarTexto(valor) {
+        return String(valor == null ? '' : valor).normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+    }
+
+    function acaiBaseEsgotadaNoSite(dados) {
+        var cadastro = (dados && dados.cadastro_skus && dados.cadastro_skus.por_chave) || {};
+        var acaiBase = cadastro['massas.MAS-039'] || null;
+        return Boolean((dados && dados.açaí && dados.açaí.esgotado_base) || (dados && dados.acai && dados.acai.esgotado_base) || (acaiBase && acaiBase.ativo === false));
+    }
+
     function montarCatalogoOficial(dados) {
         var massas = Array.isArray(dados && dados.sabores_sorvete) ? dados.sabores_sorvete : [];
         SABORES_SORVETE = massas.map(function (item) { return typeof item === 'string' ? item : item && item.nome; }).filter(Boolean);
+        SABORES_SORVETE_ESGOTADOS = {};
+        var baseAcaiEsgotada = acaiBaseEsgotadaNoSite(dados);
+        massas.forEach(function (item) {
+            if (!item || typeof item === 'string') return;
+            var nome = item.nome;
+            var codigo = String(item.codigo || '').toUpperCase();
+            var indisponivel = Boolean(item.esgotado || (codigo === 'MAS-039' && baseAcaiEsgotada));
+            if (nome && indisponivel) SABORES_SORVETE_ESGOTADOS[normalizarTexto(nome)] = true;
+        });
         var raw = (dados && (dados.picolés || dados.picoles)) || {};
         var catalogo = {};
         var mapa = {};
@@ -1237,18 +1294,23 @@
                 var isSaborNovo = ['cheesecake', 'passas ao rum', 'bem casado'].includes(nomeNormalizado);
                 var classeNovo = isSaborNovo ? ' sabor-novo' : '';
                 var novoBadge = isSaborNovo ? '<span class="sabor-novo-badge" aria-label="Novo sabor">NOVO</span>' : '';
+                var indisponivel = Boolean(SABORES_SORVETE_ESGOTADOS[normalizarTexto(s)]);
+                var classeEsgotado = indisponivel ? ' is-esgotado' : '';
+                var esgotadoBadge = indisponivel ? '<span class="sabor-esgotado-badge" aria-label="Sabor esgotado">ESGOTADO</span>' : '';
                 
                 // Usamos apenas o estilo de cores, a opacidade é controlada pela classe do grid
                 var style = getSaborMassaStyle(s);
                 
-                return `<div class="sabor-item ${sel?'sel':''}${classeNovo}" 
+                return `<div class="sabor-item ${sel?'sel':''}${classeNovo}${classeEsgotado}" 
                              style="${style}" 
-                             tabindex="0" 
+                             tabindex="${indisponivel?'-1':'0'}" 
                              role="button" 
-                             aria-pressed="${sel?'true':'false'}" 
-                             onclick="window.toggleSabor('${s}', this)" 
-                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">
+                             aria-pressed="${!indisponivel&&sel?'true':'false'}"
+                             aria-disabled="${indisponivel?'true':'false'}"
+                             onclick="if(this.getAttribute('aria-disabled')!=='true')window.toggleSabor('${s}', this)"
+                             onkeydown="if((event.key==='Enter'||event.key===' ')&&this.getAttribute('aria-disabled')!=='true'){event.preventDefault();window.toggleSabor('${s}', this)}">
                             ${novoBadge}
+                            ${esgotadoBadge}
                             <span class="sabor-label">${s}</span>
                         </div>`;
             }).join('');
@@ -1260,6 +1322,7 @@
     };
 
     window.toggleSabor = function(sabor, el) {
+        if (SABORES_SORVETE_ESGOTADOS[normalizarTexto(sabor)]) return;
         var idx = saboresSelecionados.indexOf(sabor);
         if (idx > -1) {
             // Se já está selecionado, o segundo clique desmarca (ELIMINA A SELEÇÃO)
@@ -1363,8 +1426,8 @@
                 var hasSelected = qtd > 0;
 
                 html += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: ${hasSelected ? '#F0FDF4' : '#FAFAFA'}; border: 1.5px solid ${hasSelected ? '#86EFAC' : '#E5E7EB'}; border-radius: 12px; transition: all 0.2s;" data-picole-key="${key}" class="${indisponivel ? 'is-esgotado' : ''}">
-                        <div style="flex: 1; padding-right: 10px;">
+                    <div data-picole-key="${key}" class="picole-card-row${hasSelected ? ' is-selected' : ''}${indisponivel ? ' is-esgotado' : ''}">
+                        <div class="picole-card-row__info">
                             <div style="font-weight: 800; font-size: 0.92rem; color: #1A1A1A;">${escaparHtml(s)}</div>
                             ${tipo.indexOf('Base Leite') !== -1 ? seloLeitePasteurizadoHtml() : ''}
                             <div class="picole-precos" aria-label="Preço aplicado conforme a quantidade">
@@ -1373,7 +1436,7 @@
                             ${indisponivel ? '<div class="picole-linha__esgotado">Esgotado</div>' : ''}
                             <div id="sub-${key}" style="font-size: 0.78rem; font-weight: 800; color: var(--success); margin-top: 2px;">Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}</div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 8px;" aria-label="Quantidade de ${escaparHtml(s)}">
+                        <div class="picole-card-row__controls" aria-label="Quantidade de ${escaparHtml(s)}">
                             <button type="button" class="picole-qtd-btn picole-qtd-btn--minus" aria-label="Remover ${escaparHtml(s)}" title="Remover ${escaparHtml(s)}" onclick="window.addPicole('${key}', -1)" ${qtd <= 0 ? 'disabled' : ''} style="width:48px; min-width:48px; height:48px; min-height:48px; border:2px solid #D5D5D5; border-radius:50%; background:#fff; color:#333; font-size:1.2rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">−</button>
                             <span id="q-${key}" style="min-width: 26px; text-align: center; font-weight: 900; font-size: 1.1rem; color: ${hasSelected ? 'var(--success)' : '#333'};">${qtd}</span>
                             <button type="button" class="picole-qtd-btn picole-qtd-btn--plus" aria-label="Adicionar ${escaparHtml(s)}" title="Adicionar ${escaparHtml(s)}" onclick="window.addPicole('${key}', 1)" ${indisponivel || qtd >= MAX_PICOLES_POR_SABOR ? 'disabled' : ''} style="width:48px; min-width:48px; height:48px; min-height:48px; border:2px solid var(--primary); border-radius:50%; background:var(--primary); color:#fff; font-size:1.2rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">+</button>
@@ -1409,9 +1472,12 @@
         if (subtotalEl && grupo) subtotalEl.textContent = 'Subtotal: R$ ' + (novo * precoAtualDoGrupo(grupo, totalPicolesSelecionados)).toFixed(2).replace('.',',');
         var linha = document.querySelector('[data-picole-key="' + CSS.escape(key) + '"]');
         if (linha) {
+            linha.classList.toggle('is-selected', novo > 0);
             var botoes = linha.querySelectorAll('button');
+            var contador = linha.querySelector('[id^="q-"]');
             if (botoes[0]) botoes[0].disabled = novo <= 0;
             if (botoes[1]) botoes[1].disabled = novo >= MAX_PICOLES_POR_SABOR || estoqueDisponivelParaSabor(tipo, sabor, novo) <= 0;
+            if (contador) contador.style.color = novo > 0 ? 'var(--success)' : '#333';
         }
         atualizarAcaoPicoles(key, totalPicolesAntes);
     };

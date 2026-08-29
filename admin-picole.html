@@ -69,6 +69,15 @@
     .tab-btn.ativo{color:#e65100;border-bottom-color:#e65100}
     .back-link{display:inline-flex;align-items:center;gap:6px;color:#e65100;font-size:.85rem;font-weight:700;text-decoration:none;margin-bottom:16px}
     .back-link:hover{opacity:.8}
+    .diag-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:16px}
+    .diag-card{border:1px solid #eceff1;border-radius:12px;padding:12px;background:#fafcff}
+    .diag-card strong{display:block;font-size:.75rem;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    .diag-card .diag-value{font-size:.92rem;font-weight:800;color:#1a237e}
+    .next-step-box{margin-top:16px;padding:14px 16px;border-radius:12px;background:#fff8e1;border:1px solid #ffd54f;color:#5d4300}
+    .next-step-box h4{font-size:.82rem;font-weight:900;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+    .checklist{margin:8px 0 0 18px;color:#444;font-size:.84rem;line-height:1.55}
+    .flow-note{margin-top:16px;padding:14px 16px;border-radius:12px;background:#e8f5e9;border:1px solid #a5d6a7;color:#1b5e20;font-size:.84rem;line-height:1.55}
+    .flow-note strong{display:block;font-size:.8rem;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
   </style>
 </head>
 <body>
@@ -128,6 +137,7 @@
         </div>
         <div class="card-body">
           <div id="campanha-info"><div class="empty-state">Carregando...</div></div>
+          <div id="campanha-diagnostico"></div>
           <div class="btn-row" style="margin-top:16px">
             <button class="btn btn-yellow" id="btn-pausar" type="button">⏸ Pausar Campanha</button>
             <button class="btn btn-green" id="btn-retomar" type="button">▶️ Retomar Campanha</button>
@@ -185,6 +195,20 @@
             <li><strong>ADMIN_PASSWORD_RECORD</strong> ou <strong>ADMIN_SECRET</strong> — senha do painel admin</li>
             <li><strong>Número WhatsApp da sorveteria</strong> — configurável em <code>scripts/itap-picole-promo.js</code> (variável <code>wppNum</code>)</li>
           </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr"><h2>✅ Fluxo validado para “Encontre um Picolé”</h2></div>
+        <div class="card-body" style="font-size:.88rem;color:#444;line-height:1.6">
+          <ol style="margin-left:18px">
+            <li>Criação administrativa autenticada da campanha com 30 dias e um horário exato por dia.</li>
+            <li>Status público somente leitura, sem criar agenda nem alterar estado em GET.</li>
+            <li>Ativação pública apenas com campanha ativa, ativação explícita, agenda criada e sem pausa.</li>
+            <li>Reserva atômica do primeiro clique do dia com idempotência server-side.</li>
+            <li>Formulário exclusivo com nome completo, celular DDD 16 e aceites obrigatórios.</li>
+            <li>Confirmação final com código de retirada e CTA do WhatsApp sem envio automático.</li>
+          </ol>
         </div>
       </div>
     </div>
@@ -460,17 +484,28 @@
 
   function _carregarCampanha() {
     var info = document.getElementById('campanha-info');
+    var diagnostico = document.getElementById('campanha-diagnostico');
     var tabelaDias = document.getElementById('tabela-dias');
     info.innerHTML = '<div class="empty-state">Carregando...</div>';
+    diagnostico.innerHTML = '';
     tabelaDias.innerHTML = '';
-    _get('/api/admin/promocao/picole/campanha')
-      .then(function (d) {
+    Promise.all([
+      _get('/api/admin/promocao/picole/campanha'),
+      _get('/api/promocao/picole/status')
+    ])
+      .then(function (results) {
+        var d = results[0];
+        var statusPublico = results[1] || {};
         if (!d.ok) {
           info.innerHTML = '<div class="empty-state">Nenhuma campanha encontrada. Use a aba Iniciar para criar.</div>';
+          diagnostico.innerHTML = _renderDiagnosticoCampanha(null, statusPublico, null);
           tabelaDias.innerHTML = '';
+          _atualizarAcoesCampanha(null);
           return;
         }
         var c = d.campanha;
+        var hoje = _hojeISO();
+        var diaHoje = (d.dias || []).find(function (dia) { return dia.dataLocal === hoje; }) || null;
         var statusBadge = c.ativo && !c.cancelado && !c.pausado ? '<span class="badge badge-green">Ativa</span>' :
           c.pausado ? '<span class="badge badge-yellow">Pausada</span>' :
           '<span class="badge badge-red">Encerrada/Cancelada</span>';
@@ -479,8 +514,12 @@
           '<tr><th>Início</th><td>' + _esc(c.dataInicio) + '</td></tr>' +
           '<tr><th>Fim</th><td>' + _esc(c.dataFim) + '</td></tr>' +
           '<tr><th>Status</th><td>' + statusBadge + '</td></tr>' +
+          '<tr><th>Ativação explícita</th><td>' + (c.ativacaoAdmin ? '<span class="badge badge-green">Confirmada</span>' : '<span class="badge badge-red">Pendente</span>') + '</td></tr>' +
+          '<tr><th>Origem</th><td>' + _esc(c.origem || 'manual') + '</td></tr>' +
           '<tr><th>Criado em</th><td>' + _esc((c.criadoEm || '').replace('T',' ').slice(0,19)) + '</td></tr>' +
           '</table>';
+        diagnostico.innerHTML = _renderDiagnosticoCampanha(c, statusPublico, diaHoje);
+        _atualizarAcoesCampanha(c);
 
         if (d.dias && d.dias.length) {
           var html = '<div style="overflow-x:auto"><table><thead><tr>' +
@@ -508,13 +547,99 @@
           tabelaDias.innerHTML = html;
         }
       })
-      .catch(function () { info.innerHTML = '<div class="empty-state">Erro de conexão.</div>'; });
+      .catch(function () {
+        info.innerHTML = '<div class="empty-state">Erro de conexão.</div>';
+        diagnostico.innerHTML = '';
+        _atualizarAcoesCampanha(null);
+      });
   }
 
   function _badgeDia(status) {
     var map = { agendado:'badge-gray', aguardando_inicio:'badge-blue', ativo:'badge-green', reservado:'badge-green', encerrado:'badge-gray', expirado:'badge-yellow', cancelado:'badge-red' };
     var cls = map[status] || 'badge-gray';
     return '<span class="badge ' + cls + '">' + _esc(status || '') + '</span>';
+  }
+
+  function _badgeChecklist(ok, yes, no) {
+    return ok
+      ? '<span class="badge badge-green">' + _esc(yes || 'OK') + '</span>'
+      : '<span class="badge badge-red">' + _esc(no || 'Pendente') + '</span>';
+  }
+
+  function _labelMotivoStatus(motivo) {
+    var map = {
+      campanha_nao_configurada: 'Nenhuma campanha criada.',
+      campanha_cancelada: 'A campanha foi cancelada e não pode ser retomada.',
+      campanha_pausada: 'A campanha está pausada.',
+      campanha_nao_ativada: 'A campanha existe, mas ainda não está operável para o público.',
+      dia_nao_configurado: 'O dia atual não possui horário agendado.',
+      fora_do_periodo: 'O ciclo de 30 dias já terminou ou ainda não começou.',
+      janela_expirada: 'A janela de 5 segundos de hoje já expirou.',
+      rate_limit: 'O endpoint entrou em proteção temporária por volume de consultas.'
+    };
+    return map[motivo] || (motivo ? String(motivo).replace(/_/g, ' ') : 'Sem bloqueios públicos no momento.');
+  }
+
+  function _proximoPassoCampanha(campanha, status, diaHoje) {
+    status = status || {};
+    if (!campanha) {
+      if (status.campaign_configured === false) return 'Crie a campanha na aba Iniciar/Configurar para gerar o ciclo de 30 dias e os horários diários.';
+      if (status.motivo === 'campanha_cancelada') return 'Crie uma nova campanha na aba Iniciar/Configurar; campanhas canceladas não podem ser retomadas.';
+      if (status.paused === true) return 'Retome a campanha no admin e confirme o horário do dia antes de anunciar.';
+      if (status.activation_explicit === false) return 'Recrie/ative a campanha pelo fluxo administrativo autenticado para liberar a ativação pública.';
+      if (status.schedule_created === false) return 'Verifique o cronograma do dia e gere novamente a campanha para garantir um horário válido.';
+      if (status.status === 'reservado') return 'Hoje já existe um vencedor. Acompanhe o preenchimento do formulário e aguarde o próximo horário do ciclo.';
+      if (status.status === 'ativo' && status.safeToAnnounce === true) return 'Fluxo pronto para operação. Faça apenas testes monitorados sem alterar o GET público.';
+      if (status.status === 'campanha_encerrada') return 'O ciclo acabou. Inicie um novo ciclo de 30 dias para reativar o fluxo.';
+      return 'Confira as configurações da campanha, a ativação explícita e o status público antes de anunciar.';
+    }
+    if (campanha.cancelado === true || campanha.ativo !== true) return 'Crie uma nova campanha na aba Iniciar/Configurar; campanhas canceladas/encerradas não podem ser retomadas.';
+    if (campanha.pausado === true || status.paused === true) return 'Retome a campanha e confirme se o horário de hoje está programado antes de testar o robô.';
+    if (campanha.ativacaoAdmin !== true || status.activation_explicit === false) return 'Recrie/ative a campanha pelo fluxo administrativo autenticado para liberar a ativação pública.';
+    if (status.schedule_created === false) return 'Verifique o cronograma do dia e gere novamente a campanha para garantir um horário válido.';
+    if (status.status === 'campanha_encerrada') return 'O ciclo acabou. Inicie um novo ciclo de 30 dias para reativar o fluxo.';
+    if (status.status === 'reservado') return 'Hoje já existe um vencedor. Acompanhe o preenchimento do formulário e aguarde o próximo horário do ciclo.';
+    if (status.status === 'ativo' && status.safeToAnnounce === true) return 'Fluxo pronto para operação. Faça apenas testes monitorados sem alterar o GET público.';
+    if (diaHoje && diaHoje.horarioSorteado) return 'Valide o horário sorteado de hoje, mantenha a campanha ativa e aguarde a janela pública.';
+    return 'Confira as configurações da campanha, a ativação explícita e o status público antes de anunciar.';
+  }
+
+  function _renderDiagnosticoCampanha(campanha, status, diaHoje) {
+    status = status || {};
+    var itens = [
+      ['Campanha configurada', _badgeChecklist(!!campanha && status.campaign_configured !== false, 'Sim', 'Não'), campanha ? 'Ciclo salvo no backend.' : 'Ainda não existe ciclo criado.'],
+      ['Ativação explícita', _badgeChecklist(!!campanha && campanha.ativacaoAdmin === true && status.activation_explicit !== false, 'OK', 'Pendente'), campanha && campanha.ativacaoAdmin ? 'Ativação administrativa confirmada.' : 'Use o fluxo autenticado para ativar.'],
+      ['Pausa', campanha && campanha.pausado ? '<span class="badge badge-yellow">Pausada</span>' : '<span class="badge badge-green">Livre</span>', campanha && campanha.pausado ? 'A pausa bloqueia o anúncio público.' : 'Sem bloqueio manual no momento.'],
+      ['Agenda de hoje', _badgeChecklist(!!(diaHoje && diaHoje.horarioSorteado) && status.schedule_created !== false, 'Criada', 'Ausente'), diaHoje && diaHoje.horarioSorteado ? 'Horário de hoje: ' + _esc(diaHoje.horarioSorteado) : 'Sem horário gerado para hoje.'],
+      ['Status público', '<span class="badge ' + ((status.status || 'inativo') === 'ativo' ? 'badge-green' : 'badge-gray') + '">' + _esc(status.status || 'inativo') + '</span>', _labelMotivoStatus(status.motivo)],
+      ['Anúncio seguro', _badgeChecklist(status.safeToAnnounce === true, 'Liberado', 'Bloqueado'), status.safeToAnnounce === true ? 'Contrato público pronto para o robô.' : 'O fluxo ainda não está pronto para ativação pública.']
+    ];
+    var html = '<div class="diag-grid">';
+    itens.forEach(function (item) {
+      html += '<div class="diag-card"><strong>' + item[0] + '</strong><div class="diag-value">' + item[1] + '</div><div style="font-size:.8rem;color:#607d8b;margin-top:6px;line-height:1.45">' + item[2] + '</div></div>';
+    });
+    html += '</div>';
+    html += '<div class="next-step-box"><h4>Próximo passo</h4><div style="font-size:.9rem;font-weight:700;line-height:1.5">' + _esc(_proximoPassoCampanha(campanha, status, diaHoje)) + '</div><ul class="checklist"><li>Verificar campanha ativa, sem cancelamento e sem pausa.</li><li>Confirmar ativação explícita e cronograma gerado para o dia atual.</li><li>Validar a janela pública pelo status GET antes de anunciar no ItaBot.</li></ul></div>';
+    return html;
+  }
+
+  function _atualizarAcoesCampanha(campanha) {
+    var btnPausar = document.getElementById('btn-pausar');
+    var btnRetomar = document.getElementById('btn-retomar');
+    var btnCancelar = document.getElementById('btn-cancelar');
+    if (!campanha) {
+      btnPausar.disabled = true;
+      btnRetomar.disabled = true;
+      btnCancelar.disabled = true;
+      return;
+    }
+    var encerrada = campanha.cancelado === true || campanha.ativo !== true;
+    btnPausar.disabled = encerrada || campanha.pausado === true;
+    btnRetomar.disabled = encerrada || campanha.pausado !== true;
+    btnCancelar.disabled = encerrada;
+    btnPausar.title = btnPausar.disabled ? 'Disponível apenas para campanha ativa e sem pausa.' : '';
+    btnRetomar.title = btnRetomar.disabled ? (encerrada ? 'Campanhas canceladas/encerradas exigem novo ciclo.' : 'A campanha já está ativa.') : '';
+    btnCancelar.title = btnCancelar.disabled ? 'Não há campanha ativa para cancelar.' : '';
   }
 
   document.getElementById('btn-pausar').addEventListener('click', function () {
@@ -705,13 +830,17 @@
       var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px">';
       html += '<div style="background:#e8f5e9;border-radius:10px;padding:12px"><strong>Estado da promoção:</strong><br>' +
               '<span class="badge ' + (status.status === 'ativo' ? 'badge-green' : 'badge-gray') + '">' + (status.status || 'inativo') + '</span></div>';
+      html += '<div style="background:#fff8e1;border-radius:10px;padding:12px"><strong>Motivo atual:</strong><br>' +
+              '<span style="font-size:.95rem;font-weight:800;line-height:1.4">' + _esc(_labelMotivoStatus(status.motivo)) + '</span></div>';
       html += '<div style="background:#e3f2fd;border-radius:10px;padding:12px"><strong>Ganhadores hoje:</strong><br>' +
               '<span style="font-size:1.4rem;font-weight:900">' + ganhadoresHoje.length + '</span></div>';
       html += '<div style="background:' + (wppOk.length >= ganhadoresHoje.length && ganhadoresHoje.length > 0 ? '#e8f5e9' : '#fff8e1') + ';border-radius:10px;padding:12px">' +
               '<strong>Forms preenchidos hoje:</strong><br><span style="font-size:1.4rem;font-weight:900">' + wppOk.length + '</span></div>';
       html += '</div>';
+      html += '<div class="flow-note"><strong>Contrato operacional validado</strong><div>GET público sem mutação, ativação explícita, agenda diária criada, clique vencedor atômico, formulário exclusivo com DDD 16 e confirmação por WhatsApp somente após o código.</div></div>';
+      html += '<div class="next-step-box"><h4>Próximo passo</h4><div style="font-size:.9rem;font-weight:700;line-height:1.5">' + _esc(_proximoPassoCampanha(null, status, null)) + '</div></div>';
       if (ganhadoresHoje.length > 0) {
-        html += '<h4 style="font-size:.85rem;font-weight:800;margin-bottom:6px">Ganhadores do dia ' + hoje + '</h4>';
+        html += '<h4 style="font-size:.85rem;font-weight:800;margin:14px 0 6px">Ganhadores do dia ' + hoje + '</h4>';
         html += '<table><thead><tr><th>Nome</th><th>Celular</th><th>Código</th><th>Status Form</th><th>Horário</th></tr></thead><tbody>';
         ganhadoresHoje.forEach(function(g){
           var statusBadge = g.statusFormulario === 'preenchido'
