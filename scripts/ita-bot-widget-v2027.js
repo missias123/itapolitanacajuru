@@ -258,7 +258,10 @@
     var isFree = function (x, y, w, h) { return collisionScore(x, y, w, h) === 0; };
     var layout = function () {
       if (!document.body || document.body.classList.contains('chat-open') || document.body.classList.contains('modal-aberto')) return;
-      var vw = window.innerWidth, vh = window.innerHeight;
+      var vw = window.innerWidth;
+      // Usa clientHeight (estável ao scroll em mobile) para evitar que o robô
+      // mude de tamanho quando a barra do browser aparece/some ao rolar a página.
+      var vh = document.documentElement.clientHeight || window.innerHeight;
       var narrow = mobile();
       launcher.style.visibility = 'hidden';
       launcher.style.pointerEvents = 'none';
