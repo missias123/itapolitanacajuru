@@ -1671,12 +1671,17 @@ async function handlePicoleAdminTogglePausa(env, pausar) {
       nextStep: 'criar_nova_campanha',
     }, 409);
   }
-  if (campanha.ativo !== true) {
+  if (pausar && campanha.ativo !== true) {
     return jsonResp({
       ok: false,
-      error: pausar
-        ? 'Campanha inativa não pode ser pausada.'
-        : 'Campanha inativa não pode ser retomada. Crie uma nova campanha na aba Iniciar/Configurar.',
+      error: 'Campanha inativa não pode ser pausada.',
+      nextStep: 'criar_nova_campanha',
+    }, 409);
+  }
+  if (!pausar && campanha.ativo !== true) {
+    return jsonResp({
+      ok: false,
+      error: 'Campanha inativa não pode ser retomada. Crie uma nova campanha na aba Iniciar/Configurar.',
       nextStep: 'criar_nova_campanha',
     }, 409);
   }
