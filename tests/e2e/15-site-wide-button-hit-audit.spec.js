@@ -60,7 +60,7 @@ const PUBLIC_PAGES = [
 /**
  * Executa o scan de hit-test em todos os botões candidatos.
  * Retorna { passed, partiallyBlocked, blocked, coveredByModal,
- *           skippedHidden, skippedCollapsed, skippedZeroArea }.
+ *           skippedHidden, skippedCollapsed, skippedZeroArea, skippedInline }.
  */
 async function scanButtons(page, selector) {
   return page.evaluate((sel) => {
@@ -93,6 +93,7 @@ async function scanButtons(page, selector) {
     const skippedHidden = [];
     const skippedCollapsed = [];
     const skippedZeroArea = [];
+    const skippedInline = [];
 
     for (const el of candidates) {
       const s = getComputedStyle(el);
@@ -109,9 +110,9 @@ async function scanButtons(page, selector) {
         continue;
       }
       // Elementos com display:inline são links de texto em fluxo — bbox não reflecte
-      // a área visual real; não são botões standalone. Registar separado.
+      // a área visual real; não são botões standalone. Registar em bucket próprio.
       if (s.display === 'inline') {
-        skippedZeroArea.push({ tag: el.tagName, id: el.id || null, text: (el.textContent || '').trim().slice(0, 60), reason: 'inline-text-link' });
+        skippedInline.push({ tag: el.tagName, id: el.id || null, text: (el.textContent || '').trim().slice(0, 60) });
         continue;
       }
 
@@ -206,7 +207,7 @@ async function scanButtons(page, selector) {
       }
     }
 
-    return { passed, partiallyBlocked, blocked, coveredByModal, skippedHidden, skippedCollapsed, skippedZeroArea };
+    return { passed, partiallyBlocked, blocked, coveredByModal, skippedHidden, skippedCollapsed, skippedZeroArea, skippedInline };
   }, selector);
 }
 
@@ -426,6 +427,7 @@ test.afterAll(async () => {
   const allHidden        = auditReport.results.flatMap(r => r.skippedHidden || []);
   const allCollapsed     = auditReport.results.flatMap(r => r.skippedCollapsed || []);
   const allZeroArea      = auditReport.results.flatMap(r => r.skippedZeroArea || []);
+  const allInline        = auditReport.results.flatMap(r => r.skippedInline || []);
 
   const byPage = PUBLIC_PAGES.map(p => {
     const pageResults = auditReport.results.filter(r => r.page === p || r.page === `/${p}` || r.page === p.replace(/^\//, ''));
@@ -447,6 +449,7 @@ test.afterAll(async () => {
     skippedHidden: allHidden.length,
     skippedCollapsed: allCollapsed.length,
     skippedZeroArea: allZeroArea.length,
+    skippedInline: allInline.length,
     byPage,
     blockedDetails: auditReport.results.flatMap(r =>
       (r.blocked || []).map(b => ({

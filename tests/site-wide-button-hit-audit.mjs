@@ -113,6 +113,7 @@ const BUTTON_SCAN_FN = (selector) => {
   const skippedHidden = [];
   const skippedCollapsed = [];
   const skippedZeroArea = [];
+  const skippedInline = [];
 
   for (const el of candidates) {
     const s = getComputedStyle(el);
@@ -131,7 +132,7 @@ const BUTTON_SCAN_FN = (selector) => {
     // Elementos com display:inline são links de texto em fluxo — a sua bbox é a união
     // de todos os line boxes, não a área visual real. Não são botões standalone.
     if (s.display === 'inline') {
-      skippedZeroArea.push({ tag: el.tagName, id: el.id || null, text: (el.textContent || '').trim().slice(0, 60), reason: 'inline-text-link' });
+      skippedInline.push({ tag: el.tagName, id: el.id || null, text: (el.textContent || '').trim().slice(0, 60) });
       continue;
     }
     // Dentro de acordeão fechado
@@ -220,12 +221,8 @@ const BUTTON_SCAN_FN = (selector) => {
     if (hitCount >= 3) passed.push(item);
     else if (hitCount >= 1) partiallyBlocked.push(item);
     else {
-      // Distinguir bloqueado por modal aberto (correcto) vs. bloqueio real
-      const firstInterceptorHit = (() => {
-        if (item.id) return document.getElementById(item.id);
-        return document.elementFromPoint(testPoints[0][0], testPoints[0][1]);
-      })();
-      // Verificar pelo elemento que realmente intercepta o primeiro ponto
+      // Distinguir bloqueado por modal aberto (correcto) vs. bloqueio real.
+      // Localizar o elemento que intercepta o primeiro ponto bloqueado.
       const firstBlockedPoint = pointResults.find(p => !p.hit);
       const interceptEl = firstBlockedPoint
         ? (firstBlockedPoint.interceptor?.id
@@ -240,7 +237,7 @@ const BUTTON_SCAN_FN = (selector) => {
     }
   }
 
-  return { passed, partiallyBlocked, blocked, coveredByModal, skippedHidden, skippedCollapsed, skippedZeroArea };
+  return { passed, partiallyBlocked, blocked, coveredByModal, skippedHidden, skippedCollapsed, skippedZeroArea, skippedInline };
 };
 
 // ── função principal ────────────────────────────────────────────────────────
@@ -428,6 +425,7 @@ const allButtons = allResults.flatMap(r => [
 const skippedHiddenTotal = allResults.reduce((s, r) => s + r.skippedHidden.length, 0);
 const skippedCollapsedTotal = allResults.reduce((s, r) => s + r.skippedCollapsed.length, 0);
 const skippedZeroAreaTotal = allResults.reduce((s, r) => s + r.skippedZeroArea.length, 0);
+const skippedInlineTotal = allResults.reduce((s, r) => s + (r.skippedInline?.length || 0), 0);
 
 const byPage = PUBLIC_PAGES.map(p => {
   const pageResults = allResults.filter(r => r.page === p);
@@ -481,6 +479,7 @@ const summary = {
   skippedHidden: skippedHiddenTotal,
   skippedCollapsed: skippedCollapsedTotal,
   skippedZeroArea: skippedZeroAreaTotal,
+  skippedInline: skippedInlineTotal,
   byPage,
   byViewport,
   blockedDetails,
