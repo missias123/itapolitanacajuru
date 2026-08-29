@@ -1664,10 +1664,19 @@ async function handlePicoleAdminTogglePausa(env, pausar) {
   if (!env.PROMO_KV) return jsonResp({ ok: false, error: 'PROMO_KV não configurado' }, 503);
   const campanha = await env.PROMO_KV.get('picole:campanha', 'json');
   if (!campanha) return jsonResp({ ok: false, error: 'Nenhuma campanha encontrada' }, 404);
-  if (campanha.cancelado === true || campanha.ativo !== true) {
+  if (campanha.cancelado === true) {
     return jsonResp({
       ok: false,
       error: 'Campanha encerrada/cancelada não pode ser retomada. Crie uma nova campanha na aba Iniciar/Configurar.',
+      nextStep: 'criar_nova_campanha',
+    }, 409);
+  }
+  if (campanha.ativo !== true) {
+    return jsonResp({
+      ok: false,
+      error: pausar
+        ? 'Campanha inativa não pode ser pausada.'
+        : 'Campanha inativa não pode ser retomada. Crie uma nova campanha na aba Iniciar/Configurar.',
       nextStep: 'criar_nova_campanha',
     }, 409);
   }
