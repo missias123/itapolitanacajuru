@@ -7,7 +7,7 @@
   // Feriados regionais de Cajuru/SP: São Sebastião, Nossa Senhora de Fátima, São Bento, aniversário da cidade.
   const FERIADOS_REGIONAIS_CAJURU = new Set(['01-20', '05-13', '07-11', '08-18']);
   const JANELAS = Object.freeze({
-    retirada: { inicio: 11 * 60, fim: 20 * 60, mensagem: 'Retirada somente neste período: de segunda a sexta, das 11h00 às 20h00, exceto sábados, domingos e feriados regionais de Cajuru/SP.' },
+    retirada: { inicio: 11 * 60, fim: 20 * 60, mensagem: 'Pedidos pelo site de retirada somente neste período: de segunda a sexta, das 11h00 às 20h00, exceto sábados, domingos e feriados regionais de Cajuru/SP. Desloque até nossa loja para atendimento.' },
     encomendas: { inicio: 10 * 60, fim: 20 * 60, mensagem: 'Encomendas disponíveis todos os dias, das 10h00 às 20h00. Volte nesse período para enviar sua encomenda.' }
   });
 

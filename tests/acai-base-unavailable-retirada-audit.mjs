@@ -69,8 +69,15 @@ try {
       request.continue().catch(() => {});
     });
 
-    await page.goto(`${base}/retirada.html?acai-base-esgotada-audit=${viewport.name}`, { waitUntil: 'networkidle0', timeout: 30000 });
+    await page.goto(`${base}/retirada.html?acai-base-esgotada-audit=${viewport.name}&demo-retirada=aberta`, { waitUntil: 'networkidle0', timeout: 30000 });
     await page.waitForSelector('[data-catalog-sku="ACA-300-006"] .add-btn', { timeout: 10000 });
+    await page.evaluate(() => {
+      window.ItapHorarioPedidos = Object.assign({}, window.ItapHorarioPedidos, {
+        estaAberto: (tipo) => tipo === 'retirada',
+        aviso: () => {},
+        textoAviso: () => '',
+      });
+    });
 
     const acaiButtons = await page.evaluate(() => ({
       cup: (() => {
