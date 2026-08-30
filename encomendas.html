@@ -904,10 +904,23 @@
         }, 0);
     }
 
+    var ESTOQUE_RENOVAVEL_PICOLES = 1000;
+
+    function renovarEstoquePicoleSeZerado(tipo, sabor) {
+        var grupo = PICOLES_CATALOGO[tipo];
+        if (!grupo || !grupo.estoquePorSabor) return;
+        var info = grupo.estoquePorSabor[sabor];
+        if (info && info.estoque <= 0 && !info.esgotado) {
+            info.estoque = ESTOQUE_RENOVAVEL_PICOLES;
+        }
+    }
+
     function estoqueDisponivelParaSabor(tipo, sabor, atual) {
+        renovarEstoquePicoleSeZerado(tipo, sabor);
         var info = infoEstoquePicole(tipo, sabor);
-        var reservadoNaOrigem = quantidadeSelecionadaDaOrigem(info.chaveEstoque) - atual;
-        return Math.max(0, Math.min(MAX_PICOLES_POR_SABOR, info.estoque - reservadoNaOrigem));
+        if (info.esgotado) return 0;
+        var limite = info.estoque > 0 ? Math.min(MAX_PICOLES_POR_SABOR, info.estoque) : MAX_PICOLES_POR_SABOR;
+        return Math.max(0, limite - atual);
     }
 
     async function carregarEstoqueEncomendas() {
@@ -1546,12 +1559,21 @@
         carrinho = carrinho.filter(i => !i.isPicole);
         window.carrinho = carrinho;
 
+        var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
         Object.entries(picolesSelecionados).forEach(([key, qtd]) => {
             var parts = key.split('|');
             var tipoFull = parts[0];
-            var sabor = parts[1];
-            var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
+            var sabor = parts.slice(1).join('|');
             var precoUnit = precoAtualDoGrupo(PICOLES_CATALOGO[tipoFull], totalPicolesSelecionados);
+
+            // Descontar estoque por sabor e renovar automaticamente se zerar
+            var grupo = PICOLES_CATALOGO[tipoFull];
+            if (grupo && grupo.estoquePorSabor && grupo.estoquePorSabor[sabor]) {
+                grupo.estoquePorSabor[sabor].estoque = Math.max(0, grupo.estoquePorSabor[sabor].estoque - Number(qtd));
+                if (grupo.estoquePorSabor[sabor].estoque <= 0 && !grupo.estoquePorSabor[sabor].esgotado) {
+                    grupo.estoquePorSabor[sabor].estoque = ESTOQUE_RENOVAVEL_PICOLES;
+                }
+            }
 
             carrinho.push({
                 id: key,
@@ -1564,6 +1586,10 @@
             });
         });
 
+        // Limpar seleção para que a próxima abertura do modal comece do zero
+        picolesSelecionados = {};
+        window.picolesSelecionados = picolesSelecionados;
+        ultimaModalidadePicoles = null;
         window.fecharModal('modal-picoles');
         atualizarCarrinhoFixo();
     };
