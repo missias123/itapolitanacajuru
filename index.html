@@ -2991,15 +2991,24 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 <!-- CARIMBO PICOLÉS ATACADO — posicionado abaixo dos carrinhos -->
 <style>
-  .carimbo-atacado{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:clamp(100px,22vw,134px);height:clamp(100px,22vw,134px);border-radius:50%;background:conic-gradient(#E8000D 0deg,#FF4500 72deg,#E8000D 144deg,#FF4500 216deg,#E8000D 288deg,#FF4500 360deg);border:3px solid #fff;outline:2.5px dashed rgba(255,255,255,.75);outline-offset:4px;box-shadow:0 6px 22px rgba(232,0,13,.5),0 2px 8px rgba(0,0,0,.22),inset 0 1px 4px rgba(255,255,255,.3);padding:6px 4px;transform:rotate(12deg);animation:carimbo-pulse 3s ease-in-out infinite;text-decoration:none;color:inherit;cursor:pointer;margin:14px auto 0}
-  /* garante que o hero-carrinho-wrap a{} não quebre o círculo do selo */
-  .hero-carrinho-wrap .carimbo-atacado{width:clamp(100px,22vw,134px);height:clamp(100px,22vw,134px)}
+  /* ── CARIMBO SELO 30% ── */
+  .carimbo-atacado{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:clamp(100px,22vw,134px);height:clamp(100px,22vw,134px);border-radius:50%;background:conic-gradient(#E8000D 0deg,#FF4500 72deg,#E8000D 144deg,#FF4500 216deg,#E8000D 288deg,#FF4500 360deg);border:3px solid #fff;outline:2.5px dashed rgba(255,255,255,.75);outline-offset:4px;box-shadow:0 6px 22px rgba(232,0,13,.5),0 2px 8px rgba(0,0,0,.22),inset 0 1px 4px rgba(255,255,255,.3);padding:6px 4px;transform:rotate(12deg);animation:carimbo-pulse 3s ease-in-out infinite;text-decoration:none;color:inherit;cursor:pointer;margin:0}
+  /* neutraliza hero-carrinho-wrap a{} que forçaria flex-direction:column e quebraria o círculo */
+  .hero-carrinho-wrap .carimbo-atacado{width:clamp(100px,22vw,134px);height:clamp(100px,22vw,134px);flex-direction:column}
   @keyframes carimbo-pulse{0%,100%{transform:rotate(12deg) scale(1);box-shadow:0 6px 22px rgba(232,0,13,.5),0 2px 8px rgba(0,0,0,.22)}50%{transform:rotate(12deg) scale(1.07);box-shadow:0 10px 32px rgba(232,0,13,.72),0 3px 12px rgba(0,0,0,.28)}}
   .carimbo-atacado:focus-visible{outline:3px solid #FF8F00;outline-offset:6px}
   .carimbo-atacado__kicker{font-size:clamp(.42rem,1.3vw,.54rem);font-weight:900;color:rgba(255,255,255,.93);letter-spacing:.7px;text-transform:uppercase;line-height:1.15}
   .carimbo-atacado__percent{font-size:clamp(1.1rem,3.8vw,1.55rem);font-weight:900;color:#fff;line-height:1;text-shadow:0 2px 6px rgba(0,0,0,.45);margin:1px 0}
   .carimbo-atacado__off{font-size:clamp(.5rem,1.6vw,.66rem);font-weight:900;color:#FFF59D;letter-spacing:1.2px;text-transform:uppercase;line-height:1.1}
   .carimbo-atacado__label{font-size:clamp(.38rem,1.2vw,.5rem);font-weight:800;color:rgba(255,255,255,.88);letter-spacing:.4px;text-transform:uppercase;border-top:1px solid rgba(255,255,255,.55);margin-top:3px;padding-top:2px;line-height:1.15}
+  /* ── CHAMADA "CLIQUE AGORA" — mini-círculo mesmo padrão visual ── */
+  .carimbo-chamada{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:clamp(72px,16vw,90px);height:clamp(72px,16vw,90px);border-radius:50%;background:conic-gradient(#E8000D 0deg,#FF4500 72deg,#E8000D 144deg,#FF4500 216deg,#E8000D 288deg,#FF4500 360deg);border:2.5px solid #fff;outline:2px dashed rgba(255,255,255,.75);outline-offset:3px;box-shadow:0 4px 16px rgba(232,0,13,.5),0 2px 6px rgba(0,0,0,.2);padding:4px;text-decoration:none;color:inherit;cursor:pointer;flex-shrink:0;animation:chamada-pulse 3s ease-in-out infinite}
+  /* neutraliza hero-carrinho-wrap a{} para a chamada também */
+  .hero-carrinho-wrap .carimbo-chamada{width:clamp(72px,16vw,90px);height:clamp(72px,16vw,90px);flex-direction:column}
+  @keyframes chamada-pulse{0%,100%{transform:scale(1);box-shadow:0 4px 16px rgba(232,0,13,.5),0 2px 6px rgba(0,0,0,.2)}50%{transform:scale(1.08);box-shadow:0 8px 26px rgba(232,0,13,.72),0 3px 10px rgba(0,0,0,.26)}}
+  .carimbo-chamada:focus-visible{outline:3px solid #FF8F00;outline-offset:6px}
+  .carimbo-chamada__icon{font-size:clamp(1.3rem,4vw,1.7rem);line-height:1;filter:drop-shadow(0 1px 3px rgba(0,0,0,.4));color:#fff}
+  .carimbo-chamada__texto{font-size:clamp(.38rem,1.4vw,.48rem);font-weight:900;color:#FFF59D;letter-spacing:.5px;text-transform:uppercase;line-height:1.2;margin-top:2px}
 </style>
 <style>
 @keyframes pulso-carrinho {
@@ -3118,11 +3127,10 @@ body.cardapio-aberto { padding-bottom: 80px; }
   </a>
  </div>
  <!-- SELO ATACADO — abaixo dos dois carrinhos, centralizado -->
- <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;margin-top:10px;">
-   <!-- Chamada elegante: mesmo padrão visual do selo -->
-   <a href="encomendas.html#sec-picoles" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:clamp(72px,16vw,90px);height:clamp(72px,16vw,90px);border-radius:50%;background:conic-gradient(#E8000D 0deg,#FF4500 72deg,#E8000D 144deg,#FF4500 216deg,#E8000D 288deg,#FF4500 360deg);border:2.5px solid #fff;outline:2px dashed rgba(255,255,255,.75);outline-offset:3px;box-shadow:0 4px 16px rgba(232,0,13,.5),0 2px 6px rgba(0,0,0,.2);padding:4px;text-decoration:none;animation:carimbo-pulse 3s ease-in-out infinite;flex-shrink:0;" aria-hidden="true" tabindex="-1">
-     <span style="font-size:clamp(1.3rem,4vw,1.7rem);line-height:1;filter:drop-shadow(0 1px 3px rgba(0,0,0,.4));">☞</span>
-     <span style="font-size:clamp(.38rem,1.4vw,.48rem);font-weight:900;color:#FFF59D;letter-spacing:.5px;text-transform:uppercase;line-height:1.2;margin-top:2px;">Clique<br>agora</span>
+ <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;margin-top:12px;">
+   <a class="carimbo-chamada" href="encomendas.html#sec-picoles" aria-hidden="true" tabindex="-1">
+     <span class="carimbo-chamada__icon">☞</span>
+     <span class="carimbo-chamada__texto">Clique<br>agora</span>
    </a>
    <a class="carimbo-atacado" href="encomendas.html#sec-picoles" aria-label="Picolés no atacado com até 30% de desconto — ver encomendas">
      <span class="carimbo-atacado__kicker">Picolés<br>Atacado</span>
