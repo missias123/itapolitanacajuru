@@ -328,10 +328,15 @@
       };
       chosen = findFree(fullW, fullH, false);
       if (!chosen) {
-        launcher.classList.add('itabot-launcher-icon-only');
-        // Recalcula com o footprint compacto real; não reutiliza as dimensões
-        // do launcher completo, que poderiam continuar bloqueando conteúdo.
-        chosen = findFree(iconW, iconH, true);
+        // No mobile (≤600px), nunca encolher o tamanho por colisão: usa melhor posição disponível
+        if (narrow) {
+          chosen = { x: candidates[0][0], y: candidates[0][1], mode: candidates[0][2], icon: false };
+        } else {
+          launcher.classList.add('itabot-launcher-icon-only');
+          // Recalcula com o footprint compacto real; não reutiliza as dimensões
+          // do launcher completo, que poderiam continuar bloqueando conteúdo.
+          chosen = findFree(iconW, iconH, true);
+        }
       }
       if (!chosen) {
         launcher.classList.add('itabot-launcher-mini');
@@ -362,18 +367,16 @@
     };
     var schedule = function () { if (raf) return; raf = window.requestAnimationFrame(function () { raf = 0; layout(); }); };
     window.addEventListener('resize', schedule, { passive:true });
-    window.addEventListener('orientationchange', function () { setTimeout(schedule, 80); }, { passive:true });
-    window.addEventListener('scroll', schedule, { passive:true });
-    window.addEventListener('focusin', schedule, { passive:true });
-    window.addEventListener('focusout', function () { setTimeout(schedule, 80); }, { passive:true });
+    window.addEventListener('orientationchange', function () { setTimeout(schedule, 200); }, { passive:true });
+    // scroll e focusin/focusout removidos: no mobile, a barra do browser aparece/some
+    // ao rolar e dispara resize/scroll, causando mudança de tamanho do robô.
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', schedule, { passive:true });
-      window.visualViewport.addEventListener('scroll', schedule, { passive:true });
     }
     if (window.ResizeObserver) new ResizeObserver(schedule).observe(document.body);
     if (window.MutationObserver) new MutationObserver(schedule).observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['class','style','hidden'] });
-    // Verificação periódica para detectar overlays criados por scripts/canvas que não disparam mutações.
-    window.setInterval(schedule, 900);
+    // Verificação periódica ampliada para não causar oscilação visual (era 900ms).
+    window.setInterval(schedule, 5000);
     setTimeout(layout, 60);
 
     launcher.addEventListener('click', function () {

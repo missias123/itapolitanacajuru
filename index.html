@@ -2992,16 +2992,24 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <!-- CARIMBO PICOLÉS ATACADO — posicionado abaixo dos carrinhos -->
 <style>
   /* ── CARIMBO SELO 30% ── */
-  .carimbo-atacado{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:clamp(100px,22vw,134px);height:clamp(100px,22vw,134px);border-radius:50%;background:conic-gradient(#E8000D 0deg,#FF4500 72deg,#E8000D 144deg,#FF4500 216deg,#E8000D 288deg,#FF4500 360deg);border:3px solid #fff;outline:2.5px dashed rgba(255,255,255,.75);outline-offset:4px;box-shadow:0 6px 22px rgba(232,0,13,.5),0 2px 8px rgba(0,0,0,.22),inset 0 1px 4px rgba(255,255,255,.3);padding:6px 4px;transform:rotate(12deg);animation:carimbo-pulse 3s ease-in-out infinite;text-decoration:none;color:inherit;cursor:pointer;margin:0}
+  /* Tamanho base: mobile ≤480px (iPhone SE/12/14, Samsung A54/S23, Moto G, Xiaomi) = 116px */
+  .carimbo-atacado{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:116px;height:116px;border-radius:50%;background:conic-gradient(#E8000D 0deg,#FF4500 72deg,#E8000D 144deg,#FF4500 216deg,#E8000D 288deg,#FF4500 360deg);border:3px solid #fff;outline:2.5px dashed rgba(255,255,255,.75);outline-offset:4px;box-shadow:0 6px 22px rgba(232,0,13,.5),0 2px 8px rgba(0,0,0,.22),inset 0 1px 4px rgba(255,255,255,.3);padding:6px 4px;transform:rotate(12deg) translateZ(0);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;animation:carimbo-pulse 3s ease-in-out infinite;text-decoration:none;color:inherit;cursor:pointer;margin:0;-webkit-font-smoothing:antialiased}
   /* neutraliza hero-carrinho-wrap a{} que forçaria flex-direction:column e quebraria o círculo */
-  .hero-carrinho-wrap .carimbo-atacado{width:clamp(100px,22vw,134px);height:clamp(100px,22vw,134px);flex-direction:column}
-  @keyframes carimbo-pulse{0%,100%{transform:rotate(12deg) scale(1);box-shadow:0 6px 22px rgba(232,0,13,.5),0 2px 8px rgba(0,0,0,.22)}50%{transform:rotate(12deg) scale(1.07);box-shadow:0 10px 32px rgba(232,0,13,.72),0 3px 12px rgba(0,0,0,.28)}}
+  .hero-carrinho-wrap .carimbo-atacado{width:116px;height:116px;flex-direction:column}
+  @keyframes carimbo-pulse{0%,100%{transform:rotate(12deg) translateZ(0) scale(1);box-shadow:0 6px 22px rgba(232,0,13,.5),0 2px 8px rgba(0,0,0,.22)}50%{transform:rotate(12deg) translateZ(0) scale(1.07);box-shadow:0 10px 32px rgba(232,0,13,.72),0 3px 12px rgba(0,0,0,.28)}}
   .carimbo-atacado:focus-visible{outline:3px solid #FF8F00;outline-offset:6px}
-  .carimbo-atacado__kicker{font-size:clamp(.42rem,1.3vw,.54rem);font-weight:900;color:rgba(255,255,255,.93);letter-spacing:.7px;text-transform:uppercase;line-height:1.15}
-  .carimbo-atacado__percent{font-size:clamp(1.1rem,3.8vw,1.55rem);font-weight:900;color:#fff;line-height:1;text-shadow:0 2px 6px rgba(0,0,0,.45);margin:1px 0}
-  .carimbo-atacado__off{font-size:clamp(.5rem,1.6vw,.66rem);font-weight:900;color:#FFF59D;letter-spacing:1.2px;text-transform:uppercase;line-height:1.1}
+  /* Fontes fixas (não vw) para evitar desfoque sub-pixel no mobile */
+  .carimbo-atacado__kicker{font-size:9px;font-weight:900;color:rgba(255,255,255,.93);letter-spacing:.7px;text-transform:uppercase;line-height:1.15}
+  .carimbo-atacado__percent{font-size:22px;font-weight:900;color:#fff;line-height:1;text-shadow:0 2px 6px rgba(0,0,0,.45);margin:1px 0}
+  .carimbo-atacado__off{font-size:10px;font-weight:900;color:#FFF59D;letter-spacing:1.2px;text-transform:uppercase;line-height:1.1}
   .carimbo-atacado-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin-top:12px}
-  .carimbo-atacado__led{display:inline-flex;align-items:center;justify-content:center;margin-top:5px;padding:2px 8px 1px;border:1px solid rgba(255,245,157,.75);border-radius:999px;background:rgba(50,0,0,.26);box-shadow:0 0 8px rgba(255,245,157,.38), inset 0 0 8px rgba(255,255,255,.16);font-size:clamp(.4rem,1.25vw,.52rem);font-weight:900;color:#FFF59D;letter-spacing:.14em;text-transform:uppercase;line-height:1.1;text-shadow:0 0 4px rgba(255,245,157,.95),0 0 8px rgba(255,193,7,.72)}
+  .carimbo-atacado__led{display:inline-flex;align-items:center;justify-content:center;margin-top:5px;padding:2px 8px 1px;border:1px solid rgba(255,245,157,.75);border-radius:999px;background:rgba(50,0,0,.26);box-shadow:0 0 8px rgba(255,245,157,.38), inset 0 0 8px rgba(255,255,255,.16);font-size:9px;font-weight:900;color:#FFF59D;letter-spacing:.14em;text-transform:uppercase;line-height:1.1;text-shadow:0 0 4px rgba(255,245,157,.95),0 0 8px rgba(255,193,7,.72)}
+  /* Phablet 481-767px (iPhone Plus, Pixel 7, Galaxy A) = 124px */
+  @media(min-width:481px) and (max-width:767px){.carimbo-atacado,.hero-carrinho-wrap .carimbo-atacado{width:124px;height:124px}.carimbo-atacado__kicker{font-size:10px}.carimbo-atacado__percent{font-size:24px}.carimbo-atacado__off{font-size:11px}.carimbo-atacado__led{font-size:10px}}
+  /* Tablet 768-1024px (iPad, Android tablet) = 130px */
+  @media(min-width:768px) and (max-width:1024px){.carimbo-atacado,.hero-carrinho-wrap .carimbo-atacado{width:130px;height:130px}.carimbo-atacado__kicker{font-size:10px}.carimbo-atacado__percent{font-size:25px}.carimbo-atacado__off{font-size:11px}.carimbo-atacado__led{font-size:10px}}
+  /* Desktop 1025px+ = 134px */
+  @media(min-width:1025px){.carimbo-atacado,.hero-carrinho-wrap .carimbo-atacado{width:134px;height:134px}.carimbo-atacado__kicker{font-size:11px}.carimbo-atacado__percent{font-size:26px}.carimbo-atacado__off{font-size:11px}.carimbo-atacado__led{font-size:10px}}
 </style>
 <style>
 @keyframes pulso-carrinho {
