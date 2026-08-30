@@ -1446,7 +1446,7 @@
                             <div class="picole-precos" aria-label="Preço aplicado conforme a quantidade">
                                 <span class="picole-preco ${totalPicolesSelecionados >= MIN_PICOLES_ATACADO ? 'picole-preco--atacado' : 'picole-preco--varejo'}" data-picole-price-key="${escaparHtml(key)}">${totalPicolesSelecionados >= MIN_PICOLES_ATACADO ? 'Atacado' : 'Varejo'}: R$ ${precoAtualDoGrupo(grupo, totalPicolesSelecionados).toFixed(2).replace('.',',')} / un.</span>
                             </div>
-                            ${indisponivel ? '<div class="picole-linha__esgotado">Esgotado</div>' : ''}
+                            ${indisponivel ? '<div class="picole-linha__esgotado">Esgotado</div>' : `<div id="estoque-${key}" style="font-size: 0.74rem; font-weight: 700; color: #166534; margin-top: 2px;">Estoque: ${Number(info.estoque || 0)} un.</div>`}
                             <div id="sub-${key}" style="font-size: 0.78rem; font-weight: 800; color: var(--success); margin-top: 2px;">Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}</div>
                         </div>
                         <div class="picole-card-row__controls" aria-label="Quantidade de ${escaparHtml(s)}">
@@ -1483,6 +1483,11 @@
         var subtotalEl = document.getElementById('sub-' + key);
         var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
         if (subtotalEl && grupo) subtotalEl.textContent = 'Subtotal: R$ ' + (novo * precoAtualDoGrupo(grupo, totalPicolesSelecionados)).toFixed(2).replace('.',',');
+        var estoqueEl = document.getElementById('estoque-' + key);
+        if (estoqueEl) {
+            var infoAtual = infoEstoquePicole(tipo, sabor);
+            estoqueEl.textContent = 'Estoque: ' + Math.max(0, Number(infoAtual.estoque || 0)) + ' un.';
+        }
         var linha = document.querySelector('[data-picole-key="' + CSS.escape(key) + '"]');
         if (linha) {
             linha.classList.toggle('is-selected', novo > 0);
