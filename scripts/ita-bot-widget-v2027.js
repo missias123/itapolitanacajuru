@@ -6,6 +6,9 @@
 (function () {
   'use strict';
 
+  /* ─── Oculta o bot em navegadores in-app (Instagram, Facebook) ─── */
+  if (/Instagram|FBAN|FBAV/.test(navigator.userAgent)) return;
+
   console.log('ItaBot Widget: Inicializando...');
 
   /* ─── Detecta raiz do site para construir paths ─── */
