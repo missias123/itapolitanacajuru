@@ -684,26 +684,71 @@
   function syncPickupDateConstraint() { const input = $('#pickup-date'); const field = $('#pickup-date-field'); const notice = $('#cake-pickup-rule'); const time = $('#pickup-time'); const timeHelp = $('#pickup-time-help'); if (!input || !field || !notice || !time || !timeHelp) return; const cakeProduction = hasCakeProductionLead(); field.hidden = !cakeProduction; notice.hidden = !cakeProduction; input.required = cakeProduction; if (cakeProduction) { input.min = brasiliaDateValue(new Date(Date.now() + 48 * 60 * 60 * 1000)); time.min = '11:00'; time.disabled = false; timeHelp.textContent = 'Encomenda de torta ou caixa grande: escolha data e horário pelo horário de Brasília; a data precisa estar pelo menos 48 horas à frente.'; } else { input.value = ''; input.min = ''; const deadline = commonPickupDeadline(); if (deadline.minutes <= 20 * 60) { time.min = deadline.time; time.disabled = false; timeHelp.textContent = `Horário de Brasília: escolha a partir de ${deadline.time}. O preparo mínimo é de 1 hora.`; } else { time.value = ''; time.min = '20:00'; time.disabled = true; timeHelp.textContent = 'Hoje não há horário com 1 hora de antecedência. Volte no próximo horário de atendimento.'; } } syncPickupTimeValidation(); }
   function validCakeLeadTime(date, time) { return !hasCakeProductionLead() || Date.parse(`${date}T${time}:00-03:00`) >= Date.now() + 48 * 60 * 60 * 1000; }
   function buildMessage(form) {
-    const schedule = hasCakeProductionLead() ? `• Data de retirada: ${form.data_retirada}` : '• Retirada: hoje (mínimo de 1h de antecedência)';
-    const lines = ['🍦 PEDIDO DE RETIRADA — ITAPOLITANA', '', '👤 CLIENTE', `• Nome: ${form.nome}`, `• WhatsApp: ${phoneForMessage(form.telefone)}`, '', '🕒 RETIRADA', schedule, `• Horário: ${form.horario} (Brasília)`, '', '💳 PAGAMENTO', `• Forma: ${form.pagamento}`, '', '🧾 RESUMO', `• Total final: ${money(total())}`, `• Observações: ${form.observacoes || 'Nenhuma'}`, '', '🍨 ITENS'];
+    const sep = '━━━━━━━━━━━━━━━━━━━━━';
+    const schedule = hasCakeProductionLead()
+      ? `Data: ${form.data_retirada}`
+      : 'Data: hoje';
+    const [h, m] = (form.horario || '00:00').split(':').map(Number);
+    const deadlineH = h + 1;
+    const deadline = `${String(deadlineH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    const lines = [
+      `🍦 *PEDIDO DE RETIRADA*`,
+      `_Itapolitana Cajuru_`,
+      sep,
+      ``,
+      `👤 *CLIENTE*`,
+      `• Nome: ${form.nome}`,
+      `• WhatsApp: ${phoneForMessage(form.telefone)}`,
+      ``,
+      `🕒 *RETIRADA*`,
+      `• ${schedule}`,
+      `• Horário combinado: ${form.horario} (Brasília)`,
+      `• Retirar até: ${deadline} (Brasília)`,
+      ``,
+      `💳 *PAGAMENTO*`,
+      `• ${form.pagamento}`,
+      sep,
+      ``,
+      `🛒 *ITENS*`,
+    ];
+
     state.cart.forEach((item, index) => {
-      lines.push(`${index + 1}) ${item.quantity}x ${item.name}${item.size ? ` — ${item.size}` : ''} (${item.sku})`);
-      if (item.containerType) lines.push(`• Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}`);
-      if (item.flavors?.length) lines.push(`• Sabores: ${item.flavors.map((flavor) => flavor.name || flavor).join(', ')}`);
+      lines.push(``, `*${index + 1}. ${item.quantity}x ${item.name}${item.size ? ` — ${item.size}` : ''}*`);
+      if (item.containerType) lines.push(`• ${item.containerType === 'casquinha' ? '🍦 Casquinha' : '🥤 Copo'}`);
+      if (item.flavors?.length) lines.push(`• 🍨 Sabores: ${item.flavors.map((f) => f.name || f).join(', ')}`);
       if (item.flavorDistribution) lines.push(`• Distribuição: ${item.flavorDistribution}`);
-      lines.push(`• Preço fixo: ${money(itemBaseTotal(item))}`);
-      if (item.boxAddOns?.length) { item.boxAddOns.forEach((addOn) => {
-        if (addOn.kind === 'acai-double') lines.push(`• Acréscimo ${addOn.name}${addOn.quantity > 1 ? ` (${addOn.quantity}x)` : ''}: ${money(Number(addOn.quantity) * Number(addOn.price))}`);
-        else lines.push(`• Acréscimo ${addOn.name} (${addOn.sku})${addOn.quantity > 1 ? ` (${addOn.quantity}x)` : ''}: ${money(Number(addOn.quantity) * Number(addOn.price))}`);
-      }); lines.push(`• Total de adicionais: ${money(itemAddOnTotal(item))}`); }
-      if (item.fixedIngredients?.length) lines.push(`• Ingredientes fixos: ${item.fixedIngredients.filter((ingredient) => !/sabores? de sorvete/i.test(ingredient)).join(', ')}`);
-      if (item.includedExtras?.length) lines.push(`• Inclusos: ${item.includedExtras.join(' e ')}`);
-      if (needsAvailabilityChoice(item)) lines.push(`• ${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: antecedência mínima de 48h`);
-      if (item.serviceMode === 'travel') { lines.push(`• Embalagem para viagem: ${item.packagingIncluded ? 'incluída' : money(itemPackagingTotal(item))}`); }
-      if (item.serviceMode === 'store') lines.push('• Embalagem: consumo na loja');
-      lines.push(`• Subtotal: ${money(itemTotal(item))}`, '');
+      if (item.fixedIngredients?.length) lines.push(`• Ingredientes: ${item.fixedIngredients.filter((i) => !/sabores? de sorvete/i.test(i)).join(', ')}`);
+      if (item.includedExtras?.length) lines.push(`• ✅ Inclusos: ${item.includedExtras.join(' e ')}`);
+      lines.push(`• 💰 Produto: ${money(itemBaseTotal(item))}`);
+      if (item.boxAddOns?.length) {
+        item.boxAddOns.forEach((addOn) => {
+          const val = money(Number(addOn.quantity) * Number(addOn.price));
+          const qty = addOn.quantity > 1 ? ` (${addOn.quantity}x)` : '';
+          lines.push(`• ➕ ${addOn.name}${qty}: ${val}`);
+        });
+        lines.push(`• Adicionais: *${money(itemAddOnTotal(item))}*`);
+      }
+      if (needsAvailabilityChoice(item)) lines.push(`• ⏰ ${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: mín. 48h de antecedência`);
+      if (item.serviceMode === 'travel') lines.push(`• 🛍️ Embalagem viagem: ${item.packagingIncluded ? 'incluída' : money(itemPackagingTotal(item))}`);
+      if (item.serviceMode === 'store') lines.push(`• 🏠 Consumo na loja`);
+      lines.push(`• ✔️ Subtotal: *${money(itemTotal(item))}*`);
     });
-    lines.push('⚠️ CONFIRMAÇÃO', '• Aguardando ligação/confirmação humana.', '• Sem retorno em até 15 minutos: considerar cancelado.');
+
+    const obs = form.observacoes?.trim();
+    lines.push(
+      ``,
+      sep,
+      ``,
+      `🧾 *TOTAL A PAGAR: ${money(total())}*`,
+    );
+    if (obs) lines.push(``, `📝 *Obs.:* ${obs}`);
+    lines.push(
+      ``,
+      sep,
+      ``,
+      `⚠️ _Pedido sujeito à confirmação da loja._`,
+      `_Sem retorno em 15 min, ligue/chame no WhatsApp: (16) 99606-2046_`,
+    );
     return lines.join('\n');
   }
   function submitOrder(event) { event.preventDefault(); const error = $('#form-error'); error.classList.remove('is-visible'); syncGuidedForm(); if (!formFlow.ready) return showFormError('Complete as etapas na ordem indicada antes de enviar.'); if (!retiradaAberta()) { window.ItapHorarioPedidos?.aviso('retirada'); return showFormError(window.ItapHorarioPedidos?.textoAviso('retirada') || 'Pedidos pelo site somente de segunda a sexta, das 11h00 às 20h00, exceto sábados, domingos e feriados regionais de Cajuru/SP. Vá até nossa loja e peça pessoalmente.'); } const form = Object.fromEntries(new FormData(event.currentTarget).entries()); if (!state.cart.length) return showFormError('Escolha pelo menos um produto antes de enviar.'); if (!form.nome?.trim()) return showFormError('Informe o nome de quem vai retirar.'); if (!validatePhone(form.telefone || '')) return showFormError('Digite somente o número do celular após o DDD 16.'); if (!validPickupTime(form.horario)) return showFormError('Escolha um horário de retirada entre 11h00 e 20h00 (de segunda a sexta).'); if (hasCakeProductionLead()) { if (!form.data_retirada) return showFormError('Para encomenda de torta ou caixa grande, escolha a data desejada para retirar.'); if (!validCakeLeadTime(form.data_retirada, form.horario)) return showFormError('Encomendas de torta e caixa grande precisam de pelo menos 48 horas de antecedência pelo horário de Brasília.'); } else if (!validCommonLeadTime(form.horario)) { syncPickupTimeValidation(); $('#pickup-time')?.focus(); return showFormError(pickupTimeMessage()); } if (!form.aceite) return showFormError('Leia e marque o aceite das regras antes de enviar.'); setOrderStage(3); const text = buildMessage(form); window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener'); }

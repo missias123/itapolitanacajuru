@@ -1950,12 +1950,12 @@
 
         var resumoEconomia = calcularResumoEconomiaPicoles();
         var economiaTotal = Math.max(0, resumoEconomia.varejo - resumoEconomia.atacado);
-        var texto = `Olá! Gostaria de fazer uma encomenda.\n\n✅ Estou ciente do prazo mínimo de 5 dias úteis após o pagamento.\n✅ A encomenda será retirada na loja da Itapolitana Cajuru. Não realizam delivery.\n\nCliente: ${nome}\nRetirada: Loja Itapolitana Cajuru\nWhatsApp: ${zap}\n\nItens:\n` +
-            carrinho.map(item => {
-                var desc = item.isPicole ? `${item.quantidade} un x R$ ${item.precoUnit.toFixed(2)}` : item.isAcrescimo ? `${item.quantidade} unidade(s) x R$ ${item.precoUnit.toFixed(2)}` : `Sabores: ${item.sabores.join(', ')}`;
-                return `▪ ${item.tipo}: ${item.nome}\n  ${desc}\n  Subtotal: R$ ${Number(item.preco || 0).toFixed(2).replace('.',',')}`;
+        var texto = `🍦 *ENCOMENDA — ITAPOLITANA CAJURU*\n━━━━━━━━━━━━━━━━━━━━━\n\n👤 *CLIENTE*\n• Nome: ${nome}\n• WhatsApp: ${zap}\n\n✅ Ciente do prazo mínimo de 5 dias úteis após o pagamento.\n✅ Retirada na loja — não realizamos delivery.\n\n━━━━━━━━━━━━━━━━━━━━━\n🛒 *ITENS*\n\n` +
+            carrinho.map((item, i) => {
+                var desc = item.isPicole ? `${item.quantidade} un × R$ ${item.precoUnit.toFixed(2).replace('.',',')}` : item.isAcrescimo ? `${item.quantidade} un × R$ ${item.precoUnit.toFixed(2).replace('.',',')}` : `Sabores: ${item.sabores.join(', ')}`;
+                return `*${i+1}. ${item.tipo}: ${item.nome}*\n• ${desc}\n• ✔️ Subtotal: *R$ ${Number(item.preco || 0).toFixed(2).replace('.',',')}*`;
             }).join('\n\n') +
-            `\n\nTotal de referência dos picolés no varejo: R$ ${resumoEconomia.varejo.toFixed(2).replace('.',',')}\nDESCONTO TOTAL NO ATACADO (PICOLES): R$ ${economiaTotal.toFixed(2).replace('.',',')}\nTotal do pedido a pagar: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}`;
+            `\n\n━━━━━━━━━━━━━━━━━━━━━\n💸 Varejo (referência): R$ ${resumoEconomia.varejo.toFixed(2).replace('.',',')}\n🎉 Desconto atacado (picolés): R$ ${economiaTotal.toFixed(2).replace('.',',')}\n🧾 *TOTAL A PAGAR: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}*\n━━━━━━━━━━━━━━━━━━━━━\n\n⚠️ _Pedido sujeito à confirmação da loja._\n_Sem retorno em 15 min, ligue/chame no WhatsApp: (16) 99606-2046_`;
 
         window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
     };
