@@ -1658,7 +1658,7 @@
             document.getElementById('btn-prosseguir').style.display = 'block';
             lista.innerHTML = carrinho.map((item, i) => {
                 total += Number(item.preco || 0);
-                var desc = item.isPicole ? `${item.quantidade} unidades · R$ ${item.precoUnit.toFixed(2)}/un` : item.isAcrescimo ? `${item.quantidade} unidade(s) · R$ ${item.precoUnit.toFixed(2).replace('.',',')}/un` : 'Sabores: ' + item.sabores.join(', ');
+                var desc = item.isPicole ? `${item.quantidade} unidades · R$ ${item.precoUnit.toFixed(2)}/un` : item.isAcrescimo ? `${item.quantidade} unidade(s) · R$ ${item.precoUnit.toFixed(2).replace('.',',')}/un` : '<strong>Sabores escolhidos:</strong><br>' + item.sabores.map(function(s){ return '• ' + s; }).join('<br>');
                 return `
                     <div style="padding: 16px; background: #FFF; border: 1px solid #E8E8E8; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
                         <div style="flex: 1; padding-right: 15px;">
@@ -1952,7 +1952,7 @@
         var economiaTotal = Math.max(0, resumoEconomia.varejo - resumoEconomia.atacado);
         var texto = `🍦 *ENCOMENDA — ITAPOLITANA CAJURU*\n━━━━━━━━━━━━━━━━━━━━━\n\n👤 *CLIENTE*\n• Nome: ${nome}\n• WhatsApp: ${zap}\n\n✅ Ciente do prazo mínimo de 5 dias úteis após o pagamento.\n✅ Retirada na loja — não realizamos delivery.\n\n━━━━━━━━━━━━━━━━━━━━━\n🛒 *ITENS*\n\n` +
             carrinho.map((item, i) => {
-                var desc = item.isPicole ? `${item.quantidade} un × R$ ${item.precoUnit.toFixed(2).replace('.',',')}` : item.isAcrescimo ? `${item.quantidade} un × R$ ${item.precoUnit.toFixed(2).replace('.',',')}` : `Sabores: ${item.sabores.join(', ')}`;
+                var desc = item.isPicole ? `${item.quantidade} un × R$ ${item.precoUnit.toFixed(2).replace('.',',')}` : item.isAcrescimo ? `${item.quantidade} un × R$ ${item.precoUnit.toFixed(2).replace('.',',')}` : `Sabores escolhidos:\n${item.sabores.map(function(s){ return '  • ' + s; }).join('\n')}`;
                 return `*${i+1}. ${item.tipo}: ${item.nome}*\n• ${desc}\n• ✔️ Subtotal: *R$ ${Number(item.preco || 0).toFixed(2).replace('.',',')}*`;
             }).join('\n\n') +
             `\n\n━━━━━━━━━━━━━━━━━━━━━\n💸 Varejo (referência): R$ ${resumoEconomia.varejo.toFixed(2).replace('.',',')}\n🎉 Desconto atacado (picolés): R$ ${economiaTotal.toFixed(2).replace('.',',')}\n🧾 *TOTAL A PAGAR: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}*\n━━━━━━━━━━━━━━━━━━━━━\n\n⚠️ _Pedido sujeito à confirmação da loja._\n_Sem retorno em 15 min, ligue/chame no WhatsApp: (16) 99606-2046_`;

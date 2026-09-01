@@ -105,7 +105,7 @@
   function needsFlavorPreferences() { return false; }
   function preferenceCountForPopsicle() { return 1; }
   function preferenceReady(set, rule) { return Array.isArray(set) && set.length >= rule.min && set.length <= rule.max; }
-  function preferenceText(preferences = []) { return preferences.map((set, index) => `Opção ${index + 1}: ${(set || []).map((item) => item.name || item).join(', ')}`).filter((line) => !line.endsWith(': ')).join(' | '); }
+  function preferenceText(preferences = []) { return preferences.map((set, index) => { const flavors = (set || []).map((item) => item.name || item); return flavors.length ? `Opção ${pad2(index + 1)}:\n${flavors.map((f) => `  • ${f}`).join('\n')}` : null; }).filter(Boolean).join('\n'); }
   function productType(category) { return category === 'Picolés' ? 'picole' : 'produto'; }
   function retiradaAberta() { return !window.ItapHorarioPedidos || window.ItapHorarioPedidos.estaAberto('retirada'); }
   function dependsOnAcaiBase(data, key, item) {
@@ -226,7 +226,7 @@
       const price = document.createElement('small'); price.className = 'acai-double-option__price'; price.textContent = `Em dobro (+ ${money(option.price)})`;
       label.append(input, name, price); ui.list.append(label);
     });
-    const selected = selectedAcaiDoubleAddOns(product); ui.total.textContent = selected.length ? `Itens em dobro: ${selected.map((item) => item.name).join(' · ')} · Acréscimo: ${money(selected.reduce((sum, item) => sum + item.price, 0))}.` : 'Nenhum item em dobro selecionado. O preço base e o SKU não mudam.';
+    const selected = selectedAcaiDoubleAddOns(product); if (selected.length) { ui.total.innerHTML = `<strong>Itens em dobro:</strong><br>${selected.map((item) => `• ${escape(item.name)}`).join('<br>')}<br><strong>Acréscimo: ${money(selected.reduce((sum, item) => sum + item.price, 0))}</strong>`; } else { ui.total.textContent = 'Nenhum item em dobro selecionado. O preço base e o SKU não mudam.'; }
   }
   function beginAcaiDouble(product) {
     state.flavorProduct = product; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.acaiDoubleChoices = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = emptyFondueChoices(); state.flavorDistribution = ''; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = '';
@@ -323,7 +323,7 @@
       const row = document.createElement('article'); row.className = 'product'; row.dataset.catalogSku = product.sku; const hasFlavor = needsMassFlavors(product) || product.category === 'Milkshake'; const hasAcaiDouble = isAcaiCup(product) && acaiDoubleOptions(product).length > 0;
       const meta = isIceCreamCake(product) ? `Escolha 3 sabores · Retirada com antecedência mínima de 48 horas.` : isFondue(product) ? 'Escolha 2 frutas, 2 cremes e 1 guloseima · Tudo incluído no preço.' : isBoloCopo(product) ? `${flavorRule(product).label} · depois escolha o creme (Leite Ninho ou Nutela).` : hasFlavor ? flavorRule(product).label : hasAcaiDouble ? 'Escolha quais complementos do copo podem ser pedidos em dobro.' : 'Produto pronto para retirada';
       const extras = product.includedExtras?.length ? ` · Inclui ${product.includedExtras.join(' e ')}.` : '';
-      const fixedIngredients = product.fixedIngredients?.length ? `<p class="product__ingredients"><strong>Ingredientes fixos:</strong> ${escape(product.fixedIngredients.filter((item) => !/sabores? de sorvete/i.test(item)).join(', '))}</p>` : '';
+      const fixedIngredients = product.fixedIngredients?.length ? `<p class="product__ingredients"><strong>Ingredientes fixos:</strong><br>${product.fixedIngredients.filter((item) => !/sabores? de sorvete/i.test(item)).map((i) => `• ${escape(i)}`).join('<br>')}</p>` : '';
       const ballCount = productBallCount(product); const ballRule = usesFlavorDistribution(product) && ballCount ? `<p class="product__ball-rule"><strong>${ballCount} bola${ballCount > 1 ? 's' : ''}:</strong> ${ballCount === 1 ? 'escolha 1 sabor.' : `pode distribuir ${ballCount} bolas entre os sabores que quiser — todas do mesmo sabor ou em sabores diferentes.`}</p>` : '';
       const skuLine = isLargeIceCreamBox(product) ? `<p class="product__sku">SKU: ${escape(product.sku)} · Embalagem ${escape(product.travelPackaging?.sku || '')} incluída</p>` : '';
       const sizeBadge = productSizeBadge(product); const badge = sizeBadge ? `<p class="product__size-badge product__size-badge--${sizeBadge.type}"><span>${escape(sizeBadge.detail)}</span><strong>${escape(sizeBadge.label)}</strong></p>` : '';
@@ -466,7 +466,7 @@
     includedCustomizationOptions().forEach((option) => {
       const label = document.createElement('label'); label.className = 'choice'; const input = document.createElement('input'); input.type = 'checkbox'; input.checked = Boolean(state.includedCustomizationChoices?.[option.id]); input.addEventListener('change', () => { if (input.checked) state.includedCustomizationChoices[option.id] = true; else delete state.includedCustomizationChoices[option.id]; renderIncludedCustomizations(product, ready); }); const text = document.createElement('span'); text.textContent = option.name; label.append(input, text); ui.list.append(label);
     });
-    const selected = selectedIncludedCustomizations(); ui.total.textContent = selected.length ? `Incluídos no valor: ${selected.join(' · ')}` : 'Nenhuma cobertura ou complemento selecionado. O valor do produto não muda.';
+    const selected = selectedIncludedCustomizations(); if (selected.length) { ui.total.innerHTML = `<strong>Incluídos no valor:</strong><br>${selected.map((s) => `• ${escape(s)}`).join('<br>')}`; } else { ui.total.textContent = 'Nenhuma cobertura ou complemento selecionado. O valor do produto não muda.'; }
   }
   function ensureBoloCopoCreme() {
     let section = $('#bolo-copo-creme');
@@ -541,7 +541,7 @@
     const cremesCount = fondueCount(state.fondueChoices.cremes);
     const guloseimasCount = fondueCount(state.fondueChoices.guloseimas);
     const ready = frutasCount === 2 && cremesCount === 2 && guloseimasCount === 1;
-    ui.total.textContent = ready ? `Pronto! Frutas: ${fondueSummary(state.fondueChoices.frutas)} · Cremes: ${fondueSummary(state.fondueChoices.cremes)} · Guloseima: ${fondueSummary(state.fondueChoices.guloseimas)}. Tudo incluído no R$ 25,00.` : 'Escolha 2 frutas, 2 cremes e 1 guloseima para confirmar.';
+    if (ready) { ui.total.innerHTML = `✅ <strong>Pronto!</strong><br>• 🍓 Frutas: ${escape(fondueSummary(state.fondueChoices.frutas))}<br>• 🍫 Cremes: ${escape(fondueSummary(state.fondueChoices.cremes))}<br>• 🍬 Guloseima: ${escape(fondueSummary(state.fondueChoices.guloseimas))}<br><strong>Tudo incluído no R$ 25,00.</strong>`; } else { ui.total.textContent = 'Escolha 2 frutas, 2 cremes e 1 guloseima para confirmar.'; }
     const status = $('#flavor-status'); status.textContent = ready ? 'Tudo certo! Confirme para adicionar o Fondue ao pedido.' : `Faltam: ${frutasCount < 2 ? `${2 - frutasCount} fruta(s)` : ''}${cremesCount < 2 ? `${frutasCount < 2 ? ', ' : ''}${2 - cremesCount} creme(s)` : ''}${guloseimasCount < 1 ? `${(frutasCount < 2 || cremesCount < 2) ? ', ' : ''}1 guloseima` : ''}.`;
     status.classList.toggle('ready', Boolean(ready));
     $('#confirm-flavors').disabled = !ready;
@@ -569,7 +569,7 @@
       const info = document.createElement('div'); const name = document.createElement('p'); name.className = 'box-addon-row__name'; name.textContent = addOn.name; const meta = document.createElement('p'); meta.className = 'box-addon-row__meta'; meta.textContent = unavailable ? 'Indisponível agora.' : `${money(addOn.price)} cada · SKU ${addOn.sku}`; info.append(name, meta);
       const control = document.createElement('div'); control.className = 'qty'; const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${addOn.name}`); minus.disabled = !quantity || unavailable; minus.addEventListener('click', () => { if (quantity <= 1) delete state.boxAddOnCounts[addOn.id]; else state.boxAddOnCounts[addOn.id] = quantity - 1; renderFlavorGrid(); }); const count = document.createElement('span'); count.textContent = quantity; count.setAttribute('aria-label', `${quantity} unidade${quantity !== 1 ? 's' : ''} de ${addOn.name}`); const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar ${addOn.name}`); plus.disabled = unavailable || quantity >= addOn.stock; plus.addEventListener('click', () => { state.boxAddOnCounts[addOn.id] = quantity + 1; renderFlavorGrid(); }); control.append(minus, count, plus); row.append(info, control); ui.list.append(row);
     });
-    const selected = selectedBoxAddOns(); const subtotal = selected.reduce((sum, addOn) => sum + addOn.quantity * addOn.price, 0); ui.total.textContent = selected.length ? `Complementos selecionados: ${selected.reduce((sum, addOn) => sum + addOn.quantity, 0)} un. · Total parcial: ${money(subtotal)}` : 'Nenhum complemento selecionado. Você pode adicionar depois em um novo pedido.';
+    const selected = selectedBoxAddOns(); const subtotal = selected.reduce((sum, addOn) => sum + addOn.quantity * addOn.price, 0); if (selected.length) { ui.total.innerHTML = `<strong>Complementos selecionados:</strong><br>${selected.map((addOn) => `• ${pad2(addOn.quantity)}x ${escape(addOn.name)} — ${money(Number(addOn.quantity) * Number(addOn.price))}`).join('<br>')}<br><strong>Total parcial: ${money(subtotal)}</strong>`; } else { ui.total.textContent = 'Nenhum complemento selecionado. Você pode adicionar depois em um novo pedido.'; }
   }
   function beginFlavors(product) { state.flavorProduct = product; ensureAcaiDoubleUi().section.hidden = true; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = needsFlavorPreferences(product) ? [[], [], []] : []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = emptyFondueChoices(); state.flavorDistribution = ''; state.serviceMode = isTravelOnlyBox(product) ? 'travel' : ''; state.containerType = ''; state.cakeChoice = ''; ensureBoloCopoCreme().section.hidden = true; ensureFondueUi().section.hidden = true; const rule = flavorRule(product); const sizeBadge = productSizeBadge(product); const travelText = isLargeIceCreamBox(product) ? `Primeiro consulte disponibilidade pronta ou escolha encomendar com 48 horas. Depois, selecione ${rule.label.toLowerCase()}.` : 'Caixa exclusiva para viagem: distribua os sabores e, se quiser, adicione complementos.'; $('#flavor-title').textContent = displayName(product.name); $('#flavor-subtitle').textContent = `${sizeBadge ? `${sizeBadge.label} · ` : ''}${isTravelOnlyBox(product) ? travelText : isIceCreamCake(product) ? 'Primeiro consulte disponibilidade pronta ou escolha encomendar com 48 horas.' : needsFlavorPreferences(product) ? `${rule.label}. Depois informe duas alternativas diferentes.` : needsContainerChoice(product) ? 'Escolha primeiro o recipiente e depois os sabores.' : isBoloCopo(product) ? `${rule.label}. Depois escolha o creme — incluído no preço.` : rule.label + '.'}`; renderFlavorGrid(); openDialog('flavor-dialog'); }
   function renderFlavorGrid() {
@@ -626,13 +626,13 @@
     if (!state.cart.length) { list.innerHTML = '<div class="empty-state">Seu pedido ainda está vazio. Volte e escolha os produtos que deseja retirar.</div>'; $('#cart-breakdown').innerHTML = `<div><span>Total dos produtos</span><span>${money(0)}</span></div><div><span>Complementos</span><span>${money(0)}</span></div><div><span>Embalagens para viagem</span><span>${money(0)}</span></div>`; $('#cart-total').textContent = money(0); syncPickupDateConstraint(); return; }
     state.cart.forEach((item) => {
       const row = document.createElement('article'); row.className = 'cart-item';
-      const fixedIngredients = item.fixedIngredients?.length ? `Ingredientes fixos: ${item.fixedIngredients.filter((ingredient) => !/sabores? de sorvete/i.test(ingredient)).join(', ')}` : ''; const includedExtras = item.includedExtras?.length ? `Inclusos: ${item.includedExtras.join(' e ')}` : ''; const container = item.containerType ? `Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}` : ''; const cakeChoice = needsAvailabilityChoice(item) ? `${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: ${item.cakeChoice === 'producao_48h' ? 'encomenda com 48 horas' : 'consultar disponibilidade no WhatsApp'}` : '';
+      const fixedIngredientLines = item.fixedIngredients?.length ? ['📌 Ingredientes fixos:', ...item.fixedIngredients.filter((ingredient) => !/sabores? de sorvete/i.test(ingredient)).map((i) => `  • ${i}`)] : []; const includedExtraLines = item.includedExtras?.length ? ['✅ Inclusos:', ...item.includedExtras.map((e) => `  • ${e}`)] : []; const container = item.containerType ? `🍦 Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}` : ''; const cakeChoice = needsAvailabilityChoice(item) ? `⏰ ${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: ${item.cakeChoice === 'producao_48h' ? 'encomenda com 48 horas' : 'consultar disponibilidade no WhatsApp'}` : '';
       const flavorLines = item.flavorDistribution
-        ? item.flavorDistribution.split(/\s*\+\s*/).map((part) => { const m = part.trim().match(/^(\d+)\s+(.+)$/); return m ? `${m[1]}x ${m[2]}` : part.trim(); })
-        : item.flavors?.length ? [`Sabores: ${item.flavors.map((f) => f.name || f).join(', ')}`] : [];
+        ? ['🍨 Sabores escolhidos:', ...item.flavorDistribution.split(/\s*\+\s*/).map((part) => { const m = part.trim().match(/^(\d+)\s+(.+)$/); return m ? `  ${pad2(m[1])}x ${m[2]}` : `  ${part.trim()}`; })]
+        : item.flavors?.length ? ['🍨 Sabores escolhidos:', ...item.flavors.map((f) => `  01x ${f.name || f}`)] : [];
       const mode = item.serviceMode === 'travel' ? 'Embalar para viagem' : item.serviceMode === 'store' ? 'Consumir na loja' : '';
-      const metaFields = [item.sku, item.size, container, ...flavorLines, fixedIngredients, includedExtras, cakeChoice].filter(Boolean);
-      const addOnLines = item.boxAddOns?.length ? item.boxAddOns.map((addOn) => `<p class="cart-item__meta">${escape(`Adicional: ${addOn.quantity}x ${addOn.name} — ${money(Number(addOn.quantity) * Number(addOn.price))}`)}</p>`).join('') : '';
+      const metaFields = [item.sku, item.size, container, ...flavorLines, ...fixedIngredientLines, ...includedExtraLines, cakeChoice].filter(Boolean);
+      const addOnLines = item.boxAddOns?.length ? item.boxAddOns.map((addOn) => `<p class="cart-item__meta">➕ ${escape(`${pad2(addOn.quantity)}x ${addOn.name} — ${money(Number(addOn.quantity) * Number(addOn.price))}`)}</p>`).join('') : '';
       const pricing = [`<span>Produto: ${money(itemBaseTotal(item))}</span>`];
       if (item.boxAddOns?.length) {
         item.boxAddOns.forEach((addOn) => pricing.push(`<span>${escape(`${addOn.quantity}x ${addOn.name}`)}: ${money(Number(addOn.quantity) * Number(addOn.price))}</span>`));
@@ -640,7 +640,7 @@
       }
       if (mode) pricing.push(`<span>${mode}: ${item.serviceMode === 'travel' ? (item.packagingIncluded ? `${escape(item.packagingName || 'Embalagem da caixa')} · SKU ${escape(item.packagingSku || '')} · incluída no valor` : `${escape(item.packagingName || 'Embalagem para viagem')} · SKU ${escape(item.packagingSku || 'EMB-VIAGEM')} · ${money(itemPackagingTotal(item))}`) : 'sem taxa de embalagem'}</span>`);
       pricing.push(`<strong>Subtotal: ${money(itemTotal(item))}</strong>`);
-      row.innerHTML = `<div class="cart-item__head"><div><p class="cart-item__name">${escape(displayName(item.name))}</p>${metaFields.map((f) => `<p class="cart-item__meta">${escape(f)}</p>`).join('')}${addOnLines}</div><p class="cart-item__value">${money(itemTotal(item))}</p></div><div class="cart-item__pricing">${pricing.join('')}</div>`;
+      row.innerHTML = `<div class="cart-item__head"><div><p class="cart-item__name">${escape(displayName(item.name))}</p>${metaFields.map((f) => { const isIndent = f.startsWith('  '); return `<p class="cart-item__meta${isIndent ? ' cart-item__meta--indent' : ''}">${escape(f.trimStart())}</p>`; }).join('')}${addOnLines}</div><p class="cart-item__value">${money(itemTotal(item))}</p></div><div class="cart-item__pricing">${pricing.join('')}</div>`;
       const bottom = document.createElement('div'); bottom.className = 'cart-item__bottom'; const control = document.createElement('div'); control.className = 'qty';
       const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${item.name}`); minus.addEventListener('click', () => updateQuantity(item.key, -1));
       const count = document.createElement('span'); count.textContent = item.quantity;
@@ -717,16 +717,16 @@
     ];
 
     state.cart.forEach((item, index) => {
-      lines.push(``, `*${index + 1}. ${item.quantity}x ${item.name}${item.size ? ` — ${item.size}` : ''}*`);
+      lines.push(``, `*${pad2(index + 1)}. ${pad2(item.quantity)}x ${item.name}${item.size ? ` — ${item.size}` : ''}*`);
       if (item.containerType) lines.push(`• ${item.containerType === 'casquinha' ? '🍦 Casquinha' : '🥤 Copo'}`);
-      if (item.flavorDistribution) { item.flavorDistribution.split(/\s*\+\s*/).forEach((part) => { const m = part.trim().match(/^(\d+)\s+(.+)$/); lines.push(`• 🍨 ${m ? `${m[1]}x ${m[2]}` : part.trim()}`); }); } else if (item.flavors?.length) { lines.push(`• 🍨 Sabores: ${item.flavors.map((f) => f.name || f).join(', ')}`); }
-      if (item.fixedIngredients?.length) lines.push(`• Ingredientes: ${item.fixedIngredients.filter((i) => !/sabores? de sorvete/i.test(i)).join(', ')}`);
-      if (item.includedExtras?.length) lines.push(`• ✅ Inclusos: ${item.includedExtras.join(' e ')}`);
+      if (item.flavorDistribution) { lines.push(`• 🍨 Sabores escolhidos:`); item.flavorDistribution.split(/\s*\+\s*/).forEach((part) => { const m = part.trim().match(/^(\d+)\s+(.+)$/); lines.push(`    ${m ? `${pad2(m[1])}x ${m[2]}` : part.trim()}`); }); } else if (item.flavors?.length) { lines.push(`• 🍨 Sabores escolhidos:`); item.flavors.forEach((f) => lines.push(`    01x ${f.name || f}`)); }
+      if (item.fixedIngredients?.length) { lines.push(`• 📌 Ingredientes:`); item.fixedIngredients.filter((i) => !/sabores? de sorvete/i.test(i)).forEach((i) => lines.push(`    • ${i}`)); }
+      if (item.includedExtras?.length) { lines.push(`• ✅ Inclusos:`); item.includedExtras.forEach((e) => lines.push(`    • ${e}`)); }
       lines.push(`• 💰 Produto: ${money(itemBaseTotal(item))}`);
       if (item.boxAddOns?.length) {
         item.boxAddOns.forEach((addOn) => {
           const val = money(Number(addOn.quantity) * Number(addOn.price));
-          const qty = addOn.quantity > 1 ? ` (${addOn.quantity}x)` : '';
+          const qty = ` (${pad2(addOn.quantity)}x)`;
           lines.push(`• ➕ ${addOn.name}${qty}: ${val}`);
         });
         lines.push(`• Adicionais: *${money(itemAddOnTotal(item))}*`);
