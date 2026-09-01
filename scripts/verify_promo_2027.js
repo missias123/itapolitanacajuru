@@ -2,10 +2,14 @@ const puppeteer = require('puppeteer');
 
 const REQUIRED = [
   'mais de 1.400',
+  '1 caixa de sorvete',
+  'dezembro de 2026',
   'torta de sorvete',
   'inscrições já estão abertas',
+  '1.000 participantes cadastrados',
   'janeiro de 2027',
   'itapolitanacajuru.com.br',
+  'cadastro para ganhar 1 caixa',
   '2027'
 ];
 const STALE = [
