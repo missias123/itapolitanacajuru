@@ -99,8 +99,8 @@ try {
     }));
 
     assert.deepEqual(quantities, [
-      { flavor: 'Brigadeiro', quantity: '1', subtotal: 'Subtotal: R$ 8,00' },
-      { flavor: 'Prestígio', quantity: '1', subtotal: 'Subtotal: R$ 8,00' },
+      { flavor: 'Brigadeiro', quantity: '01', subtotal: 'Subtotal: R$ 8,00' },
+      { flavor: 'Prestígio', quantity: '01', subtotal: 'Subtotal: R$ 8,00' },
     ], `${viewport.name}: os dois sabores do final da lista não entraram corretamente no lote`);
     assert.deepEqual(errors, [], `${viewport.name}: erros de página`);
     results.push({ viewport: viewport.name, flavorChecks, quantities });

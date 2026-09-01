@@ -107,22 +107,22 @@ try {
     await page.click('#confirm-flavors');
     await page.waitForSelector('#cart-dialog[open]', { timeout: 5000 });
     const cart = await page.evaluate(() => ({
-      itemMeta: document.querySelector('.cart-item__meta')?.textContent.trim() || '',
+      metaLines: [...document.querySelectorAll('.cart-item__meta')].map((node) => node.textContent.trim()).filter(Boolean),
       pricing: document.querySelector('.cart-item__pricing')?.textContent.trim() || '',
       itemValue: document.querySelector('.cart-item__value')?.textContent.trim() || '',
       total: document.querySelector('#cart-total')?.textContent.trim() || '',
       breakdown: document.querySelector('#cart-breakdown')?.textContent.trim() || '',
       skuCount: [...document.querySelectorAll('.cart-item__meta')].filter((node) => node.textContent.includes('ACA-300-006')).length,
     }));
-    assert.match(cart.itemMeta, /ACA-300-006/, `${viewport.name}: SKU base não foi preservado`);
-    assert.match(cart.itemMeta, /morango em dobro/i, `${viewport.name}: morango em dobro ausente do resumo`);
-    assert.match(cart.itemMeta, /leite condensado em dobro/i, `${viewport.name}: leite condensado em dobro ausente do resumo`);
-    assert.match(cart.pricing, /morango em dobro: R\$ 3,00/i, `${viewport.name}: preço de morango não discriminado no carrinho`);
-    assert.match(cart.pricing, /leite condensado em dobro: R\$ 3,00/i, `${viewport.name}: preço de leite condensado não discriminado no carrinho`);
-    assert.match(cart.pricing, /Total de adicionais: R\$ 6,00/i, `${viewport.name}: total de adicionais não discriminado`);
+    assert.match(cart.metaLines.join('\n'), /ACA-300-006/, `${viewport.name}: SKU base não foi preservado`);
+    assert.match(cart.metaLines.join('\n'), /01x morango em dobro/i, `${viewport.name}: morango em dobro ausente do resumo`);
+    assert.match(cart.metaLines.join('\n'), /01x leite condensado em dobro/i, `${viewport.name}: leite condensado em dobro ausente do resumo`);
+    assert.doesNotMatch(cart.pricing, /morango em dobro: R\$ 3,00/i, `${viewport.name}: morango em dobro foi repetido na área de preços`);
+    assert.doesNotMatch(cart.pricing, /leite condensado em dobro: R\$ 3,00/i, `${viewport.name}: leite condensado em dobro foi repetido na área de preços`);
+    assert.match(cart.pricing, /Complementos: R\$ 6,00/i, `${viewport.name}: total de complementos não foi mantido no carrinho`);
     assert.equal(cart.itemValue, 'R$ 21,00', `${viewport.name}: subtotal do copo deveria ser R$ 21,00`);
     assert.equal(cart.total, 'R$ 21,00', `${viewport.name}: total do pedido deveria ser R$ 21,00`);
-    assert.match(cart.breakdown, /Total de adicionais\s*R\$ 6,00/i, `${viewport.name}: breakdown não mostra R$ 6,00`);
+    assert.match(cart.breakdown, /Complementos\s*R\$ 6,00/i, `${viewport.name}: breakdown não mostra R$ 6,00`);
     assert.equal(cart.skuCount, 1, `${viewport.name}: SKU base apareceu mais de uma vez ou foi duplicado`);
 
     const outgoingMessage = await page.evaluate(() => {
@@ -142,9 +142,9 @@ try {
       return url ? decodeURIComponent(new URL(url).searchParams.get('text') || '') : '';
     });
     assert.match(outgoingMessage, /\(ACA-300-006\)/, `${viewport.name}: mensagem não contém o SKU base`);
-    assert.match(outgoingMessage, /morango em dobro — R\$ 3,00/i, `${viewport.name}: mensagem não discrimina morango em dobro`);
-    assert.match(outgoingMessage, /leite condensado em dobro — R\$ 3,00/i, `${viewport.name}: mensagem não discrimina leite condensado em dobro`);
-    assert.match(outgoingMessage, /Total final: R\$ 21,00/i, `${viewport.name}: mensagem não contém o total final correcto`);
+    assert.match(outgoingMessage, /01x morango em dobro — R\$ 3,00/i, `${viewport.name}: mensagem não discrimina morango em dobro`);
+    assert.match(outgoingMessage, /01x leite condensado em dobro — R\$ 3,00/i, `${viewport.name}: mensagem não discrimina leite condensado em dobro`);
+    assert.match(outgoingMessage, /TOTAL A PAGAR: R\$ 21,00/i, `${viewport.name}: mensagem não contém o total final correto`);
 
     await page.evaluate(() => document.getElementById('cart-dialog')?.close());
     await page.click('[data-catalog-sku="ACA-MSK-001"] .add-btn');
