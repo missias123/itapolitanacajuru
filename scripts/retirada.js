@@ -688,6 +688,9 @@
     const schedule = hasCakeProductionLead()
       ? `Data: ${form.data_retirada}`
       : 'Data: hoje';
+    const [h, m] = (form.horario || '00:00').split(':').map(Number);
+    const deadlineH = h + 1;
+    const deadline = `${String(deadlineH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     const lines = [
       `🍦 *PEDIDO DE RETIRADA*`,
       `_Itapolitana Cajuru_`,
@@ -700,7 +703,7 @@
       `🕒 *RETIRADA*`,
       `• ${schedule}`,
       `• Horário combinado: ${form.horario} (Brasília)`,
-      `• Retirar até: 20:00 (horário máximo da loja)`,
+      `• Retirar até: ${deadline} (Brasília)`,
       ``,
       `💳 *PAGAMENTO*`,
       `• ${form.pagamento}`,
