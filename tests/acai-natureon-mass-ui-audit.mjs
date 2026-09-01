@@ -112,6 +112,35 @@ try {
     }));
     assert.ok(massFlavorState.flavorNames.includes('Açaí Natureon'), `${viewport.name}: Açaí Natureon não aparece na escolha de sorvete`);
     assert.match(massFlavorState.title, /Casquinha/i, `${viewport.name}: diálogo abriu o produto errado`);
+    await page.evaluate(() => {
+      const firstFlavor = document.querySelector('#flavor-grid button:not(:disabled)');
+      if (!firstFlavor) throw new Error('Nenhum sabor disponível para testar o avanço guiado');
+      firstFlavor.click();
+    });
+    await sleep(150);
+    const guidedFlowState = await page.evaluate(() => {
+      const grid = document.querySelector('#flavor-grid');
+      const mode = document.querySelector('#item-mode');
+      const faded = [...document.querySelectorAll('#flavor-grid button')].find((button) => button.getAttribute('aria-pressed') !== 'true');
+      const active = document.activeElement;
+      return {
+        limitReached: grid?.classList.contains('limite-atingido') || false,
+        fadedDisabled: Boolean(faded?.disabled),
+        fadedOpacity: faded ? Number(window.getComputedStyle(faded).opacity || '1') : 1,
+        fadedFilter: faded ? window.getComputedStyle(faded).filter : '',
+        modeVisible: Boolean(mode && !mode.hidden),
+        guideTargetId: document.querySelector('.guide-next-step')?.id || '',
+        activeInMode: Boolean(mode && active && mode.contains(active)),
+        status: document.querySelector('#flavor-status')?.textContent?.trim() || '',
+      };
+    });
+    assert.equal(guidedFlowState.limitReached, true, `${viewport.name}: a grade não marcou o limite de sabores`);
+    assert.equal(guidedFlowState.fadedDisabled, true, `${viewport.name}: os sabores restantes não foram bloqueados ao atingir o limite`);
+    assert.ok(guidedFlowState.fadedOpacity < 0.5 || guidedFlowState.fadedFilter !== 'none', `${viewport.name}: os sabores restantes não ficaram visualmente apagados`);
+    assert.equal(guidedFlowState.modeVisible, true, `${viewport.name}: o próximo passo não foi liberado`);
+    assert.equal(guidedFlowState.guideTargetId, 'item-mode', `${viewport.name}: o guia visual não destacou o próximo passo`);
+    assert.equal(guidedFlowState.activeInMode, true, `${viewport.name}: o foco não avançou para o próximo passo`);
+    assert.match(guidedFlowState.status, /agora escolha como deseja receber/i, `${viewport.name}: o status não informou o próximo passo`);
     await page.keyboard.press('Escape');
     await sleep(50);
 
@@ -126,7 +155,7 @@ try {
     assert.ok(dimensions.bodyWidth <= dimensions.viewportWidth + 2, `${viewport.name}: overflow horizontal (${dimensions.bodyWidth}/${dimensions.viewportWidth})`);
     assert.deepEqual(errors, [], `${viewport.name}: erros de página`);
     assert.deepEqual(mutationRequests, [], `${viewport.name}: houve requisição mutativa`);
-    results.push({ viewport: viewport.name, massCards: pageState.massCards, massFlavorState, dimensions, errors, mutationRequests });
+    results.push({ viewport: viewport.name, massCards: pageState.massCards, massFlavorState, guidedFlowState, dimensions, errors, mutationRequests });
     await page.close();
   }
 } finally {
