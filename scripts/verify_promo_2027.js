@@ -6,6 +6,7 @@ const REQUIRED = [
   'dezembro de 2026',
   'torta de sorvete',
   'inscrições já estão abertas',
+  '1.000 participantes cadastrados',
   'janeiro de 2027',
   'itapolitanacajuru.com.br',
   'cadastro para ganhar 1 caixa'
