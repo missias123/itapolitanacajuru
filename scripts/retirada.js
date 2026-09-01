@@ -716,7 +716,7 @@
     ];
 
     state.cart.forEach((item, index) => {
-      lines.push(``, `*${pad2(index + 1)}. ${pad2(item.quantity)}x ${item.name}${item.size ? ` — ${item.size}` : ''}*`);
+      lines.push(``, `*${pad2(index + 1)}. ${pad2(item.quantity)}x ${item.name}${item.size ? ` — ${item.size}` : ''}${item.sku ? ` (${item.sku})` : ''}*`);
       if (item.containerType) lines.push(`• ${item.containerType === 'casquinha' ? '🍦 Casquinha' : '🥤 Copo'}`);
       if (item.flavorDistribution) { lines.push(`• 🍨 Sabores escolhidos:`); item.flavorDistribution.split(/\s*\+\s*/).forEach((part) => { const m = part.trim().match(/^(\d+)\s+(.+)$/); lines.push(`    ${m ? `${pad2(m[1])}x ${m[2]}` : part.trim()}`); }); } else if (item.flavors?.length) { lines.push(`• 🍨 Sabores escolhidos:`); item.flavors.forEach((f) => lines.push(`    01x ${f.name || f}`)); }
       if (item.fixedIngredients?.length) { lines.push(`• 📌 Ingredientes:`); item.fixedIngredients.filter((i) => !/sabores? de sorvete/i.test(i)).forEach((i) => lines.push(`    • ${i}`)); }
@@ -725,8 +725,7 @@
       if (item.boxAddOns?.length) {
         item.boxAddOns.forEach((addOn) => {
           const val = money(Number(addOn.quantity) * Number(addOn.price));
-          const qty = ` (${pad2(addOn.quantity)}x)`;
-          lines.push(`• ➕ ${addOn.name}${qty}: ${val}`);
+          lines.push(`• ➕ ${pad2(addOn.quantity)}x ${addOn.name} — ${val}`);
         });
         lines.push(`• Complementos: *${money(itemAddOnTotal(item))}*`);
       }

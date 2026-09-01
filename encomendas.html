@@ -697,7 +697,7 @@
         </div>
 
         <div class="fluxo-progresso" aria-live="polite" style="margin-bottom: 8px; flex-shrink: 0;">
-          <div class="fluxo-progresso__linha" style="font-size: .88rem; margin-bottom: 4px;"><span id="total-picoles" style="font-weight: 900; color: var(--primary);">0 unidades</span><span style="font-weight: 700; color: #444;">Meta: 100</span></div>
+          <div class="fluxo-progresso__linha" style="font-size: .88rem; margin-bottom: 4px;"><span id="total-picoles" style="font-weight: 900; color: var(--primary);">00 unidades</span><span style="font-weight: 700; color: #444;">Meta: 100</span></div>
           <div class="fluxo-progresso__barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="height: 10px; border-radius: 6px; background: #eee; overflow:hidden;"><div id="progresso-picoles" class="fluxo-progresso__valor" style="height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease;"></div></div>
         </div>
 
@@ -1521,7 +1521,7 @@
         var novo = delta > 0 ? Math.min(MAX_PICOLES_POR_SABOR, atual + delta, atual + disponivel) : Math.max(0, atual + delta);
         if (novo === 0) delete picolesSelecionados[key];
         else picolesSelecionados[key] = novo;
-        document.getElementById('q-' + key).textContent = novo;
+        document.getElementById('q-' + key).textContent = formatarQuantidade(novo);
         var tipoFull = key.split('|')[0];
         var grupo = PICOLES_CATALOGO[tipoFull];
         var subtotalEl = document.getElementById('sub-' + key);

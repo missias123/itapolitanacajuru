@@ -142,9 +142,9 @@ try {
       return url ? decodeURIComponent(new URL(url).searchParams.get('text') || '') : '';
     });
     assert.match(outgoingMessage, /\(ACA-300-006\)/, `${viewport.name}: mensagem não contém o SKU base`);
-    assert.match(outgoingMessage, /morango em dobro — R\$ 3,00/i, `${viewport.name}: mensagem não discrimina morango em dobro`);
-    assert.match(outgoingMessage, /leite condensado em dobro — R\$ 3,00/i, `${viewport.name}: mensagem não discrimina leite condensado em dobro`);
-    assert.match(outgoingMessage, /Total final: R\$ 21,00/i, `${viewport.name}: mensagem não contém o total final correcto`);
+    assert.match(outgoingMessage, /01x morango em dobro — R\$ 3,00/i, `${viewport.name}: mensagem não discrimina morango em dobro`);
+    assert.match(outgoingMessage, /01x leite condensado em dobro — R\$ 3,00/i, `${viewport.name}: mensagem não discrimina leite condensado em dobro`);
+    assert.match(outgoingMessage, /TOTAL A PAGAR: R\$ 21,00/i, `${viewport.name}: mensagem não contém o total final correto`);
 
     await page.evaluate(() => document.getElementById('cart-dialog')?.close());
     await page.click('[data-catalog-sku="ACA-MSK-001"] .add-btn');
