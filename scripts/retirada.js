@@ -683,10 +683,9 @@
       const addOnLines = item.boxAddOns?.length ? item.boxAddOns.map((addOn) => `<p class="cart-item__meta">➕ ${escape(`${pad2(addOn.quantity)}x ${addOn.name} — ${money(Number(addOn.quantity) * Number(addOn.price))}`)}</p>`).join('') : '';
       const pricing = [`<span>Produto: ${money(itemBaseTotal(item))}</span>`];
       if (item.boxAddOns?.length) {
-        pricing.push(`<span>Complementos: ${money(itemAddOnTotal(item))}</span>`);
+        pricing.push(`<span>Total de adicionais: ${money(itemAddOnTotal(item))}</span>`);
       }
       if (mode) pricing.push(`<span>${mode}: ${item.serviceMode === 'travel' ? (item.packagingIncluded ? `${escape(item.packagingName || 'Embalagem da caixa')} · SKU ${escape(item.packagingSku || '')} · incluída no valor` : `${escape(item.packagingName || 'Embalagem para viagem')} · SKU ${escape(item.packagingSku || 'EMB-VIAGEM')} · ${money(itemPackagingTotal(item))}`) : 'sem taxa de embalagem'}</span>`);
-      pricing.push(`<strong>Subtotal: ${money(itemTotal(item))}</strong>`);
       row.innerHTML = `<div class="cart-item__head"><div><p class="cart-item__name">${escape(displayName(item.name))}</p>${metaFields.map((f) => { const isIndent = f.startsWith('  '); return `<p class="cart-item__meta${isIndent ? ' cart-item__meta--indent' : ''}">${escape(f.trimStart())}</p>`; }).join('')}${addOnLines}</div><p class="cart-item__value">${money(itemTotal(item))}</p></div><div class="cart-item__pricing">${pricing.join('')}</div>`;
       const bottom = document.createElement('div'); bottom.className = 'cart-item__bottom'; const control = document.createElement('div'); control.className = 'qty';
       const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${item.name}`); minus.addEventListener('click', () => updateQuantity(item.key, -1));
@@ -775,7 +774,6 @@
           const val = money(Number(addOn.quantity) * Number(addOn.price));
           lines.push(`• ➕ ${pad2(addOn.quantity)}x ${addOn.name} — ${val}`);
         });
-        lines.push(`• Complementos: *${money(itemAddOnTotal(item))}*`);
       }
       if (needsAvailabilityChoice(item)) lines.push(`• ⏰ ${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: mín. 48h de antecedência`);
       if (item.serviceMode === 'travel') lines.push(`• 🛍️ Embalagem viagem: ${item.packagingIncluded ? 'incluída' : money(itemPackagingTotal(item))}`);
