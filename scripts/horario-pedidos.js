@@ -1,4 +1,4 @@
-/* Regra central: retirada liberada de segunda a sexta, 11h–20h, exceto feriados regionais de Cajuru/SP. Encomendas 10h–20h. */
+/* Regra central: Encomendas disponíveis 24h; Peça e Retire/retirada permanece de segunda a sexta, 11h–20h, excepto feriados regionais de Cajuru/SP. */
 (function () {
   'use strict';
 
@@ -8,7 +8,7 @@
   const FERIADOS_REGIONAIS_CAJURU = new Set(['01-20', '05-13', '07-11', '08-18']);
   const JANELAS = Object.freeze({
     retirada: { inicio: 11 * 60, fim: 20 * 60, mensagem: 'Pedidos pelo site somente de segunda a sexta, das 11h00 às 20h00, exceto sábados, domingos e feriados regionais de Cajuru/SP. Vá até nossa loja e peça pessoalmente.' },
-    encomendas: { inicio: 10 * 60, fim: 20 * 60, mensagem: 'Encomendas disponíveis todos os dias, das 10h00 às 20h00. Volte nesse período para enviar sua encomenda.' }
+    encomendas: { inicio: 0, fim: 24 * 60, mensagem: 'Encomendas disponíveis 24 horas por dia, todos os dias. O prazo mínimo de preparação continua sendo de 5 dias úteis.' }
   });
 
   const parametros = new URLSearchParams(location.search);
