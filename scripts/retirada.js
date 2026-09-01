@@ -687,7 +687,7 @@
     const sep = '━━━━━━━━━━━━━━━━━━━━━';
     const schedule = hasCakeProductionLead()
       ? `Data: ${form.data_retirada}`
-      : 'Hoje (mín. 1h de antecedência)';
+      : 'Data: hoje';
     const lines = [
       `🍦 *PEDIDO DE RETIRADA*`,
       `_Itapolitana Cajuru_`,
@@ -699,7 +699,8 @@
       ``,
       `🕒 *RETIRADA*`,
       `• ${schedule}`,
-      `• Horário: ${form.horario} (Brasília)`,
+      `• Horário combinado: ${form.horario} (Brasília)`,
+      `• Retirar até: 20:00 (horário máximo da loja)`,
       ``,
       `💳 *PAGAMENTO*`,
       `• ${form.pagamento}`,
