@@ -694,14 +694,15 @@
       if (item.containerType) lines.push(`• Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}`);
       if (item.flavors?.length) lines.push(`• Sabores: ${item.flavors.map((flavor) => flavor.name || flavor).join(', ')}`);
       if (item.flavorDistribution) lines.push(`• Distribuição: ${item.flavorDistribution}`);
+      lines.push(`• Preço fixo: ${money(itemBaseTotal(item))}`);
       if (item.boxAddOns?.length) item.boxAddOns.forEach((addOn) => {
-        if (addOn.kind === 'acai-double') lines.push(`• ${addOn.quantity > 1 ? `${addOn.quantity}x ` : ''}${addOn.name} — ${money(Number(addOn.quantity) * Number(addOn.price))}`);
-        else lines.push(`• Adicional: ${addOn.quantity}x ${addOn.name} (${addOn.sku}) ${money(Number(addOn.quantity) * Number(addOn.price))}`);
+        if (addOn.kind === 'acai-double') lines.push(`• Acréscimo ${addOn.name}${addOn.quantity > 1 ? ` (${addOn.quantity}x)` : ''}: ${money(Number(addOn.quantity) * Number(addOn.price))}`);
+        else lines.push(`• Acréscimo ${addOn.name} (${addOn.sku})${addOn.quantity > 1 ? ` (${addOn.quantity}x)` : ''}: ${money(Number(addOn.quantity) * Number(addOn.price))}`);
       });
       if (item.fixedIngredients?.length) lines.push(`• Ingredientes fixos: ${item.fixedIngredients.filter((ingredient) => !/sabores? de sorvete/i.test(ingredient)).join(', ')}`);
       if (item.includedExtras?.length) lines.push(`• Inclusos: ${item.includedExtras.join(' e ')}`);
       if (needsAvailabilityChoice(item)) lines.push(`• ${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: antecedência mínima de 48h`);
-      if (item.serviceMode === 'travel') lines.push('• Embalagem: para viagem');
+      if (item.serviceMode === 'travel') { lines.push(`• Embalagem para viagem: ${item.packagingIncluded ? 'incluída' : money(itemPackagingTotal(item))}`); }
       if (item.serviceMode === 'store') lines.push('• Embalagem: consumo na loja');
       lines.push(`• Subtotal: ${money(itemTotal(item))}`, '');
     });
