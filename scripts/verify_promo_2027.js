@@ -8,7 +8,7 @@ const REQUIRED = [
   'inscrições já estão abertas',
   'janeiro de 2027',
   'itapolitanacajuru.com.br',
-  'cadastro da caixa'
+  'cadastro para ganhar 1 caixa'
 ];
 const STALE = [
   'Temos promoções semanais e mensais para clientes e seguidores.',

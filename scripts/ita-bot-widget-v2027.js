@@ -511,7 +511,7 @@
     promocao: {
       titulo: '🎉 Promoções e Sorteios',
       textos: [
-        '⚠️ O cadastro para o sorteio da caixa de sorvete foi encerrado. A campanha teve mais de 1.400 inscritos, e os sorteios mensais de 1 caixa seguem até dezembro de 2026 para quem já se cadastrou.',
+        '⚠️ O cadastro para ganhar 1 caixa de sorvete foi encerrado. A campanha teve mais de 1.400 inscritos, e o sorteio mensal da caixa continua até dezembro de 2026 para quem já se cadastrou.',
         '🍰 Inscrições já estão abertas para o sorteio mensal de uma torta de sorvete. O sorteio da torta começa em janeiro de 2027.',
         '📝 Cadastre-se exclusivamente pelo site oficial da Itapolitana Cajuru: itapolitanacajuru.com.br, na aba Promoção.'
       ],
