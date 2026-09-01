@@ -567,7 +567,7 @@
       const quantity = Number(state.boxAddOnCounts?.[addOn.id] || 0); const unavailable = addOn.unavailable || addOn.stock <= 0;
       const row = document.createElement('div'); row.className = `box-addon-row${unavailable ? ' is-unavailable' : ''}`;
       const info = document.createElement('div'); const name = document.createElement('p'); name.className = 'box-addon-row__name'; name.textContent = addOn.name; const meta = document.createElement('p'); meta.className = 'box-addon-row__meta'; meta.textContent = unavailable ? 'Indisponível agora.' : `${money(addOn.price)} cada · SKU ${addOn.sku}`; info.append(name, meta);
-      const control = document.createElement('div'); control.className = 'qty'; const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${addOn.name}`); minus.disabled = !quantity || unavailable; minus.addEventListener('click', () => { if (quantity <= 1) delete state.boxAddOnCounts[addOn.id]; else state.boxAddOnCounts[addOn.id] = quantity - 1; renderFlavorGrid(); }); const count = document.createElement('span'); count.textContent = quantity; count.setAttribute('aria-label', `${quantity} unidade${quantity !== 1 ? 's' : ''} de ${addOn.name}`); const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar ${addOn.name}`); plus.disabled = unavailable || quantity >= addOn.stock; plus.addEventListener('click', () => { state.boxAddOnCounts[addOn.id] = quantity + 1; renderFlavorGrid(); }); control.append(minus, count, plus); row.append(info, control); ui.list.append(row);
+      const control = document.createElement('div'); control.className = 'qty'; const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${addOn.name}`); minus.disabled = !quantity || unavailable; minus.addEventListener('click', () => { if (quantity <= 1) delete state.boxAddOnCounts[addOn.id]; else state.boxAddOnCounts[addOn.id] = quantity - 1; renderFlavorGrid(); }); const count = document.createElement('span'); count.textContent = pad2(quantity); count.setAttribute('aria-label', `${pad2(quantity)} unidade${quantity !== 1 ? 's' : ''} de ${addOn.name}`); const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar ${addOn.name}`); plus.disabled = unavailable || quantity >= addOn.stock; plus.addEventListener('click', () => { state.boxAddOnCounts[addOn.id] = quantity + 1; renderFlavorGrid(); }); control.append(minus, count, plus); row.append(info, control); ui.list.append(row);
     });
     const selected = selectedBoxAddOns(); const subtotal = selected.reduce((sum, addOn) => sum + addOn.quantity * addOn.price, 0); if (selected.length) { ui.total.innerHTML = `<strong>Complementos selecionados:</strong><br>${selected.map((addOn) => `• ${pad2(addOn.quantity)}x ${escape(addOn.name)} — ${money(Number(addOn.quantity) * Number(addOn.price))}`).join('<br>')}<br><strong>Total parcial: ${money(subtotal)}</strong>`; } else { ui.total.textContent = 'Nenhum complemento selecionado. Você pode adicionar depois em um novo pedido.'; }
   }
@@ -595,12 +595,12 @@
         const name = document.createElement('span'); name.className = 'flavor-distribution__name'; name.textContent = flavor.name;
         const control = document.createElement('div'); control.className = 'qty';
         const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${flavor.name}`); minus.disabled = !quantity || flavor.unavailable; minus.addEventListener('click', () => { if (quantity <= 1) delete state.flavorCounts[flavor.code]; else state.flavorCounts[flavor.code] = quantity - 1; renderFlavorGrid(); });
-        const count = document.createElement('span'); count.textContent = quantity; count.setAttribute('aria-label', `${quantity} bolas de ${flavor.name}`);
+        const count = document.createElement('span'); count.textContent = pad2(quantity); count.setAttribute('aria-label', `${pad2(quantity)} bolas de ${flavor.name}`);
         const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar uma bola de ${flavor.name}`); plus.disabled = flavor.unavailable || distributed >= rule.ballCount; plus.addEventListener('click', () => { state.flavorCounts[flavor.code] = quantity + 1; renderFlavorGrid(); });
         control.append(minus, count, plus); row.append(name, control); distributionList.append(row);
       });
       state.selectedFlavors = selectedFlavorEntries(); state.flavorDistribution = countedFlavorText(); const ready = distributed === rule.ballCount;
-      distributionCounter.textContent = ready ? `Distribuição completa: ${distributed} de ${rule.ballCount} bolas.` : `Distribuição informada: ${distributed} de ${rule.ballCount} bolas. Use os controles até fechar a quantidade.`;
+      distributionCounter.textContent = ready ? `Distribuição completa: ${pad2(distributed)} de ${pad2(rule.ballCount)} bolas.` : `Distribuição informada: ${pad2(distributed)} de ${pad2(rule.ballCount)} bolas. Use os controles até fechar a quantidade.`;
       distributionCounter.classList.toggle('is-ready', ready);
       const requiresMode = needsPackagingChoice(product); const modeBox = $('#item-mode'); modeBox.hidden = !(ready && requiresMode); addOnsUi.section.hidden = !(ready && allowsBoxAddOns(product)); if (ready && allowsBoxAddOns(product)) renderBoxAddOns(); renderIncludedCustomizations(product, ready); $$('[data-mode-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.modeChoice === state.serviceMode)); $$('input[name="item-mode"]').forEach((input) => { input.checked = input.value === state.serviceMode; });
       status.textContent = !ready ? `Escolha as quantidades por sabor até totalizar ${rule.ballCount} bolas.` : (travelBox ? (isLargeIceCreamBox(product) ? 'Sabores completos. A embalagem da caixa já está incluída no valor.' : 'Sabores completos. Os complementos são opcionais e a caixa seguirá para viagem.') : (requiresMode && !state.serviceMode ? 'Agora escolha como deseja receber este produto.' : 'Tudo certo! Revise e adicione este produto ao pedido.'));
@@ -635,19 +635,18 @@
       const addOnLines = item.boxAddOns?.length ? item.boxAddOns.map((addOn) => `<p class="cart-item__meta">➕ ${escape(`${pad2(addOn.quantity)}x ${addOn.name} — ${money(Number(addOn.quantity) * Number(addOn.price))}`)}</p>`).join('') : '';
       const pricing = [`<span>Produto: ${money(itemBaseTotal(item))}</span>`];
       if (item.boxAddOns?.length) {
-        item.boxAddOns.forEach((addOn) => pricing.push(`<span>${escape(`${addOn.quantity}x ${addOn.name}`)}: ${money(Number(addOn.quantity) * Number(addOn.price))}</span>`));
-        pricing.push(`<span>Total de adicionais: ${money(itemAddOnTotal(item))}</span>`);
+        pricing.push(`<span>Complementos: ${money(itemAddOnTotal(item))}</span>`);
       }
       if (mode) pricing.push(`<span>${mode}: ${item.serviceMode === 'travel' ? (item.packagingIncluded ? `${escape(item.packagingName || 'Embalagem da caixa')} · SKU ${escape(item.packagingSku || '')} · incluída no valor` : `${escape(item.packagingName || 'Embalagem para viagem')} · SKU ${escape(item.packagingSku || 'EMB-VIAGEM')} · ${money(itemPackagingTotal(item))}`) : 'sem taxa de embalagem'}</span>`);
       pricing.push(`<strong>Subtotal: ${money(itemTotal(item))}</strong>`);
       row.innerHTML = `<div class="cart-item__head"><div><p class="cart-item__name">${escape(displayName(item.name))}</p>${metaFields.map((f) => { const isIndent = f.startsWith('  '); return `<p class="cart-item__meta${isIndent ? ' cart-item__meta--indent' : ''}">${escape(f.trimStart())}</p>`; }).join('')}${addOnLines}</div><p class="cart-item__value">${money(itemTotal(item))}</p></div><div class="cart-item__pricing">${pricing.join('')}</div>`;
       const bottom = document.createElement('div'); bottom.className = 'cart-item__bottom'; const control = document.createElement('div'); control.className = 'qty';
       const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${item.name}`); minus.addEventListener('click', () => updateQuantity(item.key, -1));
-      const count = document.createElement('span'); count.textContent = item.quantity;
+      const count = document.createElement('span'); count.textContent = pad2(item.quantity);
       const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar mais um ${item.name}`); plus.disabled = item.type === 'picole' && Number.isFinite(item.stock) && item.quantity >= item.stock; plus.addEventListener('click', () => updateQuantity(item.key, 1));
       control.append(minus, count, plus); const remove = document.createElement('button'); remove.className = 'remove'; remove.type = 'button'; remove.textContent = 'Excluir produto'; remove.addEventListener('click', () => removeItem(item.key)); bottom.append(control, remove); row.append(bottom); list.append(row);
     });
-    const popsicles = popsicleSummary(); const popsicleLine = popsicles.quantity ? `<div><span>Picolés: ${popsicles.quantity}${popsicles.wholesale ? ' · atacado' : ' · varejo'}</span><span>${money(popsicles.value)}</span></div>` : ''; $('#cart-breakdown').innerHTML = `<div><span>Total dos produtos</span><span>${money(totalProducts())}</span></div>${popsicleLine}<div><span>Total de adicionais</span><span>${money(totalAddOns())}</span></div><div><span>Embalagens para viagem</span><span>${money(totalPackaging())}</span></div>`;
+    const popsicles = popsicleSummary(); const popsicleLine = popsicles.quantity ? `<div><span>Picolés: ${popsicles.quantity}${popsicles.wholesale ? ' · atacado' : ' · varejo'}</span><span>${money(popsicles.value)}</span></div>` : ''; $('#cart-breakdown').innerHTML = `<div><span>Total dos produtos</span><span>${money(totalProducts())}</span></div>${popsicleLine}<div><span>Complementos</span><span>${money(totalAddOns())}</span></div><div><span>Embalagens para viagem</span><span>${money(totalPackaging())}</span></div>`;
     $('#cart-total').textContent = money(total()); syncPickupDateConstraint();
   }
   const formFlow = { paymentConfirmed: false, notesContinued: false, visibleStep: 1, ready: false };
@@ -729,7 +728,7 @@
           const qty = ` (${pad2(addOn.quantity)}x)`;
           lines.push(`• ➕ ${addOn.name}${qty}: ${val}`);
         });
-        lines.push(`• Adicionais: *${money(itemAddOnTotal(item))}*`);
+        lines.push(`• Complementos: *${money(itemAddOnTotal(item))}*`);
       }
       if (needsAvailabilityChoice(item)) lines.push(`• ⏰ ${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: mín. 48h de antecedência`);
       if (item.serviceMode === 'travel') lines.push(`• 🛍️ Embalagem viagem: ${item.packagingIncluded ? 'incluída' : money(itemPackagingTotal(item))}`);
