@@ -625,9 +625,12 @@
     if (!state.cart.length) { list.innerHTML = '<div class="empty-state">Seu pedido ainda está vazio. Volte e escolha os produtos que deseja retirar.</div>'; $('#cart-breakdown').innerHTML = `<div><span>Total dos produtos</span><span>${money(0)}</span></div><div><span>Complementos</span><span>${money(0)}</span></div><div><span>Embalagens para viagem</span><span>${money(0)}</span></div>`; $('#cart-total').textContent = money(0); syncPickupDateConstraint(); return; }
     state.cart.forEach((item) => {
       const row = document.createElement('article'); row.className = 'cart-item';
-      const flavors = item.flavors?.length ? `Sabores escolhidos: ${item.flavors.map((flavor) => flavor.name || flavor).join(', ')}` : ''; const flavorDistribution = item.flavorDistribution ? `Distribuição das bolas: ${item.flavorDistribution}` : ''; const fixedIngredients = item.fixedIngredients?.length ? `Ingredientes fixos: ${item.fixedIngredients.filter((ingredient) => !/sabores? de sorvete/i.test(ingredient)).join(', ')}` : ''; const includedExtras = item.includedExtras?.length ? `Inclusos: ${item.includedExtras.join(' e ')}` : ''; const container = item.containerType ? `Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}` : ''; const cakeChoice = needsAvailabilityChoice(item) ? `${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: ${item.cakeChoice === 'producao_48h' ? 'encomenda com 48 horas' : 'consultar disponibilidade no WhatsApp'}` : '';
+      const fixedIngredients = item.fixedIngredients?.length ? `Ingredientes fixos: ${item.fixedIngredients.filter((ingredient) => !/sabores? de sorvete/i.test(ingredient)).join(', ')}` : ''; const includedExtras = item.includedExtras?.length ? `Inclusos: ${item.includedExtras.join(' e ')}` : ''; const container = item.containerType ? `Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}` : ''; const cakeChoice = needsAvailabilityChoice(item) ? `${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: ${item.cakeChoice === 'producao_48h' ? 'encomenda com 48 horas' : 'consultar disponibilidade no WhatsApp'}` : '';
+      const flavorLines = item.flavorDistribution
+        ? item.flavorDistribution.split(/\s*\+\s*/).map((part) => { const m = part.trim().match(/^(\d+)\s+(.+)$/); return m ? `${m[1]}x ${m[2]}` : part.trim(); })
+        : item.flavors?.length ? [`Sabores: ${item.flavors.map((f) => f.name || f).join(', ')}`] : [];
       const mode = item.serviceMode === 'travel' ? 'Embalar para viagem' : item.serviceMode === 'store' ? 'Consumir na loja' : '';
-      const metaFields = [item.sku, item.size, container, flavors, flavorDistribution, fixedIngredients, includedExtras, cakeChoice].filter(Boolean);
+      const metaFields = [item.sku, item.size, container, ...flavorLines, fixedIngredients, includedExtras, cakeChoice].filter(Boolean);
       const addOnLines = item.boxAddOns?.length ? item.boxAddOns.map((addOn) => `<p class="cart-item__meta">${escape(`Adicional: ${addOn.quantity}x ${addOn.name} — ${money(Number(addOn.quantity) * Number(addOn.price))}`)}</p>`).join('') : '';
       const pricing = [`<span>Produto: ${money(itemBaseTotal(item))}</span>`];
       if (item.boxAddOns?.length) {
@@ -715,8 +718,7 @@
     state.cart.forEach((item, index) => {
       lines.push(``, `*${index + 1}. ${item.quantity}x ${item.name}${item.size ? ` — ${item.size}` : ''}*`);
       if (item.containerType) lines.push(`• ${item.containerType === 'casquinha' ? '🍦 Casquinha' : '🥤 Copo'}`);
-      if (item.flavors?.length) lines.push(`• 🍨 Sabores: ${item.flavors.map((f) => f.name || f).join(', ')}`);
-      if (item.flavorDistribution) lines.push(`• Distribuição: ${item.flavorDistribution}`);
+      if (item.flavorDistribution) { item.flavorDistribution.split(/\s*\+\s*/).forEach((part) => { const m = part.trim().match(/^(\d+)\s+(.+)$/); lines.push(`• 🍨 ${m ? `${m[1]}x ${m[2]}` : part.trim()}`); }); } else if (item.flavors?.length) { lines.push(`• 🍨 Sabores: ${item.flavors.map((f) => f.name || f).join(', ')}`); }
       if (item.fixedIngredients?.length) lines.push(`• Ingredientes: ${item.fixedIngredients.filter((i) => !/sabores? de sorvete/i.test(i)).join(', ')}`);
       if (item.includedExtras?.length) lines.push(`• ✅ Inclusos: ${item.includedExtras.join(' e ')}`);
       lines.push(`• 💰 Produto: ${money(itemBaseTotal(item))}`);
