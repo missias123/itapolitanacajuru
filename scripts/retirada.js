@@ -743,7 +743,7 @@
       sep,
       ``,
       `⚠️ _Pedido sujeito à confirmação da loja._`,
-      `_Sem retorno em 15 min: considerar cancelado._`,
+      `_Sem retorno em 15 min, ligue/chame no WhatsApp: (16) 99606-2046_`,
     );
     return lines.join('\n');
   }
