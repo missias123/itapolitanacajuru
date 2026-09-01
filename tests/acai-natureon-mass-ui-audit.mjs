@@ -114,18 +114,26 @@ try {
     assert.match(massFlavorState.title, /Casquinha/i, `${viewport.name}: diálogo abriu o produto errado`);
     await page.evaluate(() => {
       const firstFlavor = document.querySelector('#flavor-grid button:not(:disabled)');
-      if (!firstFlavor) throw new Error('Nenhum sabor disponível para testar o avanço guiado');
-      firstFlavor.click();
+      if (firstFlavor) {
+        firstFlavor.click();
+        return;
+      }
+      const firstPlus = document.querySelector('#flavor-distribution-list .qty button:last-child:not(:disabled)');
+      if (!firstPlus) throw new Error('Nenhum sabor disponível para testar o avanço guiado');
+      firstPlus.click();
     });
     await sleep(150);
     const guidedFlowState = await page.evaluate(() => {
       const grid = document.querySelector('#flavor-grid');
+      const distributionList = document.querySelector('#flavor-distribution-list');
       const mode = document.querySelector('#item-mode');
-      const faded = [...document.querySelectorAll('#flavor-grid button')].find((button) => button.getAttribute('aria-pressed') !== 'true');
+      const fadedGrid = [...document.querySelectorAll('#flavor-grid button')].find((button) => button.getAttribute('aria-pressed') !== 'true');
+      const fadedDistribution = [...document.querySelectorAll('#flavor-distribution-list .flavor-distribution__row')].find((row) => !row.classList.contains('is-selected'));
+      const faded = fadedGrid || fadedDistribution;
       const active = document.activeElement;
       return {
-        limitReached: grid?.classList.contains('limite-atingido') || false,
-        fadedDisabled: Boolean(faded?.disabled),
+        limitReached: Boolean(grid?.classList.contains('limite-atingido') || distributionList?.classList.contains('limite-atingido')),
+        fadedDisabled: 'disabled' in (faded || {}) ? Boolean(faded?.disabled) : true,
         fadedOpacity: faded ? Number(window.getComputedStyle(faded).opacity || '1') : 1,
         fadedFilter: faded ? window.getComputedStyle(faded).filter : '',
         modeVisible: Boolean(mode && !mode.hidden),
