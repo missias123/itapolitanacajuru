@@ -90,7 +90,7 @@
       'fondue':        '\ud83e\udd6e Fondue de Sorvete R$ 25. Perfeito para compartilhar!',
       'evento':        '\ud83c\udfaa Temos Carrinho para Eventos! Consulte pelo WhatsApp: (16) 99606-2046.',
       'festa':         '\ud83c\udf89 Fazemos encomendas para festas: Torta, Caixas, Picol\u00e9s no atacado e Carrinho para Eventos!',
-      'sorteio':       '\ud83c\udf89 Promo\u00e7\u00f5es e Sorteios\n\n\u26a0\ufe0f O cadastro para ganhar 1 caixa de sorvete foi encerrado. A campanha teve mais de 1.400 inscritos, e o sorteio mensal da caixa continua at\u00e9 dezembro de 2026 para quem j\u00e1 se cadastrou.\n\n\ud83c\udf70 Inscri\u00e7\u00f5es j\u00e1 est\u00e3o abertas para o sorteio mensal de uma torta de sorvete. O sorteio da torta come\u00e7a em janeiro de 2027.\n\n\ud83d\udcdd Cadastre-se exclusivamente pelo site oficial da Itapolitana Cajuru: itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o.',
+      'sorteio':       '\ud83c\udf89 Promo\u00e7\u00f5es e Sorteios\n\n\u26a0\ufe0f O cadastro para ganhar 1 caixa de sorvete foi encerrado. A campanha teve mais de 1.400 inscritos, e o sorteio mensal da caixa continua at\u00e9 dezembro de 2026 para quem j\u00e1 se cadastrou.\n\n\ud83c\udf70 Inscri\u00e7\u00f5es j\u00e1 est\u00e3o abertas para o sorteio mensal de uma torta de sorvete. O sorteio da torta come\u00e7a em janeiro de 2027 e o cadastro ser\u00e1 encerrado quando atingir 1.000 participantes cadastrados.\n\n\ud83d\udcdd Cadastre-se exclusivamente pelo site oficial da Itapolitana Cajuru: itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o.',
       'delivery':      '\ud83d\udeab N\u00e3o fazemos delivery. Encomende e retire na loja em Cajuru/SP.',
       'entrega':       '\ud83d\udeab N\u00e3o fazemos delivery. Para encomendas, a retirada \u00e9 na loja.',
       'artesanal':     '\ud83c\udf66 Nossos sorvetes s\u00e3o Sorvete Itapolitana \u2014 cremosos, em bolas redondas, com 39 Sabores incríveis!',
@@ -388,7 +388,7 @@
         };
       }
       return {
-        answer: '\ud83c\udf89 Promo\u00e7\u00f5es e Sorteios\n\n\u26a0\ufe0f O cadastro para ganhar 1 caixa de sorvete foi encerrado. A campanha teve mais de 1.400 inscritos, e o sorteio mensal da caixa continua at\u00e9 dezembro de 2026 para quem j\u00e1 se cadastrou.\n\n\ud83c\udf70 Inscri\u00e7\u00f5es j\u00e1 est\u00e3o abertas para o sorteio mensal de uma torta de sorvete. O sorteio da torta come\u00e7a em janeiro de 2027.\n\n\ud83d\udcdd Cadastre-se exclusivamente pelo site oficial da Itapolitana Cajuru: itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o.',
+        answer: '\ud83c\udf89 Promo\u00e7\u00f5es e Sorteios\n\n\u26a0\ufe0f O cadastro para ganhar 1 caixa de sorvete foi encerrado. A campanha teve mais de 1.400 inscritos, e o sorteio mensal da caixa continua at\u00e9 dezembro de 2026 para quem j\u00e1 se cadastrou.\n\n\ud83c\udf70 Inscri\u00e7\u00f5es j\u00e1 est\u00e3o abertas para o sorteio mensal de uma torta de sorvete. O sorteio da torta come\u00e7a em janeiro de 2027 e o cadastro ser\u00e1 encerrado quando atingir 1.000 participantes cadastrados.\n\n\ud83d\udcdd Cadastre-se exclusivamente pelo site oficial da Itapolitana Cajuru: itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o.',
         linkText: '\ud83c\udf81 Ver inscri\u00e7\u00e3o para 2027',
         linkHref: 'promocao.html',
         chips: ['\ud83e\uded0 Promo\u00e7\u00f5es de a\u00e7a\u00ed', '\ud83c\udf66 Pre\u00e7os de sorvete']
