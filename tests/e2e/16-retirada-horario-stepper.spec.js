@@ -1,5 +1,29 @@
 import { test, expect } from '@playwright/test';
 
+const CART_SEED = JSON.stringify([{
+  key: 'stepper-seed',
+  sku: 'SVM-COPO-02',
+  name: 'Copo',
+  size: '2 Bolas',
+  category: 'Sorvetes de massa',
+  type: 'produto',
+  price: 10,
+  flavors: [{ name: 'Abacaxi Suíço' }, { name: 'Amarena' }],
+  flavorPreferences: [],
+  flavorDistribution: '',
+  boxAddOns: [],
+  includedExtras: [],
+  fixedIngredients: [],
+  serviceMode: 'travel',
+  containerType: '',
+  cakeChoice: '',
+  packagingSku: 'EMB-VIAGEM',
+  packagingName: 'Embalagem para viagem',
+  packagingFee: 1,
+  packagingIncluded: false,
+  quantity: 1
+}]);
+
 test.describe('Retirada - horário por setas', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
@@ -13,8 +37,13 @@ test.describe('Retirada - horário por setas', () => {
       }
       window.Date = MockDate;
     });
+    await page.addInitScript((seed) => {
+      window.localStorage.setItem('itap_retirada_v1', seed);
+    }, CART_SEED);
     await page.goto('/retirada.html?demo-retirada=aberta', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1200);
+    await page.getByRole('button', { name: /ver pedido/i }).click();
+    await expect(page.locator('#cart-dialog')).toHaveAttribute('open', '');
     await page.getByLabel(/Nome completo de quem vai retirar/i).fill('Teste Retirada');
     await page.getByLabel(/WhatsApp de quem vai retirar/i).fill('99999-9999');
   });
@@ -46,8 +75,13 @@ test.describe('Retirada - horário por setas', () => {
       }
       window.Date = MockDate;
     });
+    await page.addInitScript((seed) => {
+      window.localStorage.setItem('itap_retirada_v1', seed);
+    }, CART_SEED);
     await page.goto('/retirada.html?demo-retirada=aberta', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1200);
+    await page.getByRole('button', { name: /ver pedido/i }).click();
+    await expect(page.locator('#cart-dialog')).toHaveAttribute('open', '');
     await page.getByLabel(/Nome completo de quem vai retirar/i).fill('Teste Retirada');
     await page.getByLabel(/WhatsApp de quem vai retirar/i).fill('99999-9999');
 
@@ -69,8 +103,13 @@ test.describe('Retirada - horário por setas', () => {
       }
       window.Date = MockDate;
     });
+    await page.addInitScript((seed) => {
+      window.localStorage.setItem('itap_retirada_v1', seed);
+    }, CART_SEED);
     await page.goto('/retirada.html?demo-retirada=aberta', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1200);
+    await page.getByRole('button', { name: /ver pedido/i }).click();
+    await expect(page.locator('#cart-dialog')).toHaveAttribute('open', '');
     await page.getByLabel(/Nome completo de quem vai retirar/i).fill('Teste Retirada');
     await page.getByLabel(/WhatsApp de quem vai retirar/i).fill('99999-9999');
 
