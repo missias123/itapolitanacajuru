@@ -6,6 +6,20 @@
   const DIAS_RETIRADA = new Set([1, 2, 3, 4, 5]);
   // Feriados regionais de Cajuru/SP: São Sebastião, Nossa Senhora de Fátima, São Bento, aniversário da cidade.
   const FERIADOS_REGIONAIS_CAJURU = new Set(['01-20', '05-13', '07-11', '08-18']);
+  const FERIADOS_NACIONAIS_FIXOS = new Set(['01-01', '04-21', '05-01', '09-07', '10-12', '11-02', '11-15', '11-20', '12-25']);
+  const feriadoMovel = (ano, deslocamento) => {
+    const a = ano % 19; const b = Math.floor(ano / 100); const c = ano % 100; const d = Math.floor(b / 4); const e = b % 4;
+    const f = Math.floor((b + 8) / 25); const g = Math.floor((b - f + 1) / 3); const h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4); const k = c % 4; const l = (32 + 2 * e + 2 * i - h - k) % 7; const m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const mes = Math.floor((h + l - 7 * m + 114) / 31) - 1; const dia = ((h + l - 7 * m + 114) % 31) + 1;
+    const data = new Date(Date.UTC(ano, mes, dia)); data.setUTCDate(data.getUTCDate() + deslocamento);
+    return `${String(data.getUTCMonth() + 1).padStart(2, '0')}-${String(data.getUTCDate()).padStart(2, '0')}`;
+  };
+  const FERIADOS_MOVEIS_NACIONAIS = new Map();
+  function feriadosNacionaisDoAno(ano) {
+    if (!FERIADOS_MOVEIS_NACIONAIS.has(ano)) FERIADOS_MOVEIS_NACIONAIS.set(ano, new Set([feriadoMovel(ano, -2), feriadoMovel(ano, 60)]));
+    return FERIADOS_MOVEIS_NACIONAIS.get(ano);
+  }
   const JANELAS = Object.freeze({
     retirada: { inicio: 11 * 60, fim: 21 * 60 + 1, mensagem: 'Retiradas pelo site somente de segunda a sexta, das 11h00 às 21h00, exceto sábados, domingos e feriados regionais de Cajuru/SP.' },
     encomendas: { inicio: 10 * 60, fim: 20 * 60 + 1, mensagem: 'Pedidos de encomendas disponíveis das 10h00 às 20h00. Ficam bloqueados das 20h01 às 9h59; tente novamente a partir das 10h00.' }
@@ -42,7 +56,7 @@
     if (!janela) return false;
     if (tipo === 'retirada') {
       if (!DIAS_RETIRADA.has(partes.weekday)) return false;
-      if (FERIADOS_REGIONAIS_CAJURU.has(partes.mmdd)) return false;
+      if (FERIADOS_REGIONAIS_CAJURU.has(partes.mmdd) || FERIADOS_NACIONAIS_FIXOS.has(partes.mmdd) || feriadosNacionaisDoAno(partes.year).has(partes.mmdd)) return false;
     }
     return partes.minutes >= janela.inicio && partes.minutes < janela.fim;
   }
