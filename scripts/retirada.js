@@ -718,7 +718,7 @@
     $('#form-progress').lastElementChild.textContent = progressText;
     const submit = $('#final-submit'); const hint = $('#final-submit-hint'); const formReady = accepted && state.cart.length > 0;
     submit.disabled = !formReady; submit.setAttribute('aria-disabled', formReady ? 'false' : 'true'); submit.classList.toggle('is-ready', formReady); submit.textContent = formReady ? 'Enviar solicitação para confirmação no WhatsApp' : visibleStep === 5 ? 'Marque o aceite para liberar o envio' : 'Preencha as etapas para liberar o envio'; hint.textContent = formReady ? 'Pronto: revise o pedido e envie a solicitação.' : progressText; hint.classList.toggle('is-ready', formReady);
-    const accept = $('#accept-wrap'); accept.classList.toggle('is-attention', notesValid && !accepted);
+    const accept = $('#accept-wrap'); accept.classList.toggle('is-attention', notesValid && !accepted); accept.classList.toggle('is-checked', accepted);
     const previous = formFlow.visibleStep; formFlow.visibleStep = visibleStep; formFlow.ready = formReady;
     if (scroll && visibleStep > previous) scrollToFormStep(visibleStep);
   }
