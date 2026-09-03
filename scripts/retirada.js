@@ -730,10 +730,10 @@
     if (now.minutes < 10 * 60) return 'Pedidos de retirada liberam às 10h00 (Brasília). Antes disso, o seletor fica travado.';
     const deadline = commonPickupDeadline();
     return deadline.minutes <= (21 * 60 + 59)
-      ? `⏰ ESCOLHA A PARTIR DE ${deadline.time}. O site sempre exige no mínimo 1 hora de antecedência.`
+      ? `⏰ ESCOLHA A PARTIR DE ${deadline.time}. O site sempre exige no mínimo 1 hora de antecedência. Ex.: 13:00 = 1 da tarde, 14:00 = 2 da tarde, 21:00 = 9 da noite.`
       : 'Após 20h59, não dá para abrir novo pedido de retirada hoje.';
   }
-  function pickupTimeHelpText() { return hasCakeProductionLead() ? '⏰ ESCOLHA ENTRE 11:00 E 21:59. Use formato 24h, com as setas de hora e minuto. Encomenda de torta ou caixa grande exige data com pelo menos 48 horas de antecedência.' : pickupTimeBaseHelpText(); }
+  function pickupTimeHelpText() { return hasCakeProductionLead() ? '⏰ ESCOLHA ENTRE 11:00 E 21:59. Use formato 24h, com as setas de hora e minuto. Ex.: 13:00 = 1 da tarde, 14:00 = 2 da tarde, 21:00 = 9 da noite. Encomenda de torta ou caixa grande exige data com pelo menos 48 horas de antecedência.' : pickupTimeBaseHelpText(); }
   function syncPickupTimeStepper() {
     const time = $('#pickup-time');
     const hour = $('#pickup-time-hour');
