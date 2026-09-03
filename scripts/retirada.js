@@ -722,11 +722,11 @@
     const previous = formFlow.visibleStep; formFlow.visibleStep = visibleStep; formFlow.ready = formReady;
     if (scroll && visibleStep > previous) scrollToFormStep(visibleStep);
   }
-  function validPickupTime(value) { return /^([01]\d|2[0-3]):00$/.test(value || '') && value >= '11:00' && value <= '21:00'; }
+  function validPickupTime(value) { return /^([01]\d|2[0-3]):[0-5]\d$/.test(value || '') && value >= '11:00' && value <= '21:59'; }
   function timeToMinutes(value) { if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value || '')) return Number.NaN; const [hour, minute] = String(value).split(':').map(Number); return hour * 60 + minute; }
   function minutesToTime(value) { if (!Number.isFinite(value) || value < 0 || value > (23 * 60 + 59)) return ''; const hour = Math.floor(value / 60); const minute = value % 60; return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`; }
-  function pickupTimeBaseHelpText() { return '⏰ Escolha qualquer hora cheia entre 11:00 e 21:00 usando as setas.'; }
-  function pickupTimeHelpText() { return hasCakeProductionLead() ? '⏰ ESCOLHA ENTRE 11:00 E 21:00. Use formato 24h, por hora cheia, com as setas. Encomenda de torta ou caixa grande exige data com pelo menos 48 horas de antecedência.' : pickupTimeBaseHelpText(); }
+  function pickupTimeBaseHelpText() { return '⏰ Escolha qualquer horário entre 11:00 e 21:59 usando as setas de hora e minuto.'; }
+  function pickupTimeHelpText() { return hasCakeProductionLead() ? '⏰ ESCOLHA ENTRE 11:00 E 21:59. Use formato 24h, com as setas de hora e minuto. Encomenda de torta ou caixa grande exige data com pelo menos 48 horas de antecedência.' : pickupTimeBaseHelpText(); }
   function syncPickupTimeStepper() {
     const time = $('#pickup-time');
     const hour = $('#pickup-time-hour');
@@ -741,11 +741,10 @@
     hour.textContent = hasBase ? pad2(Math.floor(baseMinutes / 60)) : '--';
     minute.textContent = hasBase ? pad2(baseMinutes % 60) : '--';
     $$('[data-pickup-adjust-unit]').forEach((button) => {
-      const isHour = button.dataset.pickupAdjustUnit === 'hour';
-      const delta = isHour ? 60 : 1;
+      const delta = button.dataset.pickupAdjustUnit === 'hour' ? 60 : 1;
       const direction = Number(button.dataset.pickupAdjustDirection) || 0;
       const nextMinutes = baseMinutes + (delta * direction);
-      const disabled = !isHour || time.disabled || !hasBase || !Number.isFinite(minMinutes) || !Number.isFinite(maxMinutes) || nextMinutes < minMinutes || nextMinutes > maxMinutes;
+      const disabled = time.disabled || !hasBase || !Number.isFinite(minMinutes) || !Number.isFinite(maxMinutes) || nextMinutes < minMinutes || nextMinutes > maxMinutes;
       button.disabled = disabled;
       button.setAttribute('aria-disabled', disabled ? 'true' : 'false');
     });
@@ -768,7 +767,7 @@
       const afternoon = minutes + 12 * 60;
       if (afternoon <= 21 * 60) return minutesToTime(afternoon);
     }
-    return minutesToTime(Math.max(11 * 60, Math.min(21 * 60, Math.round(minutes / 60) * 60)));
+    return minutesToTime(Math.max(11 * 60, Math.min(21 * 60 + 59, minutes)));
   }
   function normalizePickupTimeField() {
     const time = $('#pickup-time');
@@ -812,9 +811,9 @@
   function brasiliaDateValue(date) { return brasiliaParts(date).date; }
   function commonPickupDeadline() { return { date: brasiliaParts().date, time: '11:00', minutes: 11 * 60 }; }
   function validCommonLeadTime(time) { return validPickupTime(normalizePickupTimeValue(time)); }
-  function pickupTimeMessage() { const time = $('#pickup-time'); if (!time || hasCakeProductionLead() || !time.value) return ''; const normalized = normalizePickupTimeValue(time.value); if (normalized !== time.value) { time.value = normalized; syncPickupTimeStepper(); } if (!validPickupTime(time.value)) return 'Escolha um horário entre 11h00 e 21h00, sempre por hora cheia (Brasília).'; return ''; }
+  function pickupTimeMessage() { const time = $('#pickup-time'); if (!time || hasCakeProductionLead() || !time.value) return ''; const normalized = normalizePickupTimeValue(time.value); if (normalized !== time.value) { time.value = normalized; syncPickupTimeStepper(); } if (!validPickupTime(time.value)) return 'Escolha um horário entre 11h00 e 21h59 (Brasília).'; return ''; }
   function syncPickupTimeValidation() { const field = $('#pickup-time-field'); const time = $('#pickup-time'); const error = $('#pickup-time-error'); if (!field || !time || !error) return true; const message = pickupTimeMessage(); field.classList.toggle('is-invalid', Boolean(message)); time.setAttribute('aria-invalid', message ? 'true' : 'false'); error.textContent = message; error.classList.toggle('is-visible', Boolean(message)); return !message; }
-  function syncPickupDateConstraint() { const input = $('#pickup-date'); const field = $('#pickup-date-field'); const notice = $('#cake-pickup-rule'); const time = $('#pickup-time'); const timeHelp = $('#pickup-time-help'); if (!input || !field || !notice || !time || !timeHelp) return; const cakeProduction = hasCakeProductionLead(); field.hidden = !cakeProduction; notice.hidden = !cakeProduction; input.required = cakeProduction; if (cakeProduction) { input.min = brasiliaDateValue(new Date(Date.now() + 48 * 60 * 60 * 1000)); } else { input.value = ''; input.min = ''; } time.min = '11:00'; time.max = '21:00'; time.disabled = false; ensureFirstAvailablePickupTime('11:00'); normalizePickupTimeField(); syncPickupTimeHelp(pickupTimeHelpText()); syncPickupTimeStepper(); syncPickupTimeValidation(); }
+  function syncPickupDateConstraint() { const input = $('#pickup-date'); const field = $('#pickup-date-field'); const notice = $('#cake-pickup-rule'); const time = $('#pickup-time'); const timeHelp = $('#pickup-time-help'); if (!input || !field || !notice || !time || !timeHelp) return; const cakeProduction = hasCakeProductionLead(); field.hidden = !cakeProduction; notice.hidden = !cakeProduction; input.required = cakeProduction; if (cakeProduction) { input.min = brasiliaDateValue(new Date(Date.now() + 48 * 60 * 60 * 1000)); } else { input.value = ''; input.min = ''; } time.min = '11:00'; time.max = '21:59'; time.disabled = false; ensureFirstAvailablePickupTime('11:00'); normalizePickupTimeField(); syncPickupTimeHelp(pickupTimeHelpText()); syncPickupTimeStepper(); syncPickupTimeValidation(); }
   function validCakeLeadTime(date, time) { return !hasCakeProductionLead() || Date.parse(`${date}T${time}:00-03:00`) >= Date.now() + 48 * 60 * 60 * 1000; }
   function buildMessage(form) {
     const sep = '━━━━━━━━━━━━━━━━━━━━━';
@@ -881,7 +880,7 @@
     );
     return lines.join('\n');
   }
-  function submitOrder(event) { event.preventDefault(); const error = $('#form-error'); error.classList.remove('is-visible'); normalizePickupTimeField(); syncGuidedForm(); if (!formFlow.ready) return showFormError('Complete as etapas na ordem indicada antes de enviar.'); if (!retiradaAberta()) { window.ItapHorarioPedidos?.aviso('retirada'); return showFormError(window.ItapHorarioPedidos?.textoAviso('retirada') || 'Pedidos pelo site somente de segunda a sexta, das 10h00 às 20h00. A retirada começa às 11h00. Exceto sábados, domingos e feriados regionais de Cajuru/SP. Vá até nossa loja e peça pessoalmente.'); } const form = Object.fromEntries(new FormData(event.currentTarget).entries()); form.horario = normalizePickupTimeValue(form.horario); if (!state.cart.length) return showFormError('Escolha pelo menos um produto antes de enviar.'); if (!form.nome?.trim()) return showFormError('Informe o nome de quem vai retirar.'); if (!validatePhone(form.telefone || '')) return showFormError('Digite somente o número do celular após o DDD 16.'); if (!validPickupTime(form.horario)) return showFormError('Escolha um horário de retirada entre 11h00 e 21h00, por hora cheia (Brasília).'); if (hasCakeProductionLead()) { if (!form.data_retirada) return showFormError('Para encomenda de torta ou caixa grande, escolha a data desejada para retirar.'); if (!validCakeLeadTime(form.data_retirada, form.horario)) return showFormError('Encomendas de torta e caixa grande precisam de pelo menos 48 horas de antecedência pelo horário de Brasília.'); } else if (!validCommonLeadTime(form.horario)) { syncPickupTimeValidation(); $('#pickup-time')?.focus(); return showFormError(pickupTimeMessage()); } if (!form.aceite) return showFormError('Leia e marque o aceite das regras antes de enviar.'); setOrderStage(3); const text = buildMessage(form); window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener'); }
+  function submitOrder(event) { event.preventDefault(); const error = $('#form-error'); error.classList.remove('is-visible'); normalizePickupTimeField(); syncGuidedForm(); if (!formFlow.ready) return showFormError('Complete as etapas na ordem indicada antes de enviar.'); if (!retiradaAberta()) { window.ItapHorarioPedidos?.aviso('retirada'); return showFormError(window.ItapHorarioPedidos?.textoAviso('retirada') || 'Pedidos pelo site somente de segunda a sexta, das 10h00 às 20h00. A retirada começa às 11h00. Exceto sábados, domingos e feriados regionais de Cajuru/SP. Vá até nossa loja e peça pessoalmente.'); } const form = Object.fromEntries(new FormData(event.currentTarget).entries()); form.horario = normalizePickupTimeValue(form.horario); if (!state.cart.length) return showFormError('Escolha pelo menos um produto antes de enviar.'); if (!form.nome?.trim()) return showFormError('Informe o nome de quem vai retirar.'); if (!validatePhone(form.telefone || '')) return showFormError('Digite somente o número do celular após o DDD 16.'); if (!validPickupTime(form.horario)) return showFormError('Escolha um horário de retirada entre 11h00 e 21h59 (Brasília).'); if (hasCakeProductionLead()) { if (!form.data_retirada) return showFormError('Para encomenda de torta ou caixa grande, escolha a data desejada para retirar.'); if (!validCakeLeadTime(form.data_retirada, form.horario)) return showFormError('Encomendas de torta e caixa grande precisam de pelo menos 48 horas de antecedência pelo horário de Brasília.'); } else if (!validCommonLeadTime(form.horario)) { syncPickupTimeValidation(); $('#pickup-time')?.focus(); return showFormError(pickupTimeMessage()); } if (!form.aceite) return showFormError('Leia e marque o aceite das regras antes de enviar.'); setOrderStage(3); const text = buildMessage(form); window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener'); }
   function showFormError(message) { const error = $('#form-error'); error.textContent = message; error.classList.add('is-visible'); error.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   async function init() { try { const response = await fetch('dados/produtos.json?v=20260822-textos-skus'); if (!response.ok) throw new Error('Não foi possível carregar o catálogo.'); state.data = await response.json(); state.catalog = buildCatalog(state.data); $('#loading').remove(); renderCatalog(); renderCartSummary(); setOrderStage(state.cart.length ? 2 : 1); syncPickupDateConstraint(); syncGuidedForm(); const sku = new URLSearchParams(location.search).get('sku'); if (sku) { const product = state.catalog.find((item) => item.sku === sku); if (product) { document.getElementById(`sec-${slug(product.category)}`)?.scrollIntoView({ block: 'start' }); announce(`${product.name} está destacado na seção correspondente.`); } } } catch (error) { $('#loading').textContent = 'Não foi possível carregar os produtos agora. Volte ao cardápio e tente novamente.'; console.error(error); } }
   $('#search').addEventListener('input', (event) => { state.query = event.target.value; renderCatalog(); });
@@ -901,8 +900,8 @@
   ['beforeinput', 'paste', 'drop'].forEach((eventName) => $('#pickup-time').addEventListener(eventName, (event) => event.preventDefault()));
   $('#pickup-time').addEventListener('keydown', (event) => {
     if (event.key === 'Tab') return;
-    if (event.key === 'ArrowUp') { event.preventDefault(); adjustPickupTime('hour', 1); return; }
-    if (event.key === 'ArrowDown') { event.preventDefault(); adjustPickupTime('hour', -1); return; }
+    if (event.key === 'ArrowUp') { event.preventDefault(); adjustPickupTime('minute', 1); return; }
+    if (event.key === 'ArrowDown') { event.preventDefault(); adjustPickupTime('minute', -1); return; }
     if (event.key === 'PageUp') { event.preventDefault(); adjustPickupTime('hour', 1); return; }
     if (event.key === 'PageDown') { event.preventDefault(); adjustPickupTime('hour', -1); return; }
     event.preventDefault();
