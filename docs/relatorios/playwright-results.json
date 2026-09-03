@@ -189,23 +189,52 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 5,
+                      "status": "timedOut",
+                      "duration": 53012,
                       "error": {
-                        "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
-                        "stack": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                        "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8",
+                        "location": {
+                          "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                          "column": 8,
+                          "line": 4
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Retirada - horário por setas'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m   |\u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39maddInitScript(() \u001b[33m=>\u001b[39m {\n \u001b[90m 6 |\u001b[39m       \u001b[36mconst\u001b[39m \u001b[33mRealDate\u001b[39m \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 7 |\u001b[39m       \u001b[36mconst\u001b[39m fixedNow \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mRealDate\u001b[39m(\u001b[32m'2026-09-03T15:00:00-03:00'\u001b[39m)\u001b[33m.\u001b[39mvalueOf()\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
-                          "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 8,
+                            "line": 4
+                          },
+                          "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  2 |\n  3 | test.describe('Retirada - horário por setas', () => {\n> 4 |   test.beforeEach(async ({ page }) => {\n    |        ^\n  5 |     await page.addInitScript(() => {\n  6 |       const RealDate = Date;\n  7 |       const fixedNow = new RealDate('2026-09-03T15:00:00-03:00').valueOf();\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8"
+                        },
+                        {
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 65,
+                            "line": 18
+                          },
+                          "message": "Error: locator.fill: Test timeout of 50000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel(/Nome completo de quem vai retirar/i)\u001b[22m\n\u001b[2m    - locator resolved to <input name=\"nome\" required=\"\" id=\"client-name\" autocomplete=\"name\"/>\u001b[22m\n\u001b[2m    - fill(\"Teste Retirada\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    101 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m        - element is not visible\u001b[22m\n\u001b[2m      - retrying fill action\u001b[22m\n\u001b[2m        - waiting 500ms\u001b[22m\n\n\n  16 |     await page.goto('/retirada.html?demo-retirada=aberta', { waitUntil: 'domcontentloaded' });\n  17 |     await page.waitForTimeout(1200);\n> 18 |     await page.getByLabel(/Nome completo de quem vai retirar/i).fill('Teste Retirada');\n     |                                                                 ^\n  19 |     await page.getByLabel(/WhatsApp de quem vai retirar/i).fill('99999-9999');\n  20 |   });\n  21 |\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:18:65"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-03T17:51:34.877Z",
+                      "startTime": "2026-09-03T17:51:57.960Z",
                       "annotations": [],
                       "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-8a32f--minuto-sem-digitação-livre-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-8a32f--minuto-sem-digitação-livre-chromium/video.webm"
+                        },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
@@ -216,28 +245,62 @@
                           "contentType": "application/zip",
                           "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-8a32f--minuto-sem-digitação-livre-chromium/trace.zip"
                         }
-                      ]
+                      ],
+                      "errorLocation": {
+                        "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                        "column": 8,
+                        "line": 4
+                      }
                     },
                     {
                       "workerIndex": 1,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 4,
+                      "status": "timedOut",
+                      "duration": 52922,
                       "error": {
-                        "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
-                        "stack": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                        "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8",
+                        "location": {
+                          "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                          "column": 8,
+                          "line": 4
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Retirada - horário por setas'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m   |\u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39maddInitScript(() \u001b[33m=>\u001b[39m {\n \u001b[90m 6 |\u001b[39m       \u001b[36mconst\u001b[39m \u001b[33mRealDate\u001b[39m \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 7 |\u001b[39m       \u001b[36mconst\u001b[39m fixedNow \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mRealDate\u001b[39m(\u001b[32m'2026-09-03T15:00:00-03:00'\u001b[39m)\u001b[33m.\u001b[39mvalueOf()\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
-                          "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 8,
+                            "line": 4
+                          },
+                          "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  2 |\n  3 | test.describe('Retirada - horário por setas', () => {\n> 4 |   test.beforeEach(async ({ page }) => {\n    |        ^\n  5 |     await page.addInitScript(() => {\n  6 |       const RealDate = Date;\n  7 |       const fixedNow = new RealDate('2026-09-03T15:00:00-03:00').valueOf();\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8"
+                        },
+                        {
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 65,
+                            "line": 18
+                          },
+                          "message": "Error: locator.fill: Test timeout of 50000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel(/Nome completo de quem vai retirar/i)\u001b[22m\n\u001b[2m    - locator resolved to <input name=\"nome\" required=\"\" id=\"client-name\" autocomplete=\"name\"/>\u001b[22m\n\u001b[2m    - fill(\"Teste Retirada\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    101 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m        - element is not visible\u001b[22m\n\u001b[2m      - retrying fill action\u001b[22m\n\u001b[2m        - waiting 500ms\u001b[22m\n\n\n  16 |     await page.goto('/retirada.html?demo-retirada=aberta', { waitUntil: 'domcontentloaded' });\n  17 |     await page.waitForTimeout(1200);\n> 18 |     await page.getByLabel(/Nome completo de quem vai retirar/i).fill('Teste Retirada');\n     |                                                                 ^\n  19 |     await page.getByLabel(/WhatsApp de quem vai retirar/i).fill('99999-9999');\n  20 |   });\n  21 |\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:18:65"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 1,
-                      "startTime": "2026-09-03T17:51:35.622Z",
+                      "startTime": "2026-09-03T17:52:51.662Z",
                       "annotations": [],
                       "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-8a32f--minuto-sem-digitação-livre-chromium-retry1/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-8a32f--minuto-sem-digitação-livre-chromium-retry1/video.webm"
+                        },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
@@ -248,7 +311,12 @@
                           "contentType": "application/zip",
                           "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-8a32f--minuto-sem-digitação-livre-chromium-retry1/trace.zip"
                         }
-                      ]
+                      ],
+                      "errorLocation": {
+                        "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                        "column": 8,
+                        "line": 4
+                      }
                     }
                   ],
                   "status": "unexpected"
@@ -274,23 +342,52 @@
                     {
                       "workerIndex": 2,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 3,
+                      "status": "timedOut",
+                      "duration": 52903,
                       "error": {
-                        "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
-                        "stack": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                        "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8",
+                        "location": {
+                          "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                          "column": 8,
+                          "line": 4
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Retirada - horário por setas'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m   |\u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39maddInitScript(() \u001b[33m=>\u001b[39m {\n \u001b[90m 6 |\u001b[39m       \u001b[36mconst\u001b[39m \u001b[33mRealDate\u001b[39m \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 7 |\u001b[39m       \u001b[36mconst\u001b[39m fixedNow \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mRealDate\u001b[39m(\u001b[32m'2026-09-03T15:00:00-03:00'\u001b[39m)\u001b[33m.\u001b[39mvalueOf()\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
-                          "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 8,
+                            "line": 4
+                          },
+                          "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  2 |\n  3 | test.describe('Retirada - horário por setas', () => {\n> 4 |   test.beforeEach(async ({ page }) => {\n    |        ^\n  5 |     await page.addInitScript(() => {\n  6 |       const RealDate = Date;\n  7 |       const fixedNow = new RealDate('2026-09-03T15:00:00-03:00').valueOf();\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8"
+                        },
+                        {
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 65,
+                            "line": 18
+                          },
+                          "message": "Error: locator.fill: Test timeout of 50000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel(/Nome completo de quem vai retirar/i)\u001b[22m\n\u001b[2m    - locator resolved to <input name=\"nome\" required=\"\" id=\"client-name\" autocomplete=\"name\"/>\u001b[22m\n\u001b[2m    - fill(\"Teste Retirada\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    101 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m        - element is not visible\u001b[22m\n\u001b[2m      - retrying fill action\u001b[22m\n\u001b[2m        - waiting 500ms\u001b[22m\n\n\n  16 |     await page.goto('/retirada.html?demo-retirada=aberta', { waitUntil: 'domcontentloaded' });\n  17 |     await page.waitForTimeout(1200);\n> 18 |     await page.getByLabel(/Nome completo de quem vai retirar/i).fill('Teste Retirada');\n     |                                                                 ^\n  19 |     await page.getByLabel(/WhatsApp de quem vai retirar/i).fill('99999-9999');\n  20 |   });\n  21 |\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:18:65"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-03T17:51:36.573Z",
+                      "startTime": "2026-09-03T17:53:45.272Z",
                       "annotations": [],
                       "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-2b6ec-a-faixa-das-21h-com-minutos-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-2b6ec-a-faixa-das-21h-com-minutos-chromium/video.webm"
+                        },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
@@ -301,28 +398,62 @@
                           "contentType": "application/zip",
                           "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-2b6ec-a-faixa-das-21h-com-minutos-chromium/trace.zip"
                         }
-                      ]
+                      ],
+                      "errorLocation": {
+                        "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                        "column": 8,
+                        "line": 4
+                      }
                     },
                     {
                       "workerIndex": 3,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 3,
+                      "status": "timedOut",
+                      "duration": 53082,
                       "error": {
-                        "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
-                        "stack": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                        "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8",
+                        "location": {
+                          "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                          "column": 8,
+                          "line": 4
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Retirada - horário por setas'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m   |\u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39maddInitScript(() \u001b[33m=>\u001b[39m {\n \u001b[90m 6 |\u001b[39m       \u001b[36mconst\u001b[39m \u001b[33mRealDate\u001b[39m \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 7 |\u001b[39m       \u001b[36mconst\u001b[39m fixedNow \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mRealDate\u001b[39m(\u001b[32m'2026-09-03T15:00:00-03:00'\u001b[39m)\u001b[33m.\u001b[39mvalueOf()\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
-                          "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 8,
+                            "line": 4
+                          },
+                          "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  2 |\n  3 | test.describe('Retirada - horário por setas', () => {\n> 4 |   test.beforeEach(async ({ page }) => {\n    |        ^\n  5 |     await page.addInitScript(() => {\n  6 |       const RealDate = Date;\n  7 |       const fixedNow = new RealDate('2026-09-03T15:00:00-03:00').valueOf();\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8"
+                        },
+                        {
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 65,
+                            "line": 18
+                          },
+                          "message": "Error: locator.fill: Test timeout of 50000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel(/Nome completo de quem vai retirar/i)\u001b[22m\n\u001b[2m    - locator resolved to <input name=\"nome\" required=\"\" id=\"client-name\" autocomplete=\"name\"/>\u001b[22m\n\u001b[2m    - fill(\"Teste Retirada\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    102 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m        - element is not visible\u001b[22m\n\u001b[2m      - retrying fill action\u001b[22m\n\u001b[2m        - waiting 500ms\u001b[22m\n\n\n  16 |     await page.goto('/retirada.html?demo-retirada=aberta', { waitUntil: 'domcontentloaded' });\n  17 |     await page.waitForTimeout(1200);\n> 18 |     await page.getByLabel(/Nome completo de quem vai retirar/i).fill('Teste Retirada');\n     |                                                                 ^\n  19 |     await page.getByLabel(/WhatsApp de quem vai retirar/i).fill('99999-9999');\n  20 |   });\n  21 |\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:18:65"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 1,
-                      "startTime": "2026-09-03T17:51:37.356Z",
+                      "startTime": "2026-09-03T17:54:38.857Z",
                       "annotations": [],
                       "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-2b6ec-a-faixa-das-21h-com-minutos-chromium-retry1/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-2b6ec-a-faixa-das-21h-com-minutos-chromium-retry1/video.webm"
+                        },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
@@ -333,7 +464,12 @@
                           "contentType": "application/zip",
                           "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-2b6ec-a-faixa-das-21h-com-minutos-chromium-retry1/trace.zip"
                         }
-                      ]
+                      ],
+                      "errorLocation": {
+                        "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                        "column": 8,
+                        "line": 4
+                      }
                     }
                   ],
                   "status": "unexpected"
@@ -359,23 +495,47 @@
                     {
                       "workerIndex": 4,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 3,
+                      "status": "timedOut",
+                      "duration": 52674,
                       "error": {
-                        "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
-                        "stack": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                        "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8",
+                        "location": {
+                          "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                          "column": 8,
+                          "line": 4
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Retirada - horário por setas'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m   |\u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39maddInitScript(() \u001b[33m=>\u001b[39m {\n \u001b[90m 6 |\u001b[39m       \u001b[36mconst\u001b[39m \u001b[33mRealDate\u001b[39m \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 7 |\u001b[39m       \u001b[36mconst\u001b[39m fixedNow \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mRealDate\u001b[39m(\u001b[32m'2026-09-03T15:00:00-03:00'\u001b[39m)\u001b[33m.\u001b[39mvalueOf()\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
-                          "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 8,
+                            "line": 4
+                          },
+                          "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  2 |\n  3 | test.describe('Retirada - horário por setas', () => {\n> 4 |   test.beforeEach(async ({ page }) => {\n    |        ^\n  5 |     await page.addInitScript(() => {\n  6 |       const RealDate = Date;\n  7 |       const fixedNow = new RealDate('2026-09-03T15:00:00-03:00').valueOf();\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8"
+                        },
+                        {
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 65,
+                            "line": 18
+                          },
+                          "message": "Error: locator.fill: Test timeout of 50000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel(/Nome completo de quem vai retirar/i)\u001b[22m\n\u001b[2m    - locator resolved to <input name=\"nome\" required=\"\" id=\"client-name\" autocomplete=\"name\"/>\u001b[22m\n\u001b[2m    - fill(\"Teste Retirada\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    100 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m        - element is not visible\u001b[22m\n\u001b[2m      - retrying fill action\u001b[22m\n\u001b[2m        - waiting 500ms\u001b[22m\n\n\n  16 |     await page.goto('/retirada.html?demo-retirada=aberta', { waitUntil: 'domcontentloaded' });\n  17 |     await page.waitForTimeout(1200);\n> 18 |     await page.getByLabel(/Nome completo de quem vai retirar/i).fill('Teste Retirada');\n     |                                                                 ^\n  19 |     await page.getByLabel(/WhatsApp de quem vai retirar/i).fill('99999-9999');\n  20 |   });\n  21 |\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:18:65"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-03T17:51:37.868Z",
+                      "startTime": "2026-09-03T17:55:32.640Z",
                       "annotations": [],
                       "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-8a32f--minuto-sem-digitação-livre-mobile-chrome/test-failed-1.png"
+                        },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
@@ -386,28 +546,62 @@
                           "contentType": "application/zip",
                           "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-8a32f--minuto-sem-digitação-livre-mobile-chrome/trace.zip"
                         }
-                      ]
+                      ],
+                      "errorLocation": {
+                        "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                        "column": 8,
+                        "line": 4
+                      }
                     },
                     {
                       "workerIndex": 5,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 3,
+                      "status": "timedOut",
+                      "duration": 52614,
                       "error": {
-                        "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
-                        "stack": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                        "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8",
+                        "location": {
+                          "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                          "column": 8,
+                          "line": 4
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Retirada - horário por setas'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m   |\u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39maddInitScript(() \u001b[33m=>\u001b[39m {\n \u001b[90m 6 |\u001b[39m       \u001b[36mconst\u001b[39m \u001b[33mRealDate\u001b[39m \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 7 |\u001b[39m       \u001b[36mconst\u001b[39m fixedNow \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mRealDate\u001b[39m(\u001b[32m'2026-09-03T15:00:00-03:00'\u001b[39m)\u001b[33m.\u001b[39mvalueOf()\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
-                          "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 8,
+                            "line": 4
+                          },
+                          "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  2 |\n  3 | test.describe('Retirada - horário por setas', () => {\n> 4 |   test.beforeEach(async ({ page }) => {\n    |        ^\n  5 |     await page.addInitScript(() => {\n  6 |       const RealDate = Date;\n  7 |       const fixedNow = new RealDate('2026-09-03T15:00:00-03:00').valueOf();\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8"
+                        },
+                        {
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 65,
+                            "line": 18
+                          },
+                          "message": "Error: locator.fill: Test timeout of 50000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel(/Nome completo de quem vai retirar/i)\u001b[22m\n\u001b[2m    - locator resolved to <input name=\"nome\" required=\"\" id=\"client-name\" autocomplete=\"name\"/>\u001b[22m\n\u001b[2m    - fill(\"Teste Retirada\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    101 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m        - element is not visible\u001b[22m\n\u001b[2m      - retrying fill action\u001b[22m\n\u001b[2m        - waiting 500ms\u001b[22m\n\n\n  16 |     await page.goto('/retirada.html?demo-retirada=aberta', { waitUntil: 'domcontentloaded' });\n  17 |     await page.waitForTimeout(1200);\n> 18 |     await page.getByLabel(/Nome completo de quem vai retirar/i).fill('Teste Retirada');\n     |                                                                 ^\n  19 |     await page.getByLabel(/WhatsApp de quem vai retirar/i).fill('99999-9999');\n  20 |   });\n  21 |\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:18:65"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 1,
-                      "startTime": "2026-09-03T17:51:38.454Z",
+                      "startTime": "2026-09-03T17:56:25.896Z",
                       "annotations": [],
                       "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-8a32f--minuto-sem-digitação-livre-mobile-chrome-retry1/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-8a32f--minuto-sem-digitação-livre-mobile-chrome-retry1/video.webm"
+                        },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
@@ -418,7 +612,12 @@
                           "contentType": "application/zip",
                           "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-8a32f--minuto-sem-digitação-livre-mobile-chrome-retry1/trace.zip"
                         }
-                      ]
+                      ],
+                      "errorLocation": {
+                        "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                        "column": 8,
+                        "line": 4
+                      }
                     }
                   ],
                   "status": "unexpected"
@@ -444,23 +643,52 @@
                     {
                       "workerIndex": 6,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 3,
+                      "status": "timedOut",
+                      "duration": 52602,
                       "error": {
-                        "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
-                        "stack": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                        "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8",
+                        "location": {
+                          "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                          "column": 8,
+                          "line": 4
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Retirada - horário por setas'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m   |\u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39maddInitScript(() \u001b[33m=>\u001b[39m {\n \u001b[90m 6 |\u001b[39m       \u001b[36mconst\u001b[39m \u001b[33mRealDate\u001b[39m \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 7 |\u001b[39m       \u001b[36mconst\u001b[39m fixedNow \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mRealDate\u001b[39m(\u001b[32m'2026-09-03T15:00:00-03:00'\u001b[39m)\u001b[33m.\u001b[39mvalueOf()\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
-                          "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 8,
+                            "line": 4
+                          },
+                          "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  2 |\n  3 | test.describe('Retirada - horário por setas', () => {\n> 4 |   test.beforeEach(async ({ page }) => {\n    |        ^\n  5 |     await page.addInitScript(() => {\n  6 |       const RealDate = Date;\n  7 |       const fixedNow = new RealDate('2026-09-03T15:00:00-03:00').valueOf();\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8"
+                        },
+                        {
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 65,
+                            "line": 18
+                          },
+                          "message": "Error: locator.fill: Test timeout of 50000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel(/Nome completo de quem vai retirar/i)\u001b[22m\n\u001b[2m    - locator resolved to <input name=\"nome\" required=\"\" id=\"client-name\" autocomplete=\"name\"/>\u001b[22m\n\u001b[2m    - fill(\"Teste Retirada\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    101 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m        - element is not visible\u001b[22m\n\u001b[2m      - retrying fill action\u001b[22m\n\u001b[2m        - waiting 500ms\u001b[22m\n\n\n  16 |     await page.goto('/retirada.html?demo-retirada=aberta', { waitUntil: 'domcontentloaded' });\n  17 |     await page.waitForTimeout(1200);\n> 18 |     await page.getByLabel(/Nome completo de quem vai retirar/i).fill('Teste Retirada');\n     |                                                                 ^\n  19 |     await page.getByLabel(/WhatsApp de quem vai retirar/i).fill('99999-9999');\n  20 |   });\n  21 |\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:18:65"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-03T17:51:38.947Z",
+                      "startTime": "2026-09-03T17:57:19.276Z",
                       "annotations": [],
                       "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-2b6ec-a-faixa-das-21h-com-minutos-mobile-chrome/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-2b6ec-a-faixa-das-21h-com-minutos-mobile-chrome/video.webm"
+                        },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
@@ -471,28 +699,62 @@
                           "contentType": "application/zip",
                           "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-2b6ec-a-faixa-das-21h-com-minutos-mobile-chrome/trace.zip"
                         }
-                      ]
+                      ],
+                      "errorLocation": {
+                        "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                        "column": 8,
+                        "line": 4
+                      }
                     },
                     {
                       "workerIndex": 7,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 3,
+                      "status": "timedOut",
+                      "duration": 52594,
                       "error": {
-                        "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
-                        "stack": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                        "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8",
+                        "location": {
+                          "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                          "column": 8,
+                          "line": 4
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Retirada - horário por setas'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m   |\u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39maddInitScript(() \u001b[33m=>\u001b[39m {\n \u001b[90m 6 |\u001b[39m       \u001b[36mconst\u001b[39m \u001b[33mRealDate\u001b[39m \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 7 |\u001b[39m       \u001b[36mconst\u001b[39m fixedNow \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mRealDate\u001b[39m(\u001b[32m'2026-09-03T15:00:00-03:00'\u001b[39m)\u001b[33m.\u001b[39mvalueOf()\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
-                          "message": "Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 8,
+                            "line": 4
+                          },
+                          "message": "\u001b[31mTest timeout of 50000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  2 |\n  3 | test.describe('Retirada - horário por setas', () => {\n> 4 |   test.beforeEach(async ({ page }) => {\n    |        ^\n  5 |     await page.addInitScript(() => {\n  6 |       const RealDate = Date;\n  7 |       const fixedNow = new RealDate('2026-09-03T15:00:00-03:00').valueOf();\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:4:8"
+                        },
+                        {
+                          "location": {
+                            "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                            "column": 65,
+                            "line": 18
+                          },
+                          "message": "Error: locator.fill: Test timeout of 50000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel(/Nome completo de quem vai retirar/i)\u001b[22m\n\u001b[2m    - locator resolved to <input name=\"nome\" required=\"\" id=\"client-name\" autocomplete=\"name\"/>\u001b[22m\n\u001b[2m    - fill(\"Teste Retirada\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    101 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m        - element is not visible\u001b[22m\n\u001b[2m      - retrying fill action\u001b[22m\n\u001b[2m        - waiting 500ms\u001b[22m\n\n\n  16 |     await page.goto('/retirada.html?demo-retirada=aberta', { waitUntil: 'domcontentloaded' });\n  17 |     await page.waitForTimeout(1200);\n> 18 |     await page.getByLabel(/Nome completo de quem vai retirar/i).fill('Teste Retirada');\n     |                                                                 ^\n  19 |     await page.getByLabel(/WhatsApp de quem vai retirar/i).fill('99999-9999');\n  20 |   });\n  21 |\n    at /home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js:18:65"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 1,
-                      "startTime": "2026-09-03T17:51:39.564Z",
+                      "startTime": "2026-09-03T17:58:12.627Z",
                       "annotations": [],
                       "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-2b6ec-a-faixa-das-21h-com-minutos-mobile-chrome-retry1/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-2b6ec-a-faixa-das-21h-com-minutos-mobile-chrome-retry1/video.webm"
+                        },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
@@ -503,7 +765,12 @@
                           "contentType": "application/zip",
                           "path": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/test-results/16-retirada-horario-steppe-2b6ec-a-faixa-das-21h-com-minutos-mobile-chrome-retry1/trace.zip"
                         }
-                      ]
+                      ],
+                      "errorLocation": {
+                        "file": "/home/runner/work/itapolitanacajuru/itapolitanacajuru/tests/e2e/16-retirada-horario-stepper.spec.js",
+                        "column": 8,
+                        "line": 4
+                      }
                     }
                   ],
                   "status": "unexpected"
@@ -521,8 +788,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-03T17:51:28.421Z",
-    "duration": 11249.072999999999,
+    "startTime": "2026-09-03T17:51:55.569Z",
+    "duration": 429987.931,
     "expected": 0,
     "skipped": 0,
     "unexpected": 4,

@@ -722,18 +722,18 @@
     const previous = formFlow.visibleStep; formFlow.visibleStep = visibleStep; formFlow.ready = formReady;
     if (scroll && visibleStep > previous) scrollToFormStep(visibleStep);
   }
-  function validPickupTime(value) { return /^([01]\d|2[0-3]):[0-5]\d$/.test(value || '') && value >= '11:00' && value <= '21:59'; }
+  function validPickupTime(value) { return /^([01]\d|2[0-3]):[0-5]\d$/.test(value || '') && value >= '11:00' && value <= '21:00'; }
   function timeToMinutes(value) { if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value || '')) return Number.NaN; const [hour, minute] = String(value).split(':').map(Number); return hour * 60 + minute; }
   function minutesToTime(value) { if (!Number.isFinite(value) || value < 0 || value > (23 * 60 + 59)) return ''; const hour = Math.floor(value / 60); const minute = value % 60; return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`; }
   function pickupTimeBaseHelpText() {
     const now = brasiliaParts();
     if (now.minutes < 10 * 60) return 'Pedidos de retirada liberam às 10h00 (Brasília). Antes disso, o seletor fica travado.';
     const deadline = commonPickupDeadline();
-    return deadline.minutes <= (21 * 60 + 59)
-      ? `⏰ ESCOLHA A PARTIR DE ${deadline.time}. O relógio digital sempre exige no mínimo 1 hora de antecedência. Você pode subir horas e minutos, mas não pode voltar abaixo desse horário. Ex.: 13:00 = 1 da tarde, 14:00 = 2 da tarde, 21:00 = 9 da noite.`
-      : 'Após 20h59, não dá para abrir novo pedido de retirada hoje.';
+    return deadline.minutes <= (21 * 60)
+      ? `⏰ ESCOLHA A PARTIR DE ${deadline.time}. O relógio digital sempre exige no mínimo 1 hora e 15 minutos de antecedência. Você pode subir horas e minutos, mas não pode voltar abaixo desse horário. Ex.: 13:00 = 1 da tarde, 14:00 = 2 da tarde, 21:00 = 9 da noite.`
+      : 'Após 19h45, não dá para abrir novo pedido de retirada hoje.';
   }
-  function pickupTimeHelpText() { return hasCakeProductionLead() ? '⏰ ESCOLHA ENTRE 11:00 E 21:59. Use relógio digital 24h, com as setas de hora e minuto. Ex.: 13:00 = 1 da tarde, 14:00 = 2 da tarde, 21:00 = 9 da noite. Encomenda de torta ou caixa grande exige data com pelo menos 48 horas de antecedência.' : pickupTimeBaseHelpText(); }
+  function pickupTimeHelpText() { return hasCakeProductionLead() ? '⏰ ESCOLHA ENTRE 11:00 E 21:00. Use relógio digital 24h, com as setas de hora e minuto. Ex.: 13:00 = 1 da tarde, 14:00 = 2 da tarde, 21:00 = 9 da noite. Encomenda de torta ou caixa grande exige data com pelo menos 48 horas de antecedência.' : pickupTimeBaseHelpText(); }
   function syncPickupTimeStepper() {
     const time = $('#pickup-time');
     const hour = $('#pickup-time-hour');
@@ -774,7 +774,7 @@
       const afternoon = minutes + 12 * 60;
       if (afternoon <= 21 * 60) return minutesToTime(afternoon);
     }
-    return minutesToTime(Math.max(11 * 60, Math.min(21 * 60 + 59, minutes)));
+    return minutesToTime(Math.max(11 * 60, Math.min(21 * 60, minutes)));
   }
   function normalizePickupTimeField() {
     const time = $('#pickup-time');
@@ -817,15 +817,15 @@
   function brasiliaParts(date = new Date()) { const values = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(date).filter((part) => part.type !== 'literal').map((part) => [part.type, part.value])); return { date: `${values.year}-${values.month}-${values.day}`, time: `${values.hour}:${values.minute}`, minutes: Number(values.hour) * 60 + Number(values.minute) }; }
   function brasiliaDateValue(date) { return brasiliaParts(date).date; }
   function commonPickupDeadline() {
-    const deadline = new Date(Date.now() + 60 * 60 * 1000);
+    const deadline = new Date(Date.now() + 75 * 60 * 1000);
     deadline.setSeconds(0, 0);
     const parts = brasiliaParts(deadline);
     return parts.minutes < 11 * 60 ? { ...parts, time: '11:00', minutes: 11 * 60 } : parts;
   }
   function validCommonLeadTime(time) { const normalized = normalizePickupTimeValue(time); const limit = commonPickupDeadline(); const requestedMinutes = String(normalized || '').split(':').map(Number); return validPickupTime(normalized) && (requestedMinutes[0] * 60 + requestedMinutes[1]) >= limit.minutes; }
-  function pickupTimeMessage() { const time = $('#pickup-time'); if (!time || hasCakeProductionLead() || !time.value) return ''; const normalized = normalizePickupTimeValue(time.value); if (normalized !== time.value) { time.value = normalized; syncPickupTimeStepper(); } if (!validPickupTime(time.value)) return 'Escolha um horário entre 11h00 e 21h59 (Brasília).'; if (!validCommonLeadTime(time.value)) return `Pelo horário de Brasília, escolha a partir de ${commonPickupDeadline().time}. A retirada exige no mínimo 1 hora de antecedência.`; return ''; }
+  function pickupTimeMessage() { const time = $('#pickup-time'); if (!time || hasCakeProductionLead() || !time.value) return ''; const normalized = normalizePickupTimeValue(time.value); if (normalized !== time.value) { time.value = normalized; syncPickupTimeStepper(); } if (!validPickupTime(time.value)) return 'Escolha um horário entre 11h00 e 21h00 (Brasília).'; if (!validCommonLeadTime(time.value)) return `Pelo horário de Brasília, escolha a partir de ${commonPickupDeadline().time}. A retirada exige no mínimo 1 hora e 15 minutos de antecedência.`; return ''; }
   function syncPickupTimeValidation() { const field = $('#pickup-time-field'); const time = $('#pickup-time'); const error = $('#pickup-time-error'); if (!field || !time || !error) return true; const message = pickupTimeMessage(); field.classList.toggle('is-invalid', Boolean(message)); time.setAttribute('aria-invalid', message ? 'true' : 'false'); error.textContent = message; error.classList.toggle('is-visible', Boolean(message)); return !message; }
-  function syncPickupDateConstraint() { const input = $('#pickup-date'); const field = $('#pickup-date-field'); const notice = $('#cake-pickup-rule'); const time = $('#pickup-time'); const timeHelp = $('#pickup-time-help'); if (!input || !field || !notice || !time || !timeHelp) return; const cakeProduction = hasCakeProductionLead(); field.hidden = !cakeProduction; notice.hidden = !cakeProduction; input.required = cakeProduction; if (cakeProduction) { input.min = brasiliaDateValue(new Date(Date.now() + 48 * 60 * 60 * 1000)); time.min = '11:00'; time.max = '21:59'; time.disabled = false; ensureFirstAvailablePickupTime('11:00'); } else { input.value = ''; input.min = ''; time.max = '21:59'; const now = brasiliaParts(); const deadline = commonPickupDeadline(); if (now.minutes < 10 * 60) { time.value = ''; time.min = '11:00'; time.disabled = true; syncPickupTimeHelp('Pedidos de retirada liberam às 10h00 (Brasília).'); } else if (deadline.minutes <= (21 * 60 + 59)) { time.min = deadline.time; time.disabled = false; ensureFirstAvailablePickupTime(deadline.time); syncPickupTimeHelp(pickupTimeHelpText()); } else { time.value = ''; time.min = '21:59'; time.disabled = true; syncPickupTimeHelp('Após 20h59, não dá para abrir novo pedido de retirada hoje.'); } } normalizePickupTimeField(); syncPickupTimeHelp(pickupTimeHelpText()); syncPickupTimeStepper(); syncPickupTimeValidation(); }
+  function syncPickupDateConstraint() { const input = $('#pickup-date'); const field = $('#pickup-date-field'); const notice = $('#cake-pickup-rule'); const time = $('#pickup-time'); const timeHelp = $('#pickup-time-help'); if (!input || !field || !notice || !time || !timeHelp) return; const cakeProduction = hasCakeProductionLead(); field.hidden = !cakeProduction; notice.hidden = !cakeProduction; input.required = cakeProduction; if (cakeProduction) { input.min = brasiliaDateValue(new Date(Date.now() + 48 * 60 * 60 * 1000)); time.min = '11:00'; time.max = '21:00'; time.disabled = false; ensureFirstAvailablePickupTime('11:00'); } else { input.value = ''; input.min = ''; time.max = '21:00'; const now = brasiliaParts(); const deadline = commonPickupDeadline(); if (now.minutes < 10 * 60) { time.value = ''; time.min = '11:00'; time.disabled = true; syncPickupTimeHelp('Pedidos de retirada liberam às 10h00 (Brasília).'); } else if (deadline.minutes <= (21 * 60)) { time.min = deadline.time; time.disabled = false; ensureFirstAvailablePickupTime(deadline.time); syncPickupTimeHelp(pickupTimeHelpText()); } else { time.value = ''; time.min = '21:00'; time.disabled = true; syncPickupTimeHelp('Após 19h45, não dá para abrir novo pedido de retirada hoje.'); } } normalizePickupTimeField(); syncPickupTimeHelp(pickupTimeHelpText()); syncPickupTimeStepper(); syncPickupTimeValidation(); }
   function validCakeLeadTime(date, time) { return !hasCakeProductionLead() || Date.parse(`${date}T${time}:00-03:00`) >= Date.now() + 48 * 60 * 60 * 1000; }
   function buildMessage(form) {
     const sep = '━━━━━━━━━━━━━━━━━━━━━';
