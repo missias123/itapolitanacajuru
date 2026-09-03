@@ -56,11 +56,12 @@ test.describe('Retirada - horário por setas', () => {
     await expect(timeInput).toHaveValue('16:43');
 
     for (let i = 0; i < 5; i += 1) await page.getByRole('button', { name: /Aumentar 1 hora/i }).click();
-    await expect(timeInput).toHaveValue('21:00');
+    await expect(timeInput).toHaveValue('21:43');
+    await expect(page.getByRole('button', { name: /Aumentar 1 hora/i })).toBeDisabled();
 
     await page.getByRole('button', { name: /Aumentar 1 minuto/i }).click();
-    await expect(timeInput).toHaveValue('21:01');
+    await expect(timeInput).toHaveValue('21:44');
     await page.getByRole('button', { name: /Aumentar 1 minuto/i }).click();
-    await expect(timeInput).toHaveValue('21:02');
+    await expect(timeInput).toHaveValue('21:45');
   });
 });
