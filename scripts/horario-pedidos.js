@@ -1,4 +1,4 @@
-/* Regra central: pedidos de encomendas liberados das 10h00 às 20h00; pedidos bloqueados das 20h01 às 9h59. Peça e Retire/retirada permanece de segunda a sexta, das 11h00 às 21h00, excepto feriados regionais de Cajuru/SP. */
+/* Regra central: pedidos de encomendas liberados das 10h00 às 20h00; pedidos bloqueados das 20h01 às 9h59. Peça e Retire/retirada permanece de segunda a sexta, das 10h00 às 20h00, excepto feriados regionais de Cajuru/SP; retirada começa às 11h00. */
 (function () {
   'use strict';
 
@@ -21,7 +21,7 @@
     return FERIADOS_MOVEIS_NACIONAIS.get(ano);
   }
   const JANELAS = Object.freeze({
-    retirada: { inicio: 11 * 60, fim: 21 * 60 + 1, mensagem: 'Retiradas pelo site somente de segunda a sexta, das 11h00 às 21h00, exceto sábados, domingos e feriados regionais de Cajuru/SP.' },
+    retirada: { inicio: 10 * 60, fim: 20 * 60 + 1, mensagem: 'Pedidos pelo site somente de segunda a sexta, das 10h00 às 20h00. A retirada começa às 11h00. Exceto sábados, domingos e feriados regionais de Cajuru/SP. Vá até nossa loja e peça pessoalmente.' },
     encomendas: { inicio: 10 * 60, fim: 20 * 60 + 1, mensagem: 'Pedidos de encomendas disponíveis das 10h00 às 20h00. Ficam bloqueados das 20h01 às 9h59; tente novamente a partir das 10h00.' }
   });
 
