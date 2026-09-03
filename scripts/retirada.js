@@ -725,6 +725,18 @@
   function validPickupTime(value) { return /^([01]\d|2[0-3]):[0-5]\d$/.test(value || '') && value >= '09:00' && value <= '21:00'; }
   function timeToMinutes(value) { if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value || '')) return Number.NaN; const [hour, minute] = String(value).split(':').map(Number); return hour * 60 + minute; }
   function minutesToTime(value) { if (!Number.isFinite(value) || value < 0 || value > (23 * 60 + 59)) return ''; const hour = Math.floor(value / 60); const minute = value % 60; return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`; }
+  function pickupTimeBaseHelpText() { const deadline = commonPickupDeadline(); return deadline.minutes <= 21 * 60 ? `⏰ ESCOLHA A PARTIR DE ${deadline.time}. O preparo mínimo é de 1 hora pelo horário de Brasília.` : 'Após 21h00, o formulário trava horários para hoje. Volte no próximo período de atendimento.'; }
+  function syncPickupTimeHelp(baseText) {
+    const time = $('#pickup-time');
+    const help = $('#pickup-time-help');
+    if (!help) return;
+    const convertedFrom = time?.dataset?.convertedFrom || '';
+    if (convertedFrom) {
+      help.textContent = `${baseText} Horário AM (${convertedFrom}) não é permitido para retirada e foi ajustado para ${time.value} (PM).`;
+      return;
+    }
+    help.textContent = baseText;
+  }
   function normalizePickupTimeValue(value) {
     const minutes = timeToMinutes(value);
     if (!Number.isFinite(minutes)) return value;
@@ -737,8 +749,12 @@
   function normalizePickupTimeField() {
     const time = $('#pickup-time');
     if (!time) return '';
+    delete time.dataset.convertedFrom;
     const normalized = normalizePickupTimeValue(time.value);
-    if (normalized && normalized !== time.value) time.value = normalized;
+    if (normalized && normalized !== time.value) {
+      time.dataset.convertedFrom = time.value;
+      time.value = normalized;
+    }
     return time.value;
   }
   function ensureFirstAvailablePickupTime(minTime) {
@@ -756,7 +772,7 @@
   function validCommonLeadTime(time) { const normalized = normalizePickupTimeValue(time); const limit = commonPickupDeadline(); const requestedMinutes = String(normalized || '').split(':').map(Number); return validPickupTime(normalized) && (requestedMinutes[0] * 60 + requestedMinutes[1]) >= limit.minutes; }
   function pickupTimeMessage() { const time = $('#pickup-time'); if (!time || hasCakeProductionLead() || !time.value) return ''; const normalized = normalizePickupTimeValue(time.value); if (normalized !== time.value) time.value = normalized; if (!validPickupTime(time.value)) return 'Escolha um horário entre 09h00 e 21h00 (de segunda a sexta).'; if (!validCommonLeadTime(time.value)) return `Pelo horário de Brasília, escolha a partir de ${commonPickupDeadline().time}. A retirada exige no mínimo 1 hora de antecedência.`; return ''; }
   function syncPickupTimeValidation() { const field = $('#pickup-time-field'); const time = $('#pickup-time'); const error = $('#pickup-time-error'); if (!field || !time || !error) return true; const message = pickupTimeMessage(); field.classList.toggle('is-invalid', Boolean(message)); time.setAttribute('aria-invalid', message ? 'true' : 'false'); error.textContent = message; error.classList.toggle('is-visible', Boolean(message)); return !message; }
-  function syncPickupDateConstraint() { const input = $('#pickup-date'); const field = $('#pickup-date-field'); const notice = $('#cake-pickup-rule'); const time = $('#pickup-time'); const timeHelp = $('#pickup-time-help'); if (!input || !field || !notice || !time || !timeHelp) return; const cakeProduction = hasCakeProductionLead(); field.hidden = !cakeProduction; notice.hidden = !cakeProduction; input.required = cakeProduction; if (cakeProduction) { input.min = brasiliaDateValue(new Date(Date.now() + 48 * 60 * 60 * 1000)); time.min = '09:00'; time.disabled = false; ensureFirstAvailablePickupTime('09:00'); timeHelp.textContent = '⏰ ESCOLHA A PARTIR DE 09:00. Encomenda de torta ou caixa grande: escolha data e horário pelo horário de Brasília; a data precisa estar pelo menos 48 horas à frente.'; } else { input.value = ''; input.min = ''; const deadline = commonPickupDeadline(); if (deadline.minutes <= 21 * 60) { time.min = deadline.time; time.disabled = false; ensureFirstAvailablePickupTime(deadline.time); timeHelp.textContent = `⏰ ESCOLHA A PARTIR DE ${deadline.time}. O preparo mínimo é de 1 hora pelo horário de Brasília.`; } else { time.value = ''; time.min = '21:00'; time.disabled = true; timeHelp.textContent = 'Após 21h00, o formulário trava horários para hoje. Volte no próximo período de atendimento.'; } } normalizePickupTimeField(); syncPickupTimeValidation(); }
+  function syncPickupDateConstraint() { const input = $('#pickup-date'); const field = $('#pickup-date-field'); const notice = $('#cake-pickup-rule'); const time = $('#pickup-time'); const timeHelp = $('#pickup-time-help'); if (!input || !field || !notice || !time || !timeHelp) return; const cakeProduction = hasCakeProductionLead(); field.hidden = !cakeProduction; notice.hidden = !cakeProduction; input.required = cakeProduction; if (cakeProduction) { input.min = brasiliaDateValue(new Date(Date.now() + 48 * 60 * 60 * 1000)); time.min = '09:00'; time.disabled = false; ensureFirstAvailablePickupTime('09:00'); syncPickupTimeHelp('⏰ ESCOLHA A PARTIR DE 09:00. Encomenda de torta ou caixa grande: escolha data e horário pelo horário de Brasília; a data precisa estar pelo menos 48 horas à frente.'); } else { input.value = ''; input.min = ''; const deadline = commonPickupDeadline(); if (deadline.minutes <= 21 * 60) { time.min = deadline.time; time.disabled = false; ensureFirstAvailablePickupTime(deadline.time); syncPickupTimeHelp(`⏰ ESCOLHA A PARTIR DE ${deadline.time}. O preparo mínimo é de 1 hora pelo horário de Brasília.`); } else { time.value = ''; time.min = '21:00'; time.disabled = true; syncPickupTimeHelp('Após 21h00, o formulário trava horários para hoje. Volte no próximo período de atendimento.'); } } normalizePickupTimeField(); syncPickupTimeHelp(cakeProduction ? '⏰ ESCOLHA A PARTIR DE 09:00. Encomenda de torta ou caixa grande: escolha data e horário pelo horário de Brasília; a data precisa estar pelo menos 48 horas à frente.' : pickupTimeBaseHelpText()); syncPickupTimeValidation(); }
   function validCakeLeadTime(date, time) { return !hasCakeProductionLead() || Date.parse(`${date}T${time}:00-03:00`) >= Date.now() + 48 * 60 * 60 * 1000; }
   function buildMessage(form) {
     const sep = '━━━━━━━━━━━━━━━━━━━━━';
@@ -838,8 +854,8 @@
   $('#client-phone').addEventListener('input', (event) => { event.target.value = formatPhone(event.target.value); syncGuidedForm({ scroll: true }); });
   $('#client-name').addEventListener('input', () => syncGuidedForm({ scroll: true }));
   $('#pickup-time').addEventListener('input', () => { syncPickupTimeValidation(); syncGuidedForm({ scroll: true }); });
-  $('#pickup-time').addEventListener('change', () => { normalizePickupTimeField(); syncPickupTimeValidation(); syncGuidedForm({ scroll: true }); });
-  $('#pickup-time').addEventListener('blur', () => { normalizePickupTimeField(); syncPickupTimeValidation(); syncGuidedForm(); });
+  $('#pickup-time').addEventListener('change', () => { normalizePickupTimeField(); syncPickupTimeHelp(hasCakeProductionLead() ? '⏰ ESCOLHA A PARTIR DE 09:00. Encomenda de torta ou caixa grande: escolha data e horário pelo horário de Brasília; a data precisa estar pelo menos 48 horas à frente.' : pickupTimeBaseHelpText()); syncPickupTimeValidation(); syncGuidedForm({ scroll: true }); });
+  $('#pickup-time').addEventListener('blur', () => { normalizePickupTimeField(); syncPickupTimeHelp(hasCakeProductionLead() ? '⏰ ESCOLHA A PARTIR DE 09:00. Encomenda de torta ou caixa grande: escolha data e horário pelo horário de Brasília; a data precisa estar pelo menos 48 horas à frente.' : pickupTimeBaseHelpText()); syncPickupTimeValidation(); syncGuidedForm(); });
   $('#pickup-date').addEventListener('change', () => syncGuidedForm({ scroll: true }));
   $('#confirm-payment').addEventListener('click', () => { formFlow.paymentConfirmed = true; syncGuidedForm({ scroll: true }); });
   $('#continue-notes').addEventListener('click', () => { formFlow.notesContinued = true; syncGuidedForm({ scroll: true }); });
