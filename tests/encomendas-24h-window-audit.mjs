@@ -58,4 +58,18 @@ assert.equal(
   'Mensagem de Encomendas deve informar disponibilidade contínua.',
 );
 
+for (const [iso, expected] of [
+  ['2026-09-04T09:59:00-03:00', false],
+  ['2026-09-04T10:00:00-03:00', true],
+  ['2026-09-04T20:00:00-03:00', true],
+  ['2026-09-04T20:01:00-03:00', false],
+  ['2026-09-05T11:00:00-03:00', false],
+]) {
+  assert.equal(
+    horario.estaAberto('retirada', new Date(iso)),
+    expected,
+    `Retirada deveria preservar sua janela original em ${iso}`,
+  );
+}
+
 console.log(JSON.stringify({ pass: true, checked: 'encomendas-24h-window' }));
