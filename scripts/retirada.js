@@ -741,7 +741,7 @@
       ? `⏰ ESCOLHA A PARTIR DE ${deadline.time}. O relógio digital sempre exige no mínimo ${RETIRADA_LEAD_LABEL} de antecedência para dar 15 minutos de folga no contato e na confirmação do pedido. Você pode subir horas e minutos, mas não pode voltar abaixo desse horário. Ex.: 13:00 = 1 da tarde, 14:00 = 2 da tarde, 21:00 = 9 da noite.`
       : RETIRADA_CLOSED_MESSAGE;
   }
-  function pickupTimeHelpText() { return hasCakeProductionLead() ? `⏰ ESCOLHA ENTRE ${RETIRADA_MIN_TIME} E ${RETIRADA_MAX_TIME}. Use relógio digital 24h, com as setas de hora e minuto. Para o fluxo ficar livre de travas, a retirada comum começa sempre com ${RETIRADA_LEAD_LABEL} de antecedência. Ex.: 13:00 = 1 da tarde, 14:00 = 2 da tarde, 21:00 = 9 da noite. Encomenda de torta ou caixa grande exige data com pelo menos 48 horas de antecedência.` : pickupTimeBaseHelpText(); }
+  function pickupTimeHelpText() { return hasCakeProductionLead() ? `⏰ ESCOLHA ENTRE ${RETIRADA_MIN_TIME} E ${RETIRADA_MAX_TIME}. Use relógio digital 24h, com as setas de hora e minuto. Ex.: 13:00 = 1 da tarde, 14:00 = 2 da tarde, 21:00 = 9 da noite. Encomenda de torta ou caixa grande exige data com pelo menos 48 horas de antecedência.` : pickupTimeBaseHelpText(); }
   function syncPickupTimeStepper() {
     const time = $('#pickup-time');
     const hour = $('#pickup-time-hour');
