@@ -41,18 +41,21 @@ A rotina semanal também executa `node scripts/auto-corrigir-regras.js --check`,
 > **O formulário de Picolé Grátis é SEPARADO do formulário de Dúvidas do ItaBot. São dois formulários diferentes.**
 
 ### Como funciona:
-- **Uma vez por dia**, se a campanha estiver ativa, o LED do robô exibe **"🍦 ENCONTRE UM PICOLÉ · CLIQUE AQUI"** durante uma janela de **exatos 5 segundos**.
-- Nesse momento, o usuário deve **clicar no robô** — o servidor valida o primeiro clique e, se ainda não houver vencedor, abre automaticamente o **formulário exclusivo do Picolé**.
-- O formulário solicita **nome completo** e **celular com DDD 16**, além dos aceites obrigatórios; o sistema confirma a reserva e exibe o código na tela. Um botão abre o WhatsApp com a mensagem de agendamento, mas o participante precisa tocar em **Enviar**.
-- A retirada é presencial na loja e não há delivery para este prêmio.
-- Ao clicar no robô **fora do momento do LED de Picolé Grátis**, abrirá o formulário de **Dúvidas do ItaBot** — que é diferente.
+- **Todos os dias do ciclo mensal**, se a campanha estiver activa, um **robô-clone independente** do ItaBot de Dúvidas pode aparecer em qualquer página. O clone exibe no LED **"🍦 CLIQUE E GANHE UM PICOLÉ"** durante uma janela de **exactos 5 segundos**.
+- O horário diário é sorteado e controlado pelo servidor, usando o fuso de Brasília. O horário exacto não pode repetir-se dentro do ciclo mensal; o navegador não pode calcular, alterar ou antecipar a janela.
+- O clone aceita **apenas o primeiro clique** da janela. Depois do clique ou dos 5 segundos, ele desaparece e não altera, move, redimensiona, bloqueia ou desactiva o ItaBot principal.
+- O primeiro clique válido abre exclusivamente o **formulário de Ganhe um Picolé**. Fora da janela, o clone não deve aparecer nem interceptar cliques do ItaBot de Dúvidas.
+- O formulário solicita nome completo, data de nascimento e celular com DDD 16, além dos aceites obrigatórios. A participação é exclusiva para pessoas com **18 anos ou mais**; menores devem ser recusados antes de qualquer armazenamento.
+- A retirada é presencial na loja, sem delivery, às segundas, quartas ou sextas, com horário marcado e conferência presencial de documento de identificação. Não guardar número, fotografia ou cópia do documento.
+- O cadastro confirmado não é uma promessa de vitória. A mensagem de sucesso só pode ser exibida após confirmação real do servidor, com idempotência e sem duplicação de vencedor.
+- Ao clicar no ItaBot principal, fora do clone promocional, deve abrir apenas o formulário de **Dúvidas do ItaBot**, que é diferente.
 
 ### Regra obrigatória:
 - O formulário de Dúvidas do ItaBot **deve sempre exibir um aviso destacado** (fundo amarelo com borda dourada) informando que Picolé Grátis é em outro formulário, para evitar que usuários enviem pedidos de picolé pelo canal errado.
 - **Nunca remover ou ocultar esse aviso do campo "💬 Enviar mensagem direta via WhatsApp" no painel de Dúvidas.
 - A comunicação de Dúvidas deve explicar que “Encontre um Picolé” usa outro formulário e só pode ser apresentada como oportunidade ativa quando o endpoint público estiver validado como HTTP 200 com JSON válido, `status: ativo`, `campaign_active: true`, `activation_explicit: true`, `paused: false`, `schedule_created: true` e `safeToAnnounce: true`.
 - A criação/ativação de campanha é exclusivamente administrativa e autenticada. O GET público de status e a auditoria semanal são somente leitura: não podem criar campanha, gerar horários, expirar dia, reservar prêmio ou alterar estado.
-- O ciclo de 30 dias usa um **segundo exato diferente por dia** dentro da faixa de 11:00 a 20:00; a faixa horária se repete, mas o segundo sorteado não se repete no ciclo. Não interpretar a regra como 30 horas distintas.
+- O ciclo mensal usa um **horário exacto diferente por dia** dentro da faixa administrativa definida para a campanha; a hora/minuto/segundo sorteados não podem repetir-se no ciclo. Não interpretar a regra como autorização para o cliente escolher o horário ou para o navegador gerar o calendário.
 
 ## 6. Regra de Escalonamento para o Copilot
 
