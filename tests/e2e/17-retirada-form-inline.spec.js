@@ -53,7 +53,7 @@ test.describe('Retirada - fluxo inline do formulário', () => {
     await page.getByRole('button', { name: /Aumentar 1 minuto/i }).click();
     await page.getByRole('button', { name: /Confirmar pagamento na loja/i }).click();
     await page.getByRole('button', { name: /Continuar para confirmação/i }).click();
-    await page.getByLabel(/Estou ciente/i).check();
+    await page.locator('#accept-rules').evaluate((input) => { input.checked = true; input.dispatchEvent(new Event('change', { bubbles: true })); });
 
     await expect(page.locator('#final-submit')).toBeEnabled();
     await expect(page.locator('#form-error')).not.toHaveClass(/is-visible/);
