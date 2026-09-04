@@ -7,6 +7,12 @@
     'abacaxi ao vinho':['#F59E0B','#FFFBEB','rgba(245,158,11,.36)'],'abacaxi suíço':['#FACC15','#FEFCE8','rgba(250,204,21,.40)'],'amarena':['#E11D48','#FFF1F2','rgba(225,29,72,.34)'],'ameixa':['#7C3AED','#F5F3FF','rgba(124,58,237,.32)'],'banana com nutella':['#D97706','#FFF7ED','rgba(217,119,6,.32)'],'bem casado':['#C08457','#FFF7ED','rgba(192,132,87,.34)'],'bis e trufa':['#7C3F2C','#FFF7ED','rgba(124,63,44,.34)'],'blue ice':['#38BDF8','#F0F9FF','rgba(56,189,248,.38)'],'cereja trufada':['#BE123C','#FFF1F2','rgba(190,18,60,.34)'],'cheesecake':['#E2A77A','#FFF7ED','rgba(226,167,122,.34)'],'chocolate':['#6B3E26','#FFF7ED','rgba(107,62,38,.36)'],'chocolate com café':['#4B2E25','#F8FAFC','rgba(75,46,37,.36)'],'coco queimado':['#A16207','#FFFBEB','rgba(161,98,7,.34)'],'creme paris':['#D4A017','#FFFBEB','rgba(212,160,23,.34)'],'croquer':['#B45309','#FFF7ED','rgba(180,83,9,.34)'],'doce de leite':['#B7794B','#FFF7ED','rgba(183,121,75,.34)'],'ferrero rocher':['#A16207','#FFFBEB','rgba(161,98,7,.36)'],'flocos':['#64748B','#F8FAFC','rgba(100,116,139,.32)'],'kinder ovo':['#2563EB','#EFF6FF','rgba(37,99,235,.34)'],'leite condensado':['#CBD5E1','#F8FAFC','rgba(148,163,184,.34)'],'leite ninho':['#60A5FA','#EFF6FF','rgba(96,165,250,.38)'],'leite ninho folheado':['#38BDF8','#F0F9FF','rgba(56,189,248,.38)'],'leite ninho com oreo':['#60A5FA','#EFF6FF','rgba(96,165,250,.38)'],'limão':['#84CC16','#F7FEE7','rgba(132,204,22,.34)'],'limão suíço':['#A3E635','#F7FEE7','rgba(163,230,53,.38)'],'menta com chocolate':['#10B981','#ECFDF5','rgba(16,185,129,.34)'],'milho verde':['#EAB308','#FEFCE8','rgba(234,179,8,.36)'],'morango trufado':['#F43F5E','#FFF1F2','rgba(244,63,94,.36)'],'mousse de maracujá':['#F59E0B','#FFFBEB','rgba(245,158,11,.36)'],'mousse de uva':['#A78BFA','#F5F3FF','rgba(167,139,250,.36)'],'nozes':['#8D6E63','#FAF7F5','rgba(141,110,99,.34)'],'nutella':['#7C2D12','#FFF7ED','rgba(124,45,18,.36)'],'ovomaltine':['#B45309','#FFF7ED','rgba(180,83,9,.36)'],'passas ao rum':['#7F1D1D','#FFF1F2','rgba(127,29,29,.36)'],'pistache':['#65A30D','#F7FEE7','rgba(101,163,13,.34)'],'prestígio':['#5B3A29','#FFF7ED','rgba(91,58,41,.36)'],'sensação':['#EC4899','#FDF2F8','rgba(236,72,153,.36)'],'açaí natureon':['#7C3AED','#F5F3FF','rgba(124,58,237,.36)'],'torta de chocolate':['#3B1F0F','#FFF7ED','rgba(59,31,15,.36)']
   };
   const STORAGE_KEY = 'itap_retirada_v1';
+  const RETIRADA_LEAD_MINUTES = 75;
+  const RETIRADA_MIN_TIME = '11:00';
+  const RETIRADA_MAX_TIME = '21:00';
+  const RETIRADA_LEAD_LABEL = '1h15';
+  const RETIRADA_SITE_WINDOW_MESSAGE = 'Pedidos pelo site somente de segunda a sexta, das 10h00 às 20h00. A retirada começa às 11h00. Exceto sábados, domingos e feriados regionais de Cajuru/SP. Vá até nossa loja e peça pessoalmente.';
+  const RETIRADA_CLOSED_MESSAGE = 'Após 20h00, não dá para abrir novo pedido de retirada hoje.';
   // Regra exclusiva do Peça e retire: o cadastro mestre e Encomendas não são alterados.
   const RETIRADA_SKUS_OCULTOS = new Set(['SOB-009']);
   const BOLO_COPO_CREMES = ['Creme de Leite Ninho', 'Creme de Nutela'];
@@ -14,10 +20,11 @@
   const FONDUE_CREMES = ['Nutella', 'Creme de Ninho'];
   const FONDUE_GULOSEIMAS = ['Marshmallow', 'Canudinho Wafer'];
   const emptyFondueChoices = () => ({ frutas: {}, cremes: {}, guloseimas: {} });
-  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, selectedFlavors: [], flavorCounts: {}, flavorPreferences: [], activeFlavorPreference: 0, popsiclePreferences: [], activePopsiclePreference: 0, popsicleQuantity: 1, boxAddOnCounts: {}, acaiDoubleChoices: {}, includedCustomizationChoices: {}, serviceMode: '', containerType: '', cakeChoice: '', creamChoice: '', fondueChoices: emptyFondueChoices(), query: '', lastCatalogSku: null, lastCatalogViewport: null };
+  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, selectedFlavors: [], flavorCounts: {}, flavorPreferences: [], activeFlavorPreference: 0, popsiclePreferences: [], activePopsiclePreference: 0, popsicleQuantity: 1, boxAddOnCounts: {}, acaiDoubleChoices: {}, includedCustomizationChoices: {}, serviceMode: '', containerType: '', cakeChoice: '', creamChoice: '', fondueChoices: emptyFondueChoices(), query: '', lastCatalogSku: null, lastCatalogViewport: null, lastFlavorGuideKey: '' };
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const money = (value) => `R$ ${Number(value || 0).toFixed(2).replace('.', ',')}`;
+  const pad2 = (n) => String(Number(n) || 0).padStart(2, '0');
   const normalize = (text) => String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const ACAI_DOUBLE_ADD_ON_PRICE = 3;
   const escape = (text) => String(text || '').replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
@@ -37,6 +44,52 @@
   function setOrderStage(stage) { $$('[data-order-step]').forEach((item) => item.classList.toggle('is-current', Number(item.dataset.orderStep) === Number(stage))); }
   function openDialog(id) { const dialog = document.getElementById(id); if (dialog && !dialog.open) dialog.showModal(); }
   function closeDialog(id) { const dialog = document.getElementById(id); if (dialog?.open) dialog.close(); }
+  function isShown(element) { return Boolean(element) && !element.hidden && window.getComputedStyle(element).display !== 'none'; }
+  function guideTargetElement(key) {
+    if (!key) return null;
+    const direct = document.getElementById(key);
+    if (direct) return direct;
+    if (key === 'confirm-flavors') return $('#confirm-flavors');
+    return null;
+  }
+  function firstGuideControl(root) { return root?.matches?.('button, input, textarea') ? root : root?.querySelector?.('input:not([type="hidden"]):not([disabled]), button:not([disabled]), textarea:not([disabled])') || null; }
+  function syncFlavorGuide(key, autoScroll = false) {
+    if (!key) return;
+    const previous = state.lastFlavorGuideKey;
+    state.lastFlavorGuideKey = key;
+    $$('.guide-next-step', $('#flavor-dialog')).forEach((element) => element.classList.remove('guide-next-step'));
+    const target = guideTargetElement(key);
+    target?.classList.add('guide-next-step');
+    if (!autoScroll || key === previous) return;
+    const dialogBody = $('#flavor-dialog .dialog__body');
+    if (!target || !dialogBody) return;
+    requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      firstGuideControl(target)?.focus({ preventScroll: true });
+    });
+  }
+  function nextFlavorGuideKey(product, ready) {
+    if (!product) return '';
+    if (needsAvailabilityChoice(product) && !state.cakeChoice) return 'cake-choice';
+    if (needsContainerChoice(product) && !state.containerType) return 'item-container';
+    if (!ready) return usesFlavorDistribution(product) ? 'flavor-distribution' : 'flavor-grid';
+    if (isBoloCopo(product) && !state.creamChoice && isShown($('#bolo-copo-creme'))) return 'bolo-copo-creme';
+    if (isShown($('#milkshake-ovomaltine'))) return 'milkshake-ovomaltine';
+    if (isShown($('#box-addons'))) return 'box-addons';
+    if (isShown($('#included-customizations'))) return 'included-customizations';
+    if (needsPackagingChoice(product) && !state.serviceMode && isShown($('#item-mode'))) return 'item-mode';
+    return 'confirm-flavors';
+  }
+  function nextFlavorGuideText(key, ready, product) {
+    if (!ready) return '';
+    if (key === 'bolo-copo-creme') return 'Quantidade completa. Agora escolha o creme abaixo.';
+    if (key === 'milkshake-ovomaltine') return 'Sabores prontos. Agora escolha se deseja adicionar Ovomaltine abaixo.';
+    if (key === 'box-addons') return 'Quantidade completa. Agora escolha os complementos opcionais abaixo.';
+    if (key === 'included-customizations') return 'Sabores prontos. Agora personalize o produto abaixo.';
+    if (key === 'item-mode') return 'Quantidade completa. Agora escolha como deseja receber este produto.';
+    if (key === 'confirm-flavors') return `Tudo certo! Revise e adicione este produto ao pedido.${needsAvailabilityChoice(product) ? ' Depois, informe data e horário no mínimo 48 horas à frente.' : ''}`;
+    return '';
+  }
   function captureCatalogViewport(sku = state.lastCatalogSku) {
     const target = sku ? document.querySelector(`[data-catalog-sku="${sku}"]`) : null;
     state.lastCatalogViewport = { sku: sku || '', scrollY: window.scrollY, targetOffset: target ? target.getBoundingClientRect().top : null };
@@ -104,7 +157,7 @@
   function needsFlavorPreferences() { return false; }
   function preferenceCountForPopsicle() { return 1; }
   function preferenceReady(set, rule) { return Array.isArray(set) && set.length >= rule.min && set.length <= rule.max; }
-  function preferenceText(preferences = []) { return preferences.map((set, index) => `Opção ${index + 1}: ${(set || []).map((item) => item.name || item).join(', ')}`).filter((line) => !line.endsWith(': ')).join(' | '); }
+  function preferenceText(preferences = []) { return preferences.map((set, index) => { const flavors = (set || []).map((item) => item.name || item); return flavors.length ? `Opção ${pad2(index + 1)}:\n${flavors.map((f) => `  • ${f}`).join('\n')}` : null; }).filter(Boolean).join('\n'); }
   function productType(category) { return category === 'Picolés' ? 'picole' : 'produto'; }
   function retiradaAberta() { return !window.ItapHorarioPedidos || window.ItapHorarioPedidos.estaAberto('retirada'); }
   function dependsOnAcaiBase(data, key, item) {
@@ -225,7 +278,7 @@
       const price = document.createElement('small'); price.className = 'acai-double-option__price'; price.textContent = `Em dobro (+ ${money(option.price)})`;
       label.append(input, name, price); ui.list.append(label);
     });
-    const selected = selectedAcaiDoubleAddOns(product); ui.total.textContent = selected.length ? `Itens em dobro: ${selected.map((item) => item.name).join(' · ')} · Acréscimo: ${money(selected.reduce((sum, item) => sum + item.price, 0))}.` : 'Nenhum item em dobro selecionado. O preço base e o SKU não mudam.';
+    const selected = selectedAcaiDoubleAddOns(product); if (selected.length) { ui.total.innerHTML = `<strong>Itens em dobro:</strong><br>${selected.map((item) => `• ${escape(item.name)}`).join('<br>')}<br><strong>Acréscimo: ${money(selected.reduce((sum, item) => sum + item.price, 0))}</strong>`; } else { ui.total.textContent = 'Nenhum item em dobro selecionado. O preço base e o SKU não mudam.'; }
   }
   function beginAcaiDouble(product) {
     state.flavorProduct = product; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.acaiDoubleChoices = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = emptyFondueChoices(); state.flavorDistribution = ''; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = '';
@@ -322,7 +375,7 @@
       const row = document.createElement('article'); row.className = 'product'; row.dataset.catalogSku = product.sku; const hasFlavor = needsMassFlavors(product) || product.category === 'Milkshake'; const hasAcaiDouble = isAcaiCup(product) && acaiDoubleOptions(product).length > 0;
       const meta = isIceCreamCake(product) ? `Escolha 3 sabores · Retirada com antecedência mínima de 48 horas.` : isFondue(product) ? 'Escolha 2 frutas, 2 cremes e 1 guloseima · Tudo incluído no preço.' : isBoloCopo(product) ? `${flavorRule(product).label} · depois escolha o creme (Leite Ninho ou Nutela).` : hasFlavor ? flavorRule(product).label : hasAcaiDouble ? 'Escolha quais complementos do copo podem ser pedidos em dobro.' : 'Produto pronto para retirada';
       const extras = product.includedExtras?.length ? ` · Inclui ${product.includedExtras.join(' e ')}.` : '';
-      const fixedIngredients = product.fixedIngredients?.length ? `<p class="product__ingredients"><strong>Ingredientes fixos:</strong> ${escape(product.fixedIngredients.filter((item) => !/sabores? de sorvete/i.test(item)).join(', '))}</p>` : '';
+      const fixedIngredients = product.fixedIngredients?.length ? `<p class="product__ingredients"><strong>Ingredientes fixos:</strong><br>${product.fixedIngredients.filter((item) => !/sabores? de sorvete/i.test(item)).map((i) => `• ${escape(i)}`).join('<br>')}</p>` : '';
       const ballCount = productBallCount(product); const ballRule = usesFlavorDistribution(product) && ballCount ? `<p class="product__ball-rule"><strong>${ballCount} bola${ballCount > 1 ? 's' : ''}:</strong> ${ballCount === 1 ? 'escolha 1 sabor.' : `pode distribuir ${ballCount} bolas entre os sabores que quiser — todas do mesmo sabor ou em sabores diferentes.`}</p>` : '';
       const skuLine = isLargeIceCreamBox(product) ? `<p class="product__sku">SKU: ${escape(product.sku)} · Embalagem ${escape(product.travelPackaging?.sku || '')} incluída</p>` : '';
       const sizeBadge = productSizeBadge(product); const badge = sizeBadge ? `<p class="product__size-badge product__size-badge--${sizeBadge.type}"><span>${escape(sizeBadge.detail)}</span><strong>${escape(sizeBadge.label)}</strong></p>` : '';
@@ -465,7 +518,7 @@
     includedCustomizationOptions().forEach((option) => {
       const label = document.createElement('label'); label.className = 'choice'; const input = document.createElement('input'); input.type = 'checkbox'; input.checked = Boolean(state.includedCustomizationChoices?.[option.id]); input.addEventListener('change', () => { if (input.checked) state.includedCustomizationChoices[option.id] = true; else delete state.includedCustomizationChoices[option.id]; renderIncludedCustomizations(product, ready); }); const text = document.createElement('span'); text.textContent = option.name; label.append(input, text); ui.list.append(label);
     });
-    const selected = selectedIncludedCustomizations(); ui.total.textContent = selected.length ? `Incluídos no valor: ${selected.join(' · ')}` : 'Nenhuma cobertura ou complemento selecionado. O valor do produto não muda.';
+    const selected = selectedIncludedCustomizations(); if (selected.length) { ui.total.innerHTML = `<strong>Incluídos no valor:</strong><br>${selected.map((s) => `• ${escape(s)}`).join('<br>')}`; } else { ui.total.textContent = 'Nenhuma cobertura ou complemento selecionado. O valor do produto não muda.'; }
   }
   function ensureBoloCopoCreme() {
     let section = $('#bolo-copo-creme');
@@ -540,7 +593,7 @@
     const cremesCount = fondueCount(state.fondueChoices.cremes);
     const guloseimasCount = fondueCount(state.fondueChoices.guloseimas);
     const ready = frutasCount === 2 && cremesCount === 2 && guloseimasCount === 1;
-    ui.total.textContent = ready ? `Pronto! Frutas: ${fondueSummary(state.fondueChoices.frutas)} · Cremes: ${fondueSummary(state.fondueChoices.cremes)} · Guloseima: ${fondueSummary(state.fondueChoices.guloseimas)}. Tudo incluído no R$ 25,00.` : 'Escolha 2 frutas, 2 cremes e 1 guloseima para confirmar.';
+    if (ready) { ui.total.innerHTML = `✅ <strong>Pronto!</strong><br>• 🍓 Frutas: ${escape(fondueSummary(state.fondueChoices.frutas))}<br>• 🍫 Cremes: ${escape(fondueSummary(state.fondueChoices.cremes))}<br>• 🍬 Guloseima: ${escape(fondueSummary(state.fondueChoices.guloseimas))}<br><strong>Tudo incluído no R$ 25,00.</strong>`; } else { ui.total.textContent = 'Escolha 2 frutas, 2 cremes e 1 guloseima para confirmar.'; }
     const status = $('#flavor-status'); status.textContent = ready ? 'Tudo certo! Confirme para adicionar o Fondue ao pedido.' : `Faltam: ${frutasCount < 2 ? `${2 - frutasCount} fruta(s)` : ''}${cremesCount < 2 ? `${frutasCount < 2 ? ', ' : ''}${2 - cremesCount} creme(s)` : ''}${guloseimasCount < 1 ? `${(frutasCount < 2 || cremesCount < 2) ? ', ' : ''}1 guloseima` : ''}.`;
     status.classList.toggle('ready', Boolean(ready));
     $('#confirm-flavors').disabled = !ready;
@@ -566,11 +619,11 @@
       const quantity = Number(state.boxAddOnCounts?.[addOn.id] || 0); const unavailable = addOn.unavailable || addOn.stock <= 0;
       const row = document.createElement('div'); row.className = `box-addon-row${unavailable ? ' is-unavailable' : ''}`;
       const info = document.createElement('div'); const name = document.createElement('p'); name.className = 'box-addon-row__name'; name.textContent = addOn.name; const meta = document.createElement('p'); meta.className = 'box-addon-row__meta'; meta.textContent = unavailable ? 'Indisponível agora.' : `${money(addOn.price)} cada · SKU ${addOn.sku}`; info.append(name, meta);
-      const control = document.createElement('div'); control.className = 'qty'; const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${addOn.name}`); minus.disabled = !quantity || unavailable; minus.addEventListener('click', () => { if (quantity <= 1) delete state.boxAddOnCounts[addOn.id]; else state.boxAddOnCounts[addOn.id] = quantity - 1; renderFlavorGrid(); }); const count = document.createElement('span'); count.textContent = quantity; count.setAttribute('aria-label', `${quantity} unidade${quantity !== 1 ? 's' : ''} de ${addOn.name}`); const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar ${addOn.name}`); plus.disabled = unavailable || quantity >= addOn.stock; plus.addEventListener('click', () => { state.boxAddOnCounts[addOn.id] = quantity + 1; renderFlavorGrid(); }); control.append(minus, count, plus); row.append(info, control); ui.list.append(row);
+      const control = document.createElement('div'); control.className = 'qty'; const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${addOn.name}`); minus.disabled = !quantity || unavailable; minus.addEventListener('click', () => { if (quantity <= 1) delete state.boxAddOnCounts[addOn.id]; else state.boxAddOnCounts[addOn.id] = quantity - 1; renderFlavorGrid(); }); const count = document.createElement('span'); count.textContent = pad2(quantity); count.setAttribute('aria-label', `${pad2(quantity)} unidade${quantity !== 1 ? 's' : ''} de ${addOn.name}`); const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar ${addOn.name}`); plus.disabled = unavailable || quantity >= addOn.stock; plus.addEventListener('click', () => { state.boxAddOnCounts[addOn.id] = quantity + 1; renderFlavorGrid(); }); control.append(minus, count, plus); row.append(info, control); ui.list.append(row);
     });
-    const selected = selectedBoxAddOns(); const subtotal = selected.reduce((sum, addOn) => sum + addOn.quantity * addOn.price, 0); ui.total.textContent = selected.length ? `Complementos selecionados: ${selected.reduce((sum, addOn) => sum + addOn.quantity, 0)} un. · Total parcial: ${money(subtotal)}` : 'Nenhum complemento selecionado. Você pode adicionar depois em um novo pedido.';
+    const selected = selectedBoxAddOns(); const subtotal = selected.reduce((sum, addOn) => sum + addOn.quantity * addOn.price, 0); if (selected.length) { ui.total.innerHTML = `<strong>Complementos selecionados:</strong><br>${selected.map((addOn) => `• ${pad2(addOn.quantity)}x ${escape(addOn.name)} — ${money(Number(addOn.quantity) * Number(addOn.price))}`).join('<br>')}<br><strong>Total parcial: ${money(subtotal)}</strong>`; } else { ui.total.textContent = 'Nenhum complemento selecionado. Você pode adicionar depois em um novo pedido.'; }
   }
-  function beginFlavors(product) { state.flavorProduct = product; ensureAcaiDoubleUi().section.hidden = true; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = needsFlavorPreferences(product) ? [[], [], []] : []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = emptyFondueChoices(); state.flavorDistribution = ''; state.serviceMode = isTravelOnlyBox(product) ? 'travel' : ''; state.containerType = ''; state.cakeChoice = ''; ensureBoloCopoCreme().section.hidden = true; ensureFondueUi().section.hidden = true; const rule = flavorRule(product); const sizeBadge = productSizeBadge(product); const travelText = isLargeIceCreamBox(product) ? `Primeiro consulte disponibilidade pronta ou escolha encomendar com 48 horas. Depois, selecione ${rule.label.toLowerCase()}.` : 'Caixa exclusiva para viagem: distribua os sabores e, se quiser, adicione complementos.'; $('#flavor-title').textContent = displayName(product.name); $('#flavor-subtitle').textContent = `${sizeBadge ? `${sizeBadge.label} · ` : ''}${isTravelOnlyBox(product) ? travelText : isIceCreamCake(product) ? 'Primeiro consulte disponibilidade pronta ou escolha encomendar com 48 horas.' : needsFlavorPreferences(product) ? `${rule.label}. Depois informe duas alternativas diferentes.` : needsContainerChoice(product) ? 'Escolha primeiro o recipiente e depois os sabores.' : isBoloCopo(product) ? `${rule.label}. Depois escolha o creme — incluído no preço.` : rule.label + '.'}`; renderFlavorGrid(); openDialog('flavor-dialog'); }
+  function beginFlavors(product) { state.flavorProduct = product; ensureAcaiDoubleUi().section.hidden = true; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = needsFlavorPreferences(product) ? [[], [], []] : []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = emptyFondueChoices(); state.flavorDistribution = ''; state.serviceMode = isTravelOnlyBox(product) ? 'travel' : ''; state.containerType = ''; state.cakeChoice = ''; state.lastFlavorGuideKey = needsAvailabilityChoice(product) ? 'cake-choice' : needsContainerChoice(product) ? 'item-container' : usesFlavorDistribution(product) ? 'flavor-distribution' : 'flavor-grid'; ensureBoloCopoCreme().section.hidden = true; ensureFondueUi().section.hidden = true; const rule = flavorRule(product); const sizeBadge = productSizeBadge(product); const travelText = isLargeIceCreamBox(product) ? `Primeiro consulte disponibilidade pronta ou escolha encomendar com 48 horas. Depois, selecione ${rule.label.toLowerCase()}.` : 'Caixa exclusiva para viagem: distribua os sabores e, se quiser, adicione complementos.'; $('#flavor-title').textContent = displayName(product.name); $('#flavor-subtitle').textContent = `${sizeBadge ? `${sizeBadge.label} · ` : ''}${isTravelOnlyBox(product) ? travelText : isIceCreamCake(product) ? 'Primeiro consulte disponibilidade pronta ou escolha encomendar com 48 horas.' : needsFlavorPreferences(product) ? `${rule.label}. Depois informe duas alternativas diferentes.` : needsContainerChoice(product) ? 'Escolha primeiro o recipiente e depois os sabores.' : isBoloCopo(product) ? `${rule.label}. Depois escolha o creme — incluído no preço.` : rule.label + '.'}`; renderFlavorGrid(); openDialog('flavor-dialog'); }
   function renderFlavorGrid() {
     const product = state.flavorProduct; if (!product) return;
     const rule = flavorRule(product); const grid = $('#flavor-grid'); const status = $('#flavor-status'); const preferencesBox = $('#flavor-preferences'); const preferenceTabs = $('#flavor-preferences-tabs'); const distributionBox = $('#flavor-distribution'); const distributionList = $('#flavor-distribution-list'); const distributionHint = $('#flavor-distribution-hint'); const distributionCounter = $('#flavor-distribution-counter');     const addOnsUi = ensureBoxAddOnsUi(); const customizationsUi = ensureIncludedCustomizationsUi(); ensureFondueUi().section.hidden = true; renderMilkshakeOvomaltine(product, false); const travelBox = isTravelOnlyBox(product); const needsContainer = needsContainerChoice(product); const needsChoice = needsAvailabilityChoice(product); const cakeBox = $('#cake-choice'); cakeBox.hidden = !needsChoice; $('#cake-choice-title').textContent = isLargeIceCreamBox(product) ? 'Disponibilidade da caixa grande' : 'Disponibilidade da torta'; $('#cake-choice-hint').textContent = isLargeIceCreamBox(product) ? 'Consulte a disponibilidade pronta pelo WhatsApp ou encomende a caixa com 48 horas de antecedência.' : 'Consulte a disponibilidade pronta pelo WhatsApp ou encomende a torta com 48 horas de antecedência.'; $$('[data-cake-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.cakeChoice === state.cakeChoice)); $$('input[name="cake-choice"]').forEach((input) => { input.checked = input.value === state.cakeChoice; }); const containerBox = $('#item-container'); containerBox.hidden = !needsContainer; $$('[data-container-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.containerChoice === state.containerType)); $$('input[name="item-container"]').forEach((input) => { input.checked = input.value === state.containerType; }); if (needsChoice && !state.cakeChoice) { preferencesBox.hidden = true; grid.hidden = true; grid.innerHTML = ''; distributionBox.hidden = true; addOnsUi.section.hidden = true; customizationsUi.section.hidden = true; $('#item-mode').hidden = true; status.textContent = 'Escolha: consultar disponibilidade no WhatsApp ou encomendar com 48 horas de antecedência.'; status.classList.remove('ready'); $('#confirm-flavors').disabled = true; return; } if (needsContainer && !state.containerType) { preferencesBox.hidden = true; grid.hidden = true; grid.innerHTML = ''; distributionBox.hidden = true; addOnsUi.section.hidden = true; customizationsUi.section.hidden = true; $('#item-mode').hidden = true; status.textContent = 'Escolha o formato oficial do produto.'; status.classList.remove('ready'); $('#confirm-flavors').disabled = true; return; }
@@ -581,29 +634,31 @@
       const active = state.flavorPreferences[state.activeFlavorPreference] || []; const usedInOtherOptions = new Set(state.flavorPreferences.filter((_, index) => index !== state.activeFlavorPreference).flat().map((item) => item.code));
       grid.classList.toggle('limite-atingido', active.length >= rule.max);
       massFlavorOptions().forEach((flavor) => { const selected = active.some((item) => item.code === flavor.code); const normalized = normalize(flavor.name); const novo = SABORES_NOVOS.has(normalized); const colors = PALETA_SABORES_MASSA[normalized] || ['#94A3B8','#F8FAFC','rgba(148,163,184,.30)']; const button = document.createElement('button'); button.className = `flavor-chip sabor-item${novo ? ' sabor-novo' : ''}${flavor.unavailable ? ' is-esgotado' : ''}`; button.type = 'button'; button.style.cssText = `--sabor-accent:${colors[0]};--sabor-tint:${colors[1]};--sabor-glow:${colors[2]};`; button.innerHTML = `${novo ? '<span class="sabor-novo-badge" aria-label="Novo sabor">NOVO</span>' : ''}${flavor.unavailable ? '<span class="sabor-esgotado-badge">ESGOTADO</span>' : ''}<span>${escape(flavor.name)}</span>`; button.disabled = flavor.unavailable || (!selected && (active.length >= rule.max || usedInOtherOptions.has(flavor.code))); button.setAttribute('aria-pressed', String(selected)); button.addEventListener('click', () => { const next = state.flavorPreferences[state.activeFlavorPreference] || []; const found = next.findIndex((item) => item.code === flavor.code); if (found >= 0) next.splice(found, 1); else if (next.length < rule.max && !usedInOtherOptions.has(flavor.code)) next.push(flavor); state.flavorPreferences[state.activeFlavorPreference] = next; renderFlavorGrid(); }); grid.append(button); });
-      const complete = state.flavorPreferences.every((set) => preferenceReady(set, rule)); const completedCount = state.flavorPreferences.filter((set) => preferenceReady(set, rule)).length; const requiresMode = needsPackagingChoice(product); const modeBox = $('#item-mode'); modeBox.hidden = !(complete && requiresMode); $$('[data-mode-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.modeChoice === state.serviceMode)); $$('input[name="item-mode"]').forEach((input) => { input.checked = input.value === state.serviceMode; }); status.textContent = complete ? (requiresMode && !state.serviceMode ? 'Combinações completas. Agora escolha como deseja receber este produto.' : 'Combinações completas. As alternativas só serão usadas se a primeira opção não estiver disponível.') : `Preencha a Opção ${state.activeFlavorPreference + 1}: escolha ${rule.max} sabor${rule.max !== 1 ? 'es' : ''}. ${completedCount} de 3 combinações completas.`; status.classList.toggle('ready', complete && (!requiresMode || Boolean(state.serviceMode))); $('#confirm-flavors').disabled = !(complete && (!requiresMode || state.serviceMode)); return;
+      const complete = state.flavorPreferences.every((set) => preferenceReady(set, rule)); const completedCount = state.flavorPreferences.filter((set) => preferenceReady(set, rule)).length; const requiresMode = needsPackagingChoice(product); const modeBox = $('#item-mode'); modeBox.hidden = !(complete && requiresMode); $$('[data-mode-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.modeChoice === state.serviceMode)); $$('input[name="item-mode"]').forEach((input) => { input.checked = input.value === state.serviceMode; }); const guideKey = complete ? nextFlavorGuideKey(product, true) : `flavor-preferences-${state.activeFlavorPreference}`; status.textContent = complete ? (guideKey === 'item-mode' ? 'Combinações completas. Agora escolha como deseja receber este produto.' : 'Combinações completas. As alternativas só serão usadas se a primeira opção não estiver disponível.') : `Preencha a Opção ${state.activeFlavorPreference + 1}: escolha ${rule.max} sabor${rule.max !== 1 ? 'es' : ''}. ${completedCount} de 3 combinações completas.`; status.classList.toggle('ready', complete && (!requiresMode || Boolean(state.serviceMode))); $('#confirm-flavors').disabled = !(complete && (!requiresMode || state.serviceMode)); syncFlavorGuide(guideKey, complete); return;
     }
     preferencesBox.hidden = true;
     if (rule.distribution) {
       grid.hidden = true; grid.innerHTML = ''; distributionBox.hidden = false; distributionList.innerHTML = '';
       distributionHint.textContent = `Use + e − ao lado de cada sabor até totalizar exatamente ${rule.ballCount} bolas. Você pode repetir o mesmo sabor ou combinar vários.`;
       const distributed = countedFlavorTotal();
+      distributionList.classList.toggle('limite-atingido', distributed >= rule.ballCount);
       massFlavorOptions().forEach((flavor) => {
         const quantity = Number(state.flavorCounts?.[flavor.code] || 0); const normalized = normalize(flavor.name); const colors = PALETA_SABORES_MASSA[normalized] || ['#94A3B8','#F8FAFC','rgba(148,163,184,.30)'];
-        const row = document.createElement('div'); row.className = 'flavor-distribution__row'; row.style.cssText = `--sabor-accent:${colors[0]};--sabor-tint:${colors[1]};`;
+        const row = document.createElement('div'); row.className = `flavor-distribution__row${quantity > 0 ? ' is-selected' : ''}`; row.style.cssText = `--sabor-accent:${colors[0]};--sabor-tint:${colors[1]};`;
         const name = document.createElement('span'); name.className = 'flavor-distribution__name'; name.textContent = flavor.name;
         const control = document.createElement('div'); control.className = 'qty';
         const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${flavor.name}`); minus.disabled = !quantity || flavor.unavailable; minus.addEventListener('click', () => { if (quantity <= 1) delete state.flavorCounts[flavor.code]; else state.flavorCounts[flavor.code] = quantity - 1; renderFlavorGrid(); });
-        const count = document.createElement('span'); count.textContent = quantity; count.setAttribute('aria-label', `${quantity} bolas de ${flavor.name}`);
+        const count = document.createElement('span'); count.textContent = pad2(quantity); count.setAttribute('aria-label', `${pad2(quantity)} bolas de ${flavor.name}`);
         const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar uma bola de ${flavor.name}`); plus.disabled = flavor.unavailable || distributed >= rule.ballCount; plus.addEventListener('click', () => { state.flavorCounts[flavor.code] = quantity + 1; renderFlavorGrid(); });
         control.append(minus, count, plus); row.append(name, control); distributionList.append(row);
       });
       state.selectedFlavors = selectedFlavorEntries(); state.flavorDistribution = countedFlavorText(); const ready = distributed === rule.ballCount;
-      distributionCounter.textContent = ready ? `Distribuição completa: ${distributed} de ${rule.ballCount} bolas.` : `Distribuição informada: ${distributed} de ${rule.ballCount} bolas. Use os controles até fechar a quantidade.`;
+      distributionCounter.textContent = ready ? `Distribuição completa: ${pad2(distributed)} de ${pad2(rule.ballCount)} bolas.` : `Distribuição informada: ${pad2(distributed)} de ${pad2(rule.ballCount)} bolas. Use os controles até fechar a quantidade.`;
       distributionCounter.classList.toggle('is-ready', ready);
       const requiresMode = needsPackagingChoice(product); const modeBox = $('#item-mode'); modeBox.hidden = !(ready && requiresMode); addOnsUi.section.hidden = !(ready && allowsBoxAddOns(product)); if (ready && allowsBoxAddOns(product)) renderBoxAddOns(); renderIncludedCustomizations(product, ready); $$('[data-mode-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.modeChoice === state.serviceMode)); $$('input[name="item-mode"]').forEach((input) => { input.checked = input.value === state.serviceMode; });
-      status.textContent = !ready ? `Escolha as quantidades por sabor até totalizar ${rule.ballCount} bolas.` : (travelBox ? (isLargeIceCreamBox(product) ? 'Sabores completos. A embalagem da caixa já está incluída no valor.' : 'Sabores completos. Os complementos são opcionais e a caixa seguirá para viagem.') : (requiresMode && !state.serviceMode ? 'Agora escolha como deseja receber este produto.' : 'Tudo certo! Revise e adicione este produto ao pedido.'));
-      status.classList.toggle('ready', ready && (!requiresMode || Boolean(state.serviceMode))); $('#confirm-flavors').disabled = !(ready && (!requiresMode || state.serviceMode)); return;
+      const guideKey = nextFlavorGuideKey(product, ready);
+      status.textContent = !ready ? `Escolha as quantidades por sabor até totalizar ${rule.ballCount} bolas.` : nextFlavorGuideText(guideKey, ready, product);
+      status.classList.toggle('ready', ready && (!requiresMode || Boolean(state.serviceMode))); $('#confirm-flavors').disabled = !(ready && (!requiresMode || state.serviceMode)); syncFlavorGuide(guideKey, ready); return;
     }
     distributionBox.hidden = true; addOnsUi.section.hidden = true; grid.hidden = false; grid.innerHTML = '';
     const options = rule.source === 'milkshake' ? massFlavorOptions().map((flavor) => ({ ...flavor, code: `MLK-${flavor.code}` })) : massFlavorOptions();
@@ -616,7 +671,7 @@
       button.disabled = flavor.unavailable || (!selected && count >= rule.max); button.setAttribute('aria-pressed', String(selected));
       button.addEventListener('click', () => { const found = state.selectedFlavors.findIndex((item) => item.code === flavor.code); if (found >= 0) state.selectedFlavors.splice(found, 1); else if (state.selectedFlavors.length < rule.max) state.selectedFlavors.push(flavor); renderFlavorGrid(); }); grid.append(button);
     });
-    const ready = count >= rule.min && count <= rule.max; renderMilkshakeOvomaltine(product, ready); renderIncludedCustomizations(product, ready); renderBoloCopoCreme(product, ready); const requiresMode = needsPackagingChoice(product); const modeBox = $('#item-mode'); modeBox.hidden = !(ready && requiresMode); $$('[data-mode-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.modeChoice === state.serviceMode)); $$('input[name="item-mode"]').forEach((input) => { input.checked = input.value === state.serviceMode; }); const missing = rule.min - count; const optional = rule.max - count; const availabilityLabel = needsChoice ? ' Depois, informe data e horário no mínimo 48 horas à frente.' : ''; status.textContent = missing > 0 ? `Escolha mais ${missing} sabor${missing !== 1 ? 'es' : ''}.` : (optional > 0 ? `Você pode adicionar mais ${optional} sabor${optional !== 1 ? 'es' : ''} ou continuar com a escolha atual.${availabilityLabel}` : (requiresMode && !state.serviceMode ? 'Agora escolha como deseja receber este produto.' : isBoloCopo(product) && !state.creamChoice ? 'Sabores prontos! Agora escolha o creme abaixo.' : `Tudo certo! Revise e adicione este produto ao pedido.${availabilityLabel}`)); status.classList.toggle('ready', ready && (!requiresMode || Boolean(state.serviceMode)) && (!isBoloCopo(product) || Boolean(state.creamChoice))); $('#confirm-flavors').disabled = !(ready && (!requiresMode || state.serviceMode) && (!needsChoice || Boolean(state.cakeChoice)) && (!isBoloCopo(product) || Boolean(state.creamChoice)));
+    const ready = count >= rule.min && count <= rule.max; renderMilkshakeOvomaltine(product, ready); renderIncludedCustomizations(product, ready); renderBoloCopoCreme(product, ready); const requiresMode = needsPackagingChoice(product); const modeBox = $('#item-mode'); modeBox.hidden = !(ready && requiresMode); $$('[data-mode-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.modeChoice === state.serviceMode)); $$('input[name="item-mode"]').forEach((input) => { input.checked = input.value === state.serviceMode; }); const missing = rule.min - count; const optional = rule.max - count; const guideKey = nextFlavorGuideKey(product, ready); status.textContent = missing > 0 ? `Escolha mais ${missing} sabor${missing !== 1 ? 'es' : ''}.` : (optional > 0 ? `Você pode adicionar mais ${optional} sabor${optional !== 1 ? 'es' : ''} ou continuar com a escolha atual.${needsChoice ? ' Depois, informe data e horário no mínimo 48 horas à frente.' : ''}` : nextFlavorGuideText(guideKey, ready, product)); status.classList.toggle('ready', ready && (!requiresMode || Boolean(state.serviceMode)) && (!isBoloCopo(product) || Boolean(state.creamChoice))); $('#confirm-flavors').disabled = !(ready && (!requiresMode || state.serviceMode) && (!needsChoice || Boolean(state.cakeChoice)) && (!isBoloCopo(product) || Boolean(state.creamChoice))); syncFlavorGuide(guideKey, optional <= 0);
   }
   function confirmFlavors() { if (!state.flavorProduct) return; if (isFondue(state.flavorProduct)) { confirmFondue(); return; } if (isAcaiCup(state.flavorProduct)) { const acaiProduct = state.flavorProduct; addProduct(acaiProduct, [], '', true, '', '', '', selectedAcaiDoubleAddOns(acaiProduct), [], []); closeDialog('flavor-dialog'); state.flavorProduct = null; state.acaiDoubleChoices = {}; return; } const rule = flavorRule(state.flavorProduct); const hasPreferences = needsFlavorPreferences(state.flavorProduct); if (hasPreferences) { if (!state.flavorPreferences.every((set) => preferenceReady(set, rule))) return; state.selectedFlavors = state.flavorPreferences[0].slice(); } else if (rule.distribution) { state.selectedFlavors = selectedFlavorEntries(); state.flavorDistribution = countedFlavorText(); } const validSelection = hasPreferences || (rule.distribution ? countedFlavorTotal() === rule.ballCount : state.selectedFlavors.length >= rule.min && state.selectedFlavors.length <= rule.max); if (!validSelection) return; if (isBoloCopo(state.flavorProduct) && !state.creamChoice) return; if (needsAvailabilityChoice(state.flavorProduct) && !state.cakeChoice) return; if (needsContainerChoice(state.flavorProduct) && !state.containerType) return; if (needsPackagingChoice(state.flavorProduct) && !state.serviceMode) return; const orderAddOns = allowsBoxAddOns(state.flavorProduct) ? selectedBoxAddOns() : selectedMilkshakeAddOn(state.flavorProduct); const includedCustomizations = isBoloCopo(state.flavorProduct) ? (state.creamChoice ? [state.creamChoice] : []) : (allowsIncludedCustomizations(state.flavorProduct) ? selectedIncludedCustomizations() : []); addProduct(state.flavorProduct, state.selectedFlavors.slice(), state.serviceMode, true, state.containerType, state.cakeChoice, state.flavorDistribution, orderAddOns, hasPreferences ? state.flavorPreferences.map((set) => set.slice()) : [], includedCustomizations); closeDialog('flavor-dialog'); state.flavorProduct = null; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.acaiDoubleChoices = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = emptyFondueChoices(); state.flavorDistribution = ''; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = ''; }
   function renderCartSummary() { const bar = $('#summary-bar'); const count = totalItems(); bar.classList.toggle('is-visible', count > 0); $('#summary-small').textContent = count ? `${count} item${count !== 1 ? 's' : ''} selecionado${count !== 1 ? 's' : ''}` : 'Seu pedido está vazio'; $('#summary-large').textContent = count ? `Ver pedido · ${money(total())}` : `Ver pedido · ${money(0)}`; if (typeof syncGuidedForm === 'function') syncGuidedForm(); }
@@ -625,28 +680,26 @@
     if (!state.cart.length) { list.innerHTML = '<div class="empty-state">Seu pedido ainda está vazio. Volte e escolha os produtos que deseja retirar.</div>'; $('#cart-breakdown').innerHTML = `<div><span>Total dos produtos</span><span>${money(0)}</span></div><div><span>Complementos</span><span>${money(0)}</span></div><div><span>Embalagens para viagem</span><span>${money(0)}</span></div>`; $('#cart-total').textContent = money(0); syncPickupDateConstraint(); return; }
     state.cart.forEach((item) => {
       const row = document.createElement('article'); row.className = 'cart-item';
-      const flavors = item.flavors?.length ? `Sabores escolhidos: ${item.flavors.map((flavor) => flavor.name || flavor).join(', ')}` : ''; const flavorDistribution = item.flavorDistribution ? `Distribuição das bolas: ${item.flavorDistribution}` : ''; const selectedAddOns = item.boxAddOns?.length ? `Adicionais: ${item.boxAddOns.map((addOn) => `${addOn.quantity} ${addOn.name}`).join(', ')}` : ''; const fixedIngredients = item.fixedIngredients?.length ? `Ingredientes fixos: ${item.fixedIngredients.filter((ingredient) => !/sabores? de sorvete/i.test(ingredient)).join(', ')}` : ''; const includedExtras = item.includedExtras?.length ? `Inclusos: ${item.includedExtras.join(' e ')}` : ''; const container = item.containerType ? `Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}` : ''; const cakeChoice = needsAvailabilityChoice(item) ? `${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: ${item.cakeChoice === 'producao_48h' ? 'encomenda com 48 horas' : 'consultar disponibilidade no WhatsApp'}` : '';
+      const fixedIngredientLines = item.fixedIngredients?.length ? ['📌 Ingredientes fixos:', ...item.fixedIngredients.filter((ingredient) => !/sabores? de sorvete/i.test(ingredient)).map((i) => `  • ${i}`)] : []; const includedExtraLines = item.includedExtras?.length ? ['✅ Inclusos:', ...item.includedExtras.map((e) => `  • ${e}`)] : []; const container = item.containerType ? `🍦 Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}` : ''; const cakeChoice = needsAvailabilityChoice(item) ? `⏰ ${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: ${item.cakeChoice === 'producao_48h' ? 'encomenda com 48 horas' : 'consultar disponibilidade no WhatsApp'}` : '';
+      const flavorLines = item.flavorDistribution
+        ? ['🍨 Sabores escolhidos:', ...item.flavorDistribution.split(/\s*\+\s*/).map((part) => { const m = part.trim().match(/^(\d+)\s+(.+)$/); return m ? `  ${pad2(m[1])}x ${m[2]}` : `  ${part.trim()}`; })]
+        : item.flavors?.length ? ['🍨 Sabores escolhidos:', ...item.flavors.map((f) => `  01x ${f.name || f}`)] : [];
       const mode = item.serviceMode === 'travel' ? 'Embalar para viagem' : item.serviceMode === 'store' ? 'Consumir na loja' : '';
+      const metaFields = [item.sku, item.size, container, ...flavorLines, ...fixedIngredientLines, ...includedExtraLines, cakeChoice].filter(Boolean);
+      const addOnLines = item.boxAddOns?.length ? item.boxAddOns.map((addOn) => `<p class="cart-item__meta">➕ ${escape(`${pad2(addOn.quantity)}x ${addOn.name} — ${money(Number(addOn.quantity) * Number(addOn.price))}`)}</p>`).join('') : '';
       const pricing = [`<span>Produto: ${money(itemBaseTotal(item))}</span>`];
       if (item.boxAddOns?.length) {
-        const acaiDoubleAddOns = item.boxAddOns.filter((addOn) => addOn.kind === 'acai-double');
-        if (acaiDoubleAddOns.length) {
-          acaiDoubleAddOns.forEach((addOn) => pricing.push(`<span>${escape(addOn.name)}: ${money(Number(addOn.quantity) * Number(addOn.price))}</span>`));
-          pricing.push(`<span>Total de adicionais: ${money(itemAddOnTotal(item))}</span>`);
-        } else {
-          pricing.push(`<span>Adicionais: ${money(itemAddOnTotal(item))}</span>`);
-        }
+        pricing.push(`<span>Complementos: ${money(itemAddOnTotal(item))}</span>`);
       }
       if (mode) pricing.push(`<span>${mode}: ${item.serviceMode === 'travel' ? (item.packagingIncluded ? `${escape(item.packagingName || 'Embalagem da caixa')} · SKU ${escape(item.packagingSku || '')} · incluída no valor` : `${escape(item.packagingName || 'Embalagem para viagem')} · SKU ${escape(item.packagingSku || 'EMB-VIAGEM')} · ${money(itemPackagingTotal(item))}`) : 'sem taxa de embalagem'}</span>`);
-      pricing.push(`<strong>Subtotal: ${money(itemTotal(item))}</strong>`);
-      row.innerHTML = `<div class="cart-item__head"><div><p class="cart-item__name">${escape(displayName(item.name))}</p><p class="cart-item__meta">${escape([item.sku, item.size, container, flavors, flavorDistribution, selectedAddOns, fixedIngredients, includedExtras, cakeChoice].filter(Boolean).join(' · '))}</p></div><p class="cart-item__value">${money(itemTotal(item))}</p></div><div class="cart-item__pricing">${pricing.join('')}</div>`;
+      row.innerHTML = `<div class="cart-item__head"><div><p class="cart-item__name">${escape(displayName(item.name))}</p>${metaFields.map((f) => { const isIndent = f.startsWith('  '); return `<p class="cart-item__meta${isIndent ? ' cart-item__meta--indent' : ''}">${escape(f.trimStart())}</p>`; }).join('')}${addOnLines}</div><p class="cart-item__value">${money(itemTotal(item))}</p></div><div class="cart-item__pricing">${pricing.join('')}</div>`;
       const bottom = document.createElement('div'); bottom.className = 'cart-item__bottom'; const control = document.createElement('div'); control.className = 'qty';
       const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${item.name}`); minus.addEventListener('click', () => updateQuantity(item.key, -1));
-      const count = document.createElement('span'); count.textContent = item.quantity;
+      const count = document.createElement('span'); count.textContent = pad2(item.quantity);
       const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar mais um ${item.name}`); plus.disabled = item.type === 'picole' && Number.isFinite(item.stock) && item.quantity >= item.stock; plus.addEventListener('click', () => updateQuantity(item.key, 1));
       control.append(minus, count, plus); const remove = document.createElement('button'); remove.className = 'remove'; remove.type = 'button'; remove.textContent = 'Excluir produto'; remove.addEventListener('click', () => removeItem(item.key)); bottom.append(control, remove); row.append(bottom); list.append(row);
     });
-    const popsicles = popsicleSummary(); const popsicleLine = popsicles.quantity ? `<div><span>Picolés: ${popsicles.quantity}${popsicles.wholesale ? ' · atacado' : ' · varejo'}</span><span>${money(popsicles.value)}</span></div>` : ''; $('#cart-breakdown').innerHTML = `<div><span>Total dos produtos</span><span>${money(totalProducts())}</span></div>${popsicleLine}<div><span>Total de adicionais</span><span>${money(totalAddOns())}</span></div><div><span>Embalagens para viagem</span><span>${money(totalPackaging())}</span></div>`;
+    const popsicles = popsicleSummary(); const popsicleLine = popsicles.quantity ? `<div><span>Picolés: ${popsicles.quantity}${popsicles.wholesale ? ' · atacado' : ' · varejo'}</span><span>${money(popsicles.value)}</span></div>` : ''; $('#cart-breakdown').innerHTML = `<div><span>Total dos produtos</span><span>${money(totalProducts())}</span></div>${popsicleLine}<div><span>Complementos</span><span>${money(totalAddOns())}</span></div><div><span>Embalagens para viagem</span><span>${money(totalPackaging())}</span></div>`;
     $('#cart-total').textContent = money(total()); syncPickupDateConstraint();
   }
   const formFlow = { paymentConfirmed: false, notesContinued: false, visibleStep: 1, ready: false };
@@ -654,6 +707,7 @@
   function validatePhone(value) { return /^[0-9]{8,9}$/.test(phoneDigits(value)); }
   function formatPhone(value) { const digits = phoneDigits(value).slice(0, 9); return digits.length > 4 ? `${digits.slice(0, digits.length - 4)}-${digits.slice(-4)}` : digits; }
   function phoneForMessage(value) { const digits = phoneDigits(value); return `(16) ${digits.length > 4 ? `${digits.slice(0, digits.length - 4)}-${digits.slice(-4)}` : digits}`; }
+  function clearFormError() { const error = $('#form-error'); if (!error) return; error.textContent = ''; error.classList.remove('is-visible'); }
   function pickupStepValid() { const time = $('#pickup-time')?.value || ''; if (!validPickupTime(time)) return false; if (hasCakeProductionLead()) return Boolean($('#pickup-date')?.value) && validCakeLeadTime($('#pickup-date').value, time); return validCommonLeadTime(time); }
   function scrollToFormStep(step) { const target = document.querySelector(`[data-form-step="${step}"]`) || $('#final-submit'); requestAnimationFrame(() => { target?.scrollIntoView({ behavior: 'smooth', block: 'center' }); const input = target?.querySelector('input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), button:not([disabled])'); input?.focus({ preventScroll: true }); }); }
   function setFormStepState(step, enabled, complete) { const block = document.querySelector(`[data-form-step="${step}"]`); if (!block) return; block.classList.toggle('is-locked', !enabled); block.classList.toggle('is-current', enabled && !complete); block.classList.toggle('is-complete', complete); block.setAttribute('aria-disabled', enabled ? 'false' : 'true'); $$('input, textarea, button', block).forEach((control) => { if (control.type === 'hidden') return; control.disabled = !enabled; }); }
@@ -671,44 +725,183 @@
     $('#form-progress').lastElementChild.textContent = progressText;
     const submit = $('#final-submit'); const hint = $('#final-submit-hint'); const formReady = accepted && state.cart.length > 0;
     submit.disabled = !formReady; submit.setAttribute('aria-disabled', formReady ? 'false' : 'true'); submit.classList.toggle('is-ready', formReady); submit.textContent = formReady ? 'Enviar solicitação para confirmação no WhatsApp' : visibleStep === 5 ? 'Marque o aceite para liberar o envio' : 'Preencha as etapas para liberar o envio'; hint.textContent = formReady ? 'Pronto: revise o pedido e envie a solicitação.' : progressText; hint.classList.toggle('is-ready', formReady);
-    const accept = $('#accept-wrap'); accept.classList.toggle('is-attention', notesValid && !accepted);
+    const accept = $('#accept-wrap'); accept.classList.toggle('is-attention', notesValid && !accepted); accept.classList.toggle('is-checked', accepted);
     const previous = formFlow.visibleStep; formFlow.visibleStep = visibleStep; formFlow.ready = formReady;
+    if (formReady || visibleStep > previous) clearFormError();
     if (scroll && visibleStep > previous) scrollToFormStep(visibleStep);
   }
-  function validPickupTime(value) { return /^([01]\d|2[0-3]):[0-5]\d$/.test(value || '') && value >= '11:00' && value <= '20:00'; }
+  function validPickupTime(value) { return /^([01]\d|2[0-3]):[0-5]\d$/.test(value || '') && value >= RETIRADA_MIN_TIME && value <= RETIRADA_MAX_TIME; }
+  function timeToMinutes(value) { if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value || '')) return Number.NaN; const [hour, minute] = String(value).split(':').map(Number); return hour * 60 + minute; }
+  function minutesToTime(value) { if (!Number.isFinite(value) || value < 0 || value > (23 * 60 + 59)) return ''; const hour = Math.floor(value / 60); const minute = value % 60; return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`; }
+  function pickupTimeBaseHelpText() {
+    const now = brasiliaParts();
+    if (now.minutes < 10 * 60) return 'Pedidos de retirada liberam às 10h00 (Brasília). Antes disso, o seletor fica travado.';
+    const deadline = commonPickupDeadline();
+    return deadline.minutes <= timeToMinutes(RETIRADA_MAX_TIME)
+      ? `⏰ ESCOLHA A PARTIR DE ${deadline.time}. O relógio digital sempre exige no mínimo ${RETIRADA_LEAD_LABEL} de antecedência para dar 15 minutos de folga no contato e na confirmação do pedido. Você pode subir horas e minutos, mas não pode voltar abaixo desse horário. Ex.: 13:00 = 1 da tarde, 14:00 = 2 da tarde, 21:00 = 9 da noite.`
+      : RETIRADA_CLOSED_MESSAGE;
+  }
+  function pickupTimeHelpText() { return hasCakeProductionLead() ? `⏰ ESCOLHA ENTRE ${RETIRADA_MIN_TIME} E ${RETIRADA_MAX_TIME}. Use relógio digital 24h, com as setas de hora e minuto. Ex.: 13:00 = 1 da tarde, 14:00 = 2 da tarde, 21:00 = 9 da noite. Encomenda de torta ou caixa grande exige data com pelo menos 48 horas de antecedência.` : pickupTimeBaseHelpText(); }
+  function syncPickupTimeStepper() {
+    const time = $('#pickup-time');
+    const hour = $('#pickup-time-hour');
+    const minute = $('#pickup-time-minute');
+    if (!time || !hour || !minute) return;
+    const currentMinutes = timeToMinutes(time.value);
+    const minMinutes = timeToMinutes(time.min || '09:00');
+    const maxMinutes = timeToMinutes(time.max || '21:00');
+    const hasValue = Number.isFinite(currentMinutes);
+    const baseMinutes = hasValue ? currentMinutes : minMinutes;
+    const hasBase = Number.isFinite(baseMinutes);
+    hour.textContent = hasBase ? pad2(Math.floor(baseMinutes / 60)) : '--';
+    minute.textContent = hasBase ? pad2(baseMinutes % 60) : '--';
+    $$('[data-pickup-adjust-unit]').forEach((button) => {
+      const delta = button.dataset.pickupAdjustUnit === 'hour' ? 60 : 1;
+      const direction = Number(button.dataset.pickupAdjustDirection) || 0;
+      const nextMinutes = baseMinutes + (delta * direction);
+      const disabled = time.disabled || !hasBase || !Number.isFinite(minMinutes) || !Number.isFinite(maxMinutes) || nextMinutes < minMinutes || nextMinutes > maxMinutes;
+      button.disabled = disabled;
+      button.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+    });
+  }
+  function syncPickupTimeHelp(baseText) {
+    const time = $('#pickup-time');
+    const help = $('#pickup-time-help');
+    if (!help) return;
+    const convertedFrom = time?.dataset?.convertedFrom || '';
+    if (convertedFrom) {
+      help.textContent = `${baseText} Horário AM (${convertedFrom}) não é permitido para retirada e foi ajustado para ${time.value} (PM).`;
+      return;
+    }
+    help.textContent = baseText;
+  }
+  function normalizePickupTimeValue(value) {
+    const minutes = timeToMinutes(value);
+    if (!Number.isFinite(minutes)) return value;
+    if (minutes < 9 * 60) {
+      const afternoon = minutes + 12 * 60;
+      if (afternoon <= timeToMinutes(RETIRADA_MAX_TIME)) return minutesToTime(afternoon);
+    }
+    return minutesToTime(Math.max(timeToMinutes(RETIRADA_MIN_TIME), Math.min(timeToMinutes(RETIRADA_MAX_TIME), minutes)));
+  }
+  function normalizePickupTimeField() {
+    const time = $('#pickup-time');
+    if (!time) return '';
+    delete time.dataset.convertedFrom;
+    const normalized = normalizePickupTimeValue(time.value);
+    if (normalized && normalized !== time.value) {
+      time.dataset.convertedFrom = time.value;
+      time.value = normalized;
+    }
+    syncPickupTimeStepper();
+    return time.value;
+  }
+  function ensureFirstAvailablePickupTime(minTime) {
+    const time = $('#pickup-time');
+    const minMinutes = timeToMinutes(minTime);
+    if (!time || !Number.isFinite(minMinutes) || time.disabled) return;
+    const currentMinutes = timeToMinutes(time.value);
+    if (!Number.isFinite(currentMinutes) || currentMinutes < minMinutes) time.value = minTime;
+    syncPickupTimeStepper();
+  }
+  function adjustPickupTime(unit, direction) {
+    const time = $('#pickup-time');
+    const delta = unit === 'hour' ? 60 : 1;
+    const minMinutes = timeToMinutes(time?.min || '09:00');
+    const maxMinutes = timeToMinutes(time?.max || '21:00');
+    if (!time || time.disabled || !Number.isFinite(minMinutes) || !Number.isFinite(maxMinutes)) return;
+    const baseMinutes = Number.isFinite(timeToMinutes(time.value)) ? timeToMinutes(time.value) : minMinutes;
+    const nextMinutes = Math.min(maxMinutes, Math.max(minMinutes, baseMinutes + (delta * (Number(direction) >= 0 ? 1 : -1))));
+    if (!Number.isFinite(nextMinutes) || nextMinutes === baseMinutes) return;
+    delete time.dataset.convertedFrom;
+    time.value = minutesToTime(nextMinutes);
+    syncPickupTimeHelp(pickupTimeHelpText());
+    syncPickupTimeValidation();
+    syncPickupTimeStepper();
+    syncGuidedForm({ scroll: true });
+  }
   function hasIceCreamCake() { return state.cart.some((item) => isIceCreamCake(item)); }
   function hasCakeProductionLead() { return state.cart.some((item) => needsAvailabilityChoice(item) && item.cakeChoice === 'producao_48h'); }
   function brasiliaParts(date = new Date()) { const values = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(date).filter((part) => part.type !== 'literal').map((part) => [part.type, part.value])); return { date: `${values.year}-${values.month}-${values.day}`, time: `${values.hour}:${values.minute}`, minutes: Number(values.hour) * 60 + Number(values.minute) }; }
   function brasiliaDateValue(date) { return brasiliaParts(date).date; }
-  function commonPickupDeadline() { const deadline = new Date(Date.now() + 60 * 60 * 1000); deadline.setSeconds(0, 0); deadline.setMinutes(Math.ceil(deadline.getMinutes() / 15) * 15); return brasiliaParts(deadline); }
-  function validCommonLeadTime(time) { const limit = commonPickupDeadline(); const requestedMinutes = String(time || '').split(':').map(Number); return validPickupTime(time) && (requestedMinutes[0] * 60 + requestedMinutes[1]) >= limit.minutes; }
-  function pickupTimeMessage() { const time = $('#pickup-time'); if (!time || hasCakeProductionLead() || !time.value) return ''; if (!validPickupTime(time.value)) return 'Escolha um horário entre 11h00 e 20h00 (de segunda a sexta).'; if (!validCommonLeadTime(time.value)) return `Pelo horário de Brasília, escolha a partir de ${commonPickupDeadline().time}. A retirada exige no mínimo 1 hora de antecedência.`; return ''; }
+  function commonPickupDeadline() {
+    const deadline = new Date(Date.now() + RETIRADA_LEAD_MINUTES * 60 * 1000);
+    deadline.setSeconds(0, 0);
+    const parts = brasiliaParts(deadline);
+    const minMinutes = timeToMinutes(RETIRADA_MIN_TIME);
+    return parts.minutes < minMinutes ? { ...parts, time: RETIRADA_MIN_TIME, minutes: minMinutes } : parts;
+  }
+  function validCommonLeadTime(time) { const normalized = normalizePickupTimeValue(time); const limit = commonPickupDeadline(); const requestedMinutes = String(normalized || '').split(':').map(Number); return validPickupTime(normalized) && (requestedMinutes[0] * 60 + requestedMinutes[1]) >= limit.minutes; }
+  function pickupTimeMessage() { const time = $('#pickup-time'); if (!time || hasCakeProductionLead() || !time.value) return ''; const normalized = normalizePickupTimeValue(time.value); if (normalized !== time.value) { time.value = normalized; syncPickupTimeStepper(); } if (!validPickupTime(time.value)) return `Escolha um horário entre ${RETIRADA_MIN_TIME.replace(':', 'h')} e ${RETIRADA_MAX_TIME.replace(':', 'h')} (Brasília).`; if (!validCommonLeadTime(time.value)) return `Pelo horário de Brasília, escolha a partir de ${commonPickupDeadline().time}. A retirada exige no mínimo ${RETIRADA_LEAD_LABEL} de antecedência.`; return ''; }
   function syncPickupTimeValidation() { const field = $('#pickup-time-field'); const time = $('#pickup-time'); const error = $('#pickup-time-error'); if (!field || !time || !error) return true; const message = pickupTimeMessage(); field.classList.toggle('is-invalid', Boolean(message)); time.setAttribute('aria-invalid', message ? 'true' : 'false'); error.textContent = message; error.classList.toggle('is-visible', Boolean(message)); return !message; }
-  function syncPickupDateConstraint() { const input = $('#pickup-date'); const field = $('#pickup-date-field'); const notice = $('#cake-pickup-rule'); const time = $('#pickup-time'); const timeHelp = $('#pickup-time-help'); if (!input || !field || !notice || !time || !timeHelp) return; const cakeProduction = hasCakeProductionLead(); field.hidden = !cakeProduction; notice.hidden = !cakeProduction; input.required = cakeProduction; if (cakeProduction) { input.min = brasiliaDateValue(new Date(Date.now() + 48 * 60 * 60 * 1000)); time.min = '11:00'; time.disabled = false; timeHelp.textContent = 'Encomenda de torta ou caixa grande: escolha data e horário pelo horário de Brasília; a data precisa estar pelo menos 48 horas à frente.'; } else { input.value = ''; input.min = ''; const deadline = commonPickupDeadline(); if (deadline.minutes <= 20 * 60) { time.min = deadline.time; time.disabled = false; timeHelp.textContent = `Horário de Brasília: escolha a partir de ${deadline.time}. O preparo mínimo é de 1 hora.`; } else { time.value = ''; time.min = '20:00'; time.disabled = true; timeHelp.textContent = 'Hoje não há horário com 1 hora de antecedência. Volte no próximo horário de atendimento.'; } } syncPickupTimeValidation(); }
+  function syncPickupDateConstraint() { const input = $('#pickup-date'); const field = $('#pickup-date-field'); const notice = $('#cake-pickup-rule'); const time = $('#pickup-time'); const timeHelp = $('#pickup-time-help'); if (!input || !field || !notice || !time || !timeHelp) return; const cakeProduction = hasCakeProductionLead(); field.hidden = !cakeProduction; notice.hidden = !cakeProduction; input.required = cakeProduction; if (cakeProduction) { input.min = brasiliaDateValue(new Date(Date.now() + 48 * 60 * 60 * 1000)); time.min = RETIRADA_MIN_TIME; time.max = RETIRADA_MAX_TIME; time.disabled = false; ensureFirstAvailablePickupTime(RETIRADA_MIN_TIME); } else { input.value = ''; input.min = ''; time.max = RETIRADA_MAX_TIME; const now = brasiliaParts(); const deadline = commonPickupDeadline(); if (now.minutes < 10 * 60) { time.value = ''; time.min = RETIRADA_MIN_TIME; time.disabled = true; syncPickupTimeHelp('Pedidos de retirada liberam às 10h00 (Brasília).'); } else if (deadline.minutes <= timeToMinutes(RETIRADA_MAX_TIME)) { time.min = deadline.time; time.disabled = false; ensureFirstAvailablePickupTime(deadline.time); syncPickupTimeHelp(pickupTimeHelpText()); } else { time.value = ''; time.min = RETIRADA_MAX_TIME; time.disabled = true; syncPickupTimeHelp(RETIRADA_CLOSED_MESSAGE); } } normalizePickupTimeField(); syncPickupTimeHelp(pickupTimeHelpText()); syncPickupTimeStepper(); syncPickupTimeValidation(); }
   function validCakeLeadTime(date, time) { return !hasCakeProductionLead() || Date.parse(`${date}T${time}:00-03:00`) >= Date.now() + 48 * 60 * 60 * 1000; }
   function buildMessage(form) {
-    const schedule = hasCakeProductionLead() ? `• Data de retirada: ${form.data_retirada}` : '• Retirada: hoje (mínimo de 1h de antecedência)';
-    const lines = ['🍦 PEDIDO DE RETIRADA — ITAPOLITANA', '', '👤 CLIENTE', `• Nome: ${form.nome}`, `• WhatsApp: ${phoneForMessage(form.telefone)}`, '', '🕒 RETIRADA', schedule, `• Horário: ${form.horario} (Brasília)`, '', '💳 PAGAMENTO', `• Forma: ${form.pagamento}`, '', '🧾 RESUMO', `• Total final: ${money(total())}`, `• Observações: ${form.observacoes || 'Nenhuma'}`, '', '🍨 ITENS'];
+    const sep = '━━━━━━━━━━━━━━━━━━━━━';
+    const schedule = hasCakeProductionLead()
+      ? `Data: ${form.data_retirada}`
+      : 'Data: hoje';
+    const [h, m] = (form.horario || '00:00').split(':').map(Number);
+    const deadlineH = h + 1;
+    const deadline = `${String(deadlineH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    const lines = [
+      `🍦 *PEDIDO DE RETIRADA*`,
+      `_Itapolitana Cajuru_`,
+      sep,
+      ``,
+      `👤 *CLIENTE*`,
+      `• Nome: ${form.nome}`,
+      `• WhatsApp: ${phoneForMessage(form.telefone)}`,
+      ``,
+      `🕒 *RETIRADA*`,
+      `• ${schedule}`,
+      `• Horário combinado: ${form.horario} (Brasília)`,
+      `• Retirar até: ${deadline} (Brasília)`,
+      ``,
+      `💳 *PAGAMENTO*`,
+      `• ${form.pagamento}`,
+      sep,
+      ``,
+      `🛒 *ITENS*`,
+    ];
+
     state.cart.forEach((item, index) => {
-      lines.push(`${index + 1}) ${item.quantity}x ${item.name}${item.size ? ` — ${item.size}` : ''} (${item.sku})`);
-      if (item.containerType) lines.push(`• Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}`);
-      if (item.flavors?.length) lines.push(`• Sabores: ${item.flavors.map((flavor) => flavor.name || flavor).join(', ')}`);
-      if (item.flavorDistribution) lines.push(`• Distribuição: ${item.flavorDistribution}`);
-      if (item.boxAddOns?.length) item.boxAddOns.forEach((addOn) => {
-        if (addOn.kind === 'acai-double') lines.push(`• ${addOn.quantity > 1 ? `${addOn.quantity}x ` : ''}${addOn.name} — ${money(Number(addOn.quantity) * Number(addOn.price))}`);
-        else lines.push(`• Adicional: ${addOn.quantity}x ${addOn.name} (${addOn.sku}) ${money(Number(addOn.quantity) * Number(addOn.price))}`);
-      });
-      if (item.fixedIngredients?.length) lines.push(`• Ingredientes fixos: ${item.fixedIngredients.filter((ingredient) => !/sabores? de sorvete/i.test(ingredient)).join(', ')}`);
-      if (item.includedExtras?.length) lines.push(`• Inclusos: ${item.includedExtras.join(' e ')}`);
-      if (needsAvailabilityChoice(item)) lines.push(`• ${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: antecedência mínima de 48h`);
-      if (item.serviceMode === 'travel') lines.push('• Embalagem: para viagem');
-      if (item.serviceMode === 'store') lines.push('• Embalagem: consumo na loja');
-      lines.push(`• Subtotal: ${money(itemTotal(item))}`, '');
+      lines.push(``, `*${pad2(index + 1)}. ${pad2(item.quantity)}x ${item.name}${item.size ? ` — ${item.size}` : ''}${item.sku ? ` (${item.sku})` : ''}*`);
+      if (item.containerType) lines.push(`• ${item.containerType === 'casquinha' ? '🍦 Casquinha' : '🥤 Copo'}`);
+      if (item.flavorDistribution) { lines.push(`• 🍨 Sabores escolhidos:`); item.flavorDistribution.split(/\s*\+\s*/).forEach((part) => { const m = part.trim().match(/^(\d+)\s+(.+)$/); lines.push(`    ${m ? `${pad2(m[1])}x ${m[2]}` : part.trim()}`); }); } else if (item.flavors?.length) { lines.push(`• 🍨 Sabores escolhidos:`); item.flavors.forEach((f) => lines.push(`    01x ${f.name || f}`)); }
+      if (item.fixedIngredients?.length) { lines.push(`• 📌 Ingredientes:`); item.fixedIngredients.filter((i) => !/sabores? de sorvete/i.test(i)).forEach((i) => lines.push(`    • ${i}`)); }
+      if (item.includedExtras?.length) { lines.push(`• ✅ Inclusos:`); item.includedExtras.forEach((e) => lines.push(`    • ${e}`)); }
+      lines.push(`• 💰 Produto: ${money(itemBaseTotal(item))}`);
+      if (item.boxAddOns?.length) {
+        item.boxAddOns.forEach((addOn) => {
+          const val = money(Number(addOn.quantity) * Number(addOn.price));
+          lines.push(`• ➕ ${pad2(addOn.quantity)}x ${addOn.name} — ${val}`);
+        });
+      }
+      if (needsAvailabilityChoice(item)) lines.push(`• ⏰ ${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: mín. 48h de antecedência`);
+      if (item.serviceMode === 'travel') lines.push(`• 🛍️ Embalagem viagem: ${item.packagingIncluded ? 'incluída' : money(itemPackagingTotal(item))}`);
+      if (item.serviceMode === 'store') lines.push(`• 🏠 Consumo na loja`);
+      lines.push(`• ✔️ Subtotal: *${money(itemTotal(item))}*`);
     });
-    lines.push('⚠️ CONFIRMAÇÃO', '• Aguardando ligação/confirmação humana.', '• Sem retorno em até 15 minutos: considerar cancelado.');
+
+    const obs = form.observacoes?.trim();
+    lines.push(
+      ``,
+      sep,
+      ``,
+      `🧾 *TOTAL A PAGAR: ${money(total())}*`,
+    );
+    if (obs) lines.push(``, `📝 *Obs.:* ${obs}`);
+    lines.push(
+      ``,
+      sep,
+      ``,
+      `⚠️ _Pedido sujeito à confirmação da loja._`,
+      `_Sem retorno em 15 min, ligue/chame no WhatsApp: (16) 99606-2046_`,
+    );
     return lines.join('\n');
   }
-  function submitOrder(event) { event.preventDefault(); const error = $('#form-error'); error.classList.remove('is-visible'); syncGuidedForm(); if (!formFlow.ready) return showFormError('Complete as etapas na ordem indicada antes de enviar.'); if (!retiradaAberta()) { window.ItapHorarioPedidos?.aviso('retirada'); return showFormError(window.ItapHorarioPedidos?.textoAviso('retirada') || 'Pedidos pelo site somente de segunda a sexta, das 11h00 às 20h00, exceto sábados, domingos e feriados regionais de Cajuru/SP. Vá até nossa loja e peça pessoalmente.'); } const form = Object.fromEntries(new FormData(event.currentTarget).entries()); if (!state.cart.length) return showFormError('Escolha pelo menos um produto antes de enviar.'); if (!form.nome?.trim()) return showFormError('Informe o nome de quem vai retirar.'); if (!validatePhone(form.telefone || '')) return showFormError('Digite somente o número do celular após o DDD 16.'); if (!validPickupTime(form.horario)) return showFormError('Escolha um horário de retirada entre 11h00 e 20h00 (de segunda a sexta).'); if (hasCakeProductionLead()) { if (!form.data_retirada) return showFormError('Para encomenda de torta ou caixa grande, escolha a data desejada para retirar.'); if (!validCakeLeadTime(form.data_retirada, form.horario)) return showFormError('Encomendas de torta e caixa grande precisam de pelo menos 48 horas de antecedência pelo horário de Brasília.'); } else if (!validCommonLeadTime(form.horario)) { syncPickupTimeValidation(); $('#pickup-time')?.focus(); return showFormError(pickupTimeMessage()); } if (!form.aceite) return showFormError('Leia e marque o aceite das regras antes de enviar.'); setOrderStage(3); const text = buildMessage(form); window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener'); }
+  function submitOrder(event) { event.preventDefault(); clearFormError(); normalizePickupTimeField(); syncGuidedForm(); if (!formFlow.ready) return showFormError('Complete as etapas na ordem indicada antes de enviar.'); if (!retiradaAberta()) { window.ItapHorarioPedidos?.aviso('retirada'); return showFormError(window.ItapHorarioPedidos?.textoAviso('retirada') || RETIRADA_SITE_WINDOW_MESSAGE); } const form = Object.fromEntries(new FormData(event.currentTarget).entries()); form.horario = normalizePickupTimeValue(form.horario); if (!state.cart.length) return showFormError('Escolha pelo menos um produto antes de enviar.'); if (!form.nome?.trim()) return showFormError('Informe o nome de quem vai retirar.'); if (!validatePhone(form.telefone || '')) return showFormError('Digite somente o número do celular após o DDD 16.'); if (!validPickupTime(form.horario)) return showFormError(`Escolha um horário de retirada entre ${RETIRADA_MIN_TIME.replace(':', 'h')} e ${RETIRADA_MAX_TIME.replace(':', 'h')} (Brasília).`); if (hasCakeProductionLead()) { if (!form.data_retirada) return showFormError('Para encomenda de torta ou caixa grande, escolha a data desejada para retirar.'); if (!validCakeLeadTime(form.data_retirada, form.horario)) return showFormError('Encomendas de torta e caixa grande precisam de pelo menos 48 horas de antecedência pelo horário de Brasília.'); } else if (!validCommonLeadTime(form.horario)) { syncPickupTimeValidation(); $('#pickup-time')?.focus(); return showFormError(pickupTimeMessage()); } if (!form.aceite) return showFormError('Leia e marque o aceite das regras antes de enviar.'); setOrderStage(3); const text = buildMessage(form); window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener'); }
   function showFormError(message) { const error = $('#form-error'); error.textContent = message; error.classList.add('is-visible'); error.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   async function init() { try { const response = await fetch('dados/produtos.json?v=20260822-textos-skus'); if (!response.ok) throw new Error('Não foi possível carregar o catálogo.'); state.data = await response.json(); state.catalog = buildCatalog(state.data); $('#loading').remove(); renderCatalog(); renderCartSummary(); setOrderStage(state.cart.length ? 2 : 1); syncPickupDateConstraint(); syncGuidedForm(); const sku = new URLSearchParams(location.search).get('sku'); if (sku) { const product = state.catalog.find((item) => item.sku === sku); if (product) { document.getElementById(`sec-${slug(product.category)}`)?.scrollIntoView({ block: 'start' }); announce(`${product.name} está destacado na seção correspondente.`); } } } catch (error) { $('#loading').textContent = 'Não foi possível carregar os produtos agora. Volte ao cardápio e tente novamente.'; console.error(error); } }
   $('#search').addEventListener('input', (event) => { state.query = event.target.value; renderCatalog(); });
@@ -722,8 +915,19 @@
   $('#pickup-form').addEventListener('submit', submitOrder);
   $('#client-phone').addEventListener('input', (event) => { event.target.value = formatPhone(event.target.value); syncGuidedForm({ scroll: true }); });
   $('#client-name').addEventListener('input', () => syncGuidedForm({ scroll: true }));
-  $('#pickup-time').addEventListener('input', () => { syncPickupTimeValidation(); syncGuidedForm({ scroll: true }); });
-  $('#pickup-time').addEventListener('change', () => { syncPickupTimeValidation(); syncGuidedForm({ scroll: true }); });
+  $('#pickup-time').addEventListener('input', () => { syncPickupTimeStepper(); syncPickupTimeValidation(); syncGuidedForm({ scroll: true }); });
+  $('#pickup-time').addEventListener('change', () => { normalizePickupTimeField(); syncPickupTimeHelp(pickupTimeHelpText()); syncPickupTimeValidation(); syncGuidedForm({ scroll: true }); });
+  $('#pickup-time').addEventListener('blur', () => { normalizePickupTimeField(); syncPickupTimeHelp(pickupTimeHelpText()); syncPickupTimeValidation(); syncGuidedForm(); });
+  ['beforeinput', 'paste', 'drop'].forEach((eventName) => $('#pickup-time').addEventListener(eventName, (event) => event.preventDefault()));
+  $('#pickup-time').addEventListener('keydown', (event) => {
+    if (event.key === 'Tab') return;
+    if (event.key === 'ArrowUp') { event.preventDefault(); adjustPickupTime('minute', 1); return; }
+    if (event.key === 'ArrowDown') { event.preventDefault(); adjustPickupTime('minute', -1); return; }
+    if (event.key === 'PageUp') { event.preventDefault(); adjustPickupTime('hour', 1); return; }
+    if (event.key === 'PageDown') { event.preventDefault(); adjustPickupTime('hour', -1); return; }
+    event.preventDefault();
+  });
+  $$('[data-pickup-adjust-unit]').forEach((button) => button.addEventListener('click', () => adjustPickupTime(button.dataset.pickupAdjustUnit, button.dataset.pickupAdjustDirection)));
   $('#pickup-date').addEventListener('change', () => syncGuidedForm({ scroll: true }));
   $('#confirm-payment').addEventListener('click', () => { formFlow.paymentConfirmed = true; syncGuidedForm({ scroll: true }); });
   $('#continue-notes').addEventListener('click', () => { formFlow.notesContinued = true; syncGuidedForm({ scroll: true }); });
