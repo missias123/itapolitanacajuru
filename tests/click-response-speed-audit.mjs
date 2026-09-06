@@ -189,9 +189,10 @@ async function runScenario(browser, viewport, scenario) {
   page.on('pageerror', (error) => pageErrors.push(String(error?.message || error)));
 
   await page.goto(`${base}/${scenario.page}?click-response-speed-audit=${viewport.name}-${scenario.id}`, {
-    waitUntil: 'networkidle0',
+    waitUntil: 'domcontentloaded',
     timeout: 30000,
   });
+  await new Promise((resolve) => setTimeout(resolve, 700));
 
   if (scenario.setup) await scenario.setup(page);
 
