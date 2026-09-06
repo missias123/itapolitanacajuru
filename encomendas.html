@@ -2074,7 +2074,8 @@
         var zap = document.getElementById('pedido-whatsapp').value.trim();
         var tel = zap.replace(/\D/g, '');
         var dataRetirada = document.getElementById('pedido-data-retirada').value;
-        var horaRetirada = document.getElementById('pedido-hora-retirada').value;
+        var inputHoraRetirada = document.getElementById('pedido-hora-retirada');
+        var horaRetirada = inputHoraRetirada.value;
         var dataMinima = document.getElementById('pedido-data-retirada').min || '';
 
         if (nome.length < 3) {
@@ -2108,9 +2109,9 @@
             document.getElementById('pedido-data-retirada').focus();
             return;
         }
-        if (!horarioRetiradaEncomendaValido(horaRetirada)) {
+        if (!sincronizarCampoHoraRetiradaEncomenda() || !inputHoraRetirada.checkValidity()) {
             alert("Escolha um horário para retirada entre 11h e antes de 21h.");
-            document.getElementById('pedido-hora-retirada').focus();
+            inputHoraRetirada.focus();
             return;
         }
         if (window.__encomendaEnviando) return;
