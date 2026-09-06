@@ -2057,6 +2057,7 @@
         var resumoEconomia = calcularResumoEconomiaPicoles();
         var economiaTotal = Math.max(0, resumoEconomia.varejo - resumoEconomia.atacado);
         var dataRetiradaFmt = formatarDataMensagem(dataRetirada);
+        var totalUnidadesPedido = carrinho.reduce((acc, item) => acc + Number(item.quantidade || 1), 0);
         var texto = `🍦 *ENCOMENDA — ITAPOLITANA CAJURU*\n━━━━━━━━━━━━━━━━━━━━━\n\n👤 *CLIENTE*\n• Nome: ${nome}\n• WhatsApp: ${zap}\n\n🕒 *RETIRADA PROGRAMADA*\n• Data: ${dataRetiradaFmt}\n• Horário: ${horaRetirada} (Brasília)\n\n✅ Ciente do prazo mínimo de 5 dias corridos após o pagamento.\n✅ Retirada na loja — não realizamos delivery.\n✅ Pedido enviado para conferência da equipe.\n\n━━━━━━━━━━━━━━━━━━━━━\n🛒 *ITENS DO PEDIDO*\n\n` +
             carrinho.map((item, i) => {
                 var subtotal = `R$ ${Number(item.preco || 0).toFixed(2).replace('.',',')}`;
@@ -2066,7 +2067,7 @@
                 var sabores = Array.isArray(item.sabores) && item.sabores.length ? `\n• Sabores escolhidos:\n${item.sabores.map(function(s){ return '  ◦ ' + s; }).join('\n')}` : '';
                 return `*${i+1}. ${item.tipo}: ${item.nome}*\n• Quantidade: ${item.quantidade || 1} unidade(s)${sabores}\n• ✔️ Subtotal: *${subtotal}*`;
             }).join('\n\n') +
-            `\n\n━━━━━━━━━━━━━━━━━━━━━\n📦 Total de itens: ${carrinho.length}\n💸 Varejo (referência): R$ ${resumoEconomia.varejo.toFixed(2).replace('.',',')}\n🎉 Desconto atacado (picolés): R$ ${economiaTotal.toFixed(2).replace('.',',')}\n🧾 *TOTAL A PAGAR: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}*\n━━━━━━━━━━━━━━━━━━━━━\n\n⚠️ _Pedido sujeito à confirmação da loja._\n_Sem retorno em 15 min, ligue/chame no WhatsApp: (16) 99606-2046_`;
+            `\n\n━━━━━━━━━━━━━━━━━━━━━\n📦 Total de unidades no pedido: ${totalUnidadesPedido}\n💸 Varejo (referência): R$ ${resumoEconomia.varejo.toFixed(2).replace('.',',')}\n🎉 Desconto atacado (picolés): R$ ${economiaTotal.toFixed(2).replace('.',',')}\n🧾 *TOTAL A PAGAR: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}*\n━━━━━━━━━━━━━━━━━━━━━\n\n⚠️ _Pedido sujeito à confirmação da loja._\n_Sem retorno em 15 min, ligue/chame no WhatsApp: (16) 99606-2046_`;
         window.__encomendaEnviando = true;
         setBtnFinalizarState(false, { busy: true });
         document.getElementById('btn-finalizar-pedido').textContent = 'Abrindo WhatsApp...';
