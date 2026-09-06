@@ -1820,6 +1820,21 @@
         return totalMinutos >= (11 * 60) && totalMinutos < (21 * 60) && (minuto % 5 === 0);
     }
 
+    function resetarErroHorarioRetiradaEncomenda() {
+        var inputHora = document.getElementById('pedido-hora-retirada');
+        var erroHorario = document.getElementById('pedido-agendamento-erro');
+        if (!inputHora) return;
+        delete inputHora.dataset.invalidAutoclear;
+        delete inputHora.dataset.userTouched;
+        inputHora.setCustomValidity('');
+        inputHora.removeAttribute('aria-invalid');
+        if (erroHorario) {
+            erroHorario.textContent = '';
+            erroHorario.hidden = true;
+            erroHorario.setAttribute('aria-hidden', 'true');
+        }
+    }
+
     function sincronizarCampoHoraRetiradaEncomenda() {
         var inputHora = document.getElementById('pedido-hora-retirada');
         if (!inputHora) return false;
@@ -1836,15 +1851,17 @@
         if (invalidoPreenchido) {
             inputHora.value = '';
             inputHora.dataset.invalidAutoclear = '1';
+            inputHora.dataset.userTouched = '1';
             erroPendente = true;
         } else if (valorOriginal && horarioRetiradaEncomendaValido(valorOriginal)) {
             delete inputHora.dataset.invalidAutoclear;
             erroPendente = false;
         }
+        var mostrarErro = erroPendente && inputHora.dataset.userTouched === '1';
         if (erroHorario) {
-            erroHorario.textContent = erroPendente ? 'Escolha um horário entre 11h e antes de 21h.' : '';
-            erroHorario.hidden = !erroPendente;
-            erroHorario.setAttribute('aria-hidden', erroPendente ? 'false' : 'true');
+            erroHorario.textContent = mostrarErro ? 'Escolha um horário entre 11h e antes de 21h.' : '';
+            erroHorario.hidden = !mostrarErro;
+            erroHorario.setAttribute('aria-hidden', mostrarErro ? 'false' : 'true');
         }
         if (erroPendente) inputHora.setAttribute('aria-invalid', 'true');
         else inputHora.removeAttribute('aria-invalid');
@@ -1905,6 +1922,7 @@
             document.getElementById('pedido-ciencia').checked = false;
             document.getElementById('pedido-data-retirada').value = '';
             document.getElementById('pedido-hora-retirada').value = '';
+            resetarErroHorarioRetiradaEncomenda();
             document.getElementById('bloco-retirada').style.opacity = '0.4';
             document.getElementById('bloco-retirada').style.pointerEvents = 'none';
             document.getElementById('pedido-retirada').disabled = true;
@@ -1999,6 +2017,7 @@
                 inputHora.disabled = true;
                 inputData.value = '';
                 inputHora.value = '';
+                resetarErroHorarioRetiradaEncomenda();
                 setBtnFinalizarState(false);
             }
         } else {
@@ -2012,6 +2031,7 @@
             inputHora.disabled = true;
             inputData.value = '';
             inputHora.value = '';
+            resetarErroHorarioRetiradaEncomenda();
             setBtnFinalizarState(false);
         }
     };
@@ -2115,6 +2135,7 @@
         }
         if (!sincronizarCampoHoraRetiradaEncomenda() || !inputHoraRetirada.checkValidity()) {
             var erroHorarioRetirada = document.getElementById('pedido-agendamento-erro');
+            inputHoraRetirada.dataset.userTouched = '1';
             if (erroHorarioRetirada) {
                 erroHorarioRetirada.textContent = 'Escolha um horário entre 11h e antes de 21h.';
                 erroHorarioRetirada.hidden = false;
