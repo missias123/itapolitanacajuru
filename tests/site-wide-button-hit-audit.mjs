@@ -130,6 +130,11 @@ const BUTTON_SCAN_FN = (selector) => {
   const skippedInline = [];
 
   for (const el of candidates) {
+    if (typeof el.scrollIntoView === 'function') {
+      el.scrollIntoView({ block: 'center', inline: 'center' });
+    }
+    const settleUntil = performance.now() + 40;
+    while (performance.now() < settleUntil) {}
     const s = getComputedStyle(el);
     const r = el.getBoundingClientRect();
 
