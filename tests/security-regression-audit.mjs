@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = '/home/runner/work/itapolitanacajuru/itapolitanacajuru';
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 async function read(rel) {
   return readFile(join(root, rel), 'utf8');
