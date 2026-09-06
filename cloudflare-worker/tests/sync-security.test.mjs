@@ -207,6 +207,7 @@ test('busca pública do sorteio não expõe telefone nem metadata da inscrição
 test('busca pública do sorteio ainda encontra inscrição de meses anteriores sem expor PII', async () => {
   const env = createEnv();
   const id = 'sorteio-test-002';
+  await env.CLIENTES_KV.put('sorteio:idx:nasc-global:maria_teste__2000-01-02', id);
   await env.CLIENTES_KV.put(`sorteio:inscrito:${id}`, JSON.stringify({
     id,
     nome: 'Maria Teste',
@@ -221,6 +222,22 @@ test('busca pública do sorteio ainda encontra inscrição de meses anteriores s
   assert.equal(response.status, 200);
   assert.equal(response.json.found, true);
   assert.equal(JSON.stringify(response.json).includes('16912345678'), false);
+});
+
+test('cadastro do sorteio grava índice global privado para buscas futuras', async () => {
+  const env = createEnv();
+  const response = await request(env, '/api/promocao/cadastro', {
+    method: 'POST',
+    body: {
+      name: 'Cliente Sorteio',
+      birthdate: '1999-12-31',
+      phone: '16912345678',
+      regulation_accept: true,
+    },
+  });
+  assert.equal(response.status, 201);
+  const globalIndex = await env.CLIENTES_KV.get('sorteio:idx:nasc-global:cliente_sorteio__1999-12-31');
+  assert.equal(globalIndex, response.json.registrationId);
 });
 
 test('worker aplica headers rígidos de hardening nas respostas da API', async () => {
