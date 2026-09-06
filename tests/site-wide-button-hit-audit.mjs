@@ -133,8 +133,6 @@ const BUTTON_SCAN_FN = (selector) => {
     if (typeof el.scrollIntoView === 'function') {
       el.scrollIntoView({ block: 'center', inline: 'center' });
     }
-    const settleUntil = performance.now() + 40;
-    while (performance.now() < settleUntil) {}
     const s = getComputedStyle(el);
     const r = el.getBoundingClientRect();
 
