@@ -101,6 +101,7 @@ try {
       last: values[values.length - 1],
       count: values.length,
       hasBelowMin: values.includes('10:55'),
+      hasOffStep: values.includes('20:57'),
       hasAboveMax: values.includes('21:05'),
     };
   });
@@ -108,6 +109,7 @@ try {
   assert.equal(optionsInfo.last, '21:00', 'A última opção de horário deve ser 21:00.');
   assert.equal(optionsInfo.count, 121, 'A lista deve conter todos os horários de 5 em 5 minutos entre 11:00 e 21:00.');
   assert.equal(optionsInfo.hasBelowMin, false, 'A lista não pode incluir horários abaixo de 11:00.');
+  assert.equal(optionsInfo.hasOffStep, false, 'A lista não pode incluir horários fora do intervalo de 5 minutos.');
   assert.equal(optionsInfo.hasAboveMax, false, 'A lista não pode incluir horários acima de 21:00.');
 
   await page.$eval('#pedido-hora-retirada', (input) => {
