@@ -798,7 +798,7 @@
             <label style="display: block; font-weight: 800; font-size: 0.9rem; margin: 10px 0 6px; color: #333;">6. Horário para retirada da encomenda *</label>
             <input id="pedido-hora-retirada" type="time" min="11:00" max="20:55" step="300" aria-describedby="pedido-agendamento-instrucao pedido-agendamento-erro" aria-errormessage="pedido-agendamento-erro" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
             <small id="pedido-agendamento-instrucao" style="color: #666; display: block; margin-top: 6px;">Prazo mínimo de 5 dias corridos. A data só é liberada a partir desse prazo e o horário deve ficar entre 11h e antes de 21h.</small>
-            <small id="pedido-agendamento-erro" role="alert" aria-live="assertive" style="color:#C62828; display:block; margin-top:4px; min-height:1.2em;"></small>
+            <small id="pedido-agendamento-erro" role="alert" aria-live="assertive" hidden aria-hidden="true" style="color:#C62828; display:block; margin-top:4px; min-height:1.2em;"></small>
           </div>
         </div>
       </div>
@@ -1843,6 +1843,8 @@
         }
         if (erroHorario) {
             erroHorario.textContent = erroPendente ? 'Escolha um horário entre 11h e antes de 21h.' : '';
+            erroHorario.hidden = !erroPendente;
+            erroHorario.setAttribute('aria-hidden', erroPendente ? 'false' : 'true');
         }
         if (erroPendente) inputHora.setAttribute('aria-invalid', 'true');
         else inputHora.removeAttribute('aria-invalid');
