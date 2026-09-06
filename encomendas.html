@@ -1820,14 +1820,16 @@
     function sincronizarCampoHoraRetiradaEncomenda() {
         var inputHora = document.getElementById('pedido-hora-retirada');
         if (!inputHora) return false;
+        var valorOriginal = inputHora.value || '';
+        var invalidoPreenchido = Boolean(valorOriginal) && !horarioRetiradaEncomendaValido(valorOriginal);
+        var manterErroAnterior = !valorOriginal && inputHora.validity && inputHora.validity.customError;
         inputHora.min = '11:00';
         inputHora.max = '20:55';
-        if (inputHora.value && !horarioRetiradaEncomendaValido(inputHora.value)) {
+        if (invalidoPreenchido) {
             inputHora.value = '';
         }
-        var valido = !inputHora.value || horarioRetiradaEncomendaValido(inputHora.value);
-        inputHora.setCustomValidity(valido ? '' : 'Escolha um horário entre 11h e antes de 21h.');
-        return valido;
+        inputHora.setCustomValidity((invalidoPreenchido || manterErroAnterior) ? 'Escolha um horário entre 11h e antes de 21h.' : '');
+        return !(invalidoPreenchido || manterErroAnterior);
     }
 
     function prepararAgendamentoEncomenda() {
