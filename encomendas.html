@@ -2192,6 +2192,13 @@
         var id = mapa[rota];
         if (id) window.toggleSecao(id);
     }
+    function registrarListenerEncomenda(elemento, tipo, handler) {
+        if (!elemento || !tipo || typeof handler !== 'function') return;
+        if (!elemento.__encomendaListeners) elemento.__encomendaListeners = {};
+        if (elemento.__encomendaListeners[tipo]) return;
+        elemento.addEventListener(tipo, handler);
+        elemento.__encomendaListeners[tipo] = true;
+    }
     // Permite trocar de gaveta por link/hash sem recarregar a página e sem criar outro renderizador.
     window.addEventListener('hashchange', abrirSecaoPorRota);
     var inputDataRetirada = document.getElementById('pedido-data-retirada');
@@ -2200,15 +2207,14 @@
     var inputCienciaEncomenda = document.getElementById('pedido-ciencia');
     var inputNomeEncomenda = document.getElementById('pedido-nome');
     var inputWhatsappEncomenda = document.getElementById('pedido-whatsapp');
-    if (!window.__encomendaFormListenersRegistrados && inputNomeEncomenda && inputWhatsappEncomenda && inputDataRetirada && inputHoraRetirada && inputRetiradaConfirmada && inputCienciaEncomenda) {
-        inputNomeEncomenda.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
-        inputWhatsappEncomenda.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
-        inputDataRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
-        inputHoraRetirada.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
-        inputHoraRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
-        inputRetiradaConfirmada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
-        inputCienciaEncomenda.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
-        window.__encomendaFormListenersRegistrados = true;
+    if (inputNomeEncomenda && inputWhatsappEncomenda && inputDataRetirada && inputHoraRetirada && inputRetiradaConfirmada && inputCienciaEncomenda) {
+        registrarListenerEncomenda(inputNomeEncomenda, 'input', atualizarEstadoAgendamentoEncomenda);
+        registrarListenerEncomenda(inputWhatsappEncomenda, 'input', atualizarEstadoAgendamentoEncomenda);
+        registrarListenerEncomenda(inputDataRetirada, 'change', atualizarEstadoAgendamentoEncomenda);
+        registrarListenerEncomenda(inputHoraRetirada, 'input', atualizarEstadoAgendamentoEncomenda);
+        registrarListenerEncomenda(inputHoraRetirada, 'change', atualizarEstadoAgendamentoEncomenda);
+        registrarListenerEncomenda(inputRetiradaConfirmada, 'change', atualizarEstadoAgendamentoEncomenda);
+        registrarListenerEncomenda(inputCienciaEncomenda, 'change', atualizarEstadoAgendamentoEncomenda);
     }
     window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); window.validarWhatsapp(); });
 
