@@ -2199,6 +2199,17 @@
         elemento.addEventListener(tipo, handler);
         elemento.__encomendaListeners[tipo] = true;
     }
+    function campoDelegadoEncomenda(alvo) {
+        if (!alvo || !alvo.id) return false;
+        return [
+            'pedido-nome',
+            'pedido-whatsapp',
+            'pedido-data-retirada',
+            'pedido-hora-retirada',
+            'pedido-retirada',
+            'pedido-ciencia'
+        ].indexOf(alvo.id) !== -1;
+    }
     // Permite trocar de gaveta por link/hash sem recarregar a página e sem criar outro renderizador.
     window.addEventListener('hashchange', abrirSecaoPorRota);
     var inputDataRetirada = document.getElementById('pedido-data-retirada');
@@ -2208,13 +2219,14 @@
     var inputNomeEncomenda = document.getElementById('pedido-nome');
     var inputWhatsappEncomenda = document.getElementById('pedido-whatsapp');
     if (inputNomeEncomenda && inputWhatsappEncomenda && inputDataRetirada && inputHoraRetirada && inputRetiradaConfirmada && inputCienciaEncomenda) {
-        registrarListenerEncomenda(inputNomeEncomenda, 'input', atualizarEstadoAgendamentoEncomenda);
-        registrarListenerEncomenda(inputWhatsappEncomenda, 'input', atualizarEstadoAgendamentoEncomenda);
-        registrarListenerEncomenda(inputDataRetirada, 'change', atualizarEstadoAgendamentoEncomenda);
-        registrarListenerEncomenda(inputHoraRetirada, 'input', atualizarEstadoAgendamentoEncomenda);
-        registrarListenerEncomenda(inputHoraRetirada, 'change', atualizarEstadoAgendamentoEncomenda);
-        registrarListenerEncomenda(inputRetiradaConfirmada, 'change', atualizarEstadoAgendamentoEncomenda);
-        registrarListenerEncomenda(inputCienciaEncomenda, 'change', atualizarEstadoAgendamentoEncomenda);
+        registrarListenerEncomenda(document, 'input', function(event) {
+            if (!campoDelegadoEncomenda(event.target)) return;
+            atualizarEstadoAgendamentoEncomenda();
+        });
+        registrarListenerEncomenda(document, 'change', function(event) {
+            if (!campoDelegadoEncomenda(event.target)) return;
+            atualizarEstadoAgendamentoEncomenda();
+        });
     }
     window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); window.validarWhatsapp(); });
 
