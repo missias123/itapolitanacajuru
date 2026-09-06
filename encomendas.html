@@ -1064,6 +1064,7 @@
     // Chave: "Tipo|Sabor"; cada linha mantém preço, quantidade e subtotal próprios.
     var MAX_PICOLES_POR_SABOR = 250;
     var MIN_PICOLES_ATACADO = 100;
+    var IDS_CAIXAS_FLUXO_ACRESCIMOS = ['cx5l_2s', 'cx5l_3s', 'cx10l_2s', 'cx10l_3s'];
     var fluxoAcrescimosAutomaticoConcluido = false;
     window.toggleSecao = function(id) {
         var el = document.getElementById(id);
@@ -1110,7 +1111,10 @@
 
     function todasAsCaixasComSaboresSelecionados() {
         if (!Array.isArray(PRODUTOS) || PRODUTOS.length === 0) return false;
-        var caixasElegiveis = PRODUTOS.slice();
+        var caixasElegiveis = PRODUTOS.filter(function (produto) {
+            return IDS_CAIXAS_FLUXO_ACRESCIMOS.includes(produto.id);
+        });
+        if (caixasElegiveis.length === 0) caixasElegiveis = PRODUTOS.slice(0, 4);
         if (caixasElegiveis.length === 0) return false;
         var idsElegiveis = new Set(caixasElegiveis.map(function (produto) { return produto.id; }));
         var totalCaixasSelecionadas = carrinho.reduce(function (total, item) {
@@ -1128,10 +1132,11 @@
     function abrirAcrescimosComScroll() {
         var secaoId = 'sec-acrescimos';
         var secao = document.getElementById('sec-acrescimos');
-        if (!secao) return;
+        if (!secao) return false;
         if (secao.style.display !== 'block') window.toggleSecao(secaoId);
         var categoria = secao.closest('.categoria');
         (categoria || secao).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return true;
     }
 
     function atualizarFluxoAutomaticoCaixasParaAcrescimos() {
@@ -1140,8 +1145,7 @@
             return;
         }
         if (fluxoAcrescimosAutomaticoConcluido) return;
-        fluxoAcrescimosAutomaticoConcluido = true;
-        abrirAcrescimosComScroll();
+        if (abrirAcrescimosComScroll()) fluxoAcrescimosAutomaticoConcluido = true;
     }
 
     window.abrirModal = function(id) {
