@@ -2115,9 +2115,12 @@
         }
         if (!sincronizarCampoHoraRetiradaEncomenda() || !inputHoraRetirada.checkValidity()) {
             var erroHorarioRetirada = document.getElementById('pedido-agendamento-erro');
-            if (erroHorarioRetirada && !erroHorarioRetirada.textContent.trim()) {
+            if (erroHorarioRetirada) {
                 erroHorarioRetirada.textContent = 'Escolha um horário entre 11h e antes de 21h.';
+                erroHorarioRetirada.hidden = false;
+                erroHorarioRetirada.setAttribute('aria-hidden', 'false');
             }
+            inputHoraRetirada.setAttribute('aria-invalid', 'true');
             inputHoraRetirada.focus();
             return;
         }
