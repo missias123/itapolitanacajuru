@@ -94,8 +94,8 @@ try {
   const instruction = await page.$eval('#pedido-agendamento-instrucao', (node) => node.textContent.trim());
   assert.match(instruction, /5 dias corridos/i, 'A instrução precisa destacar o prazo de 5 dias corridos.');
 
-  const range = await page.$eval('#pedido-hora-retirada', (input) => ({ min: input.min, max: input.max }));
-  assert.deepEqual(range, { min: '11:00', max: '20:55' });
+  const range = await page.$eval('#pedido-hora-retirada', (input) => ({ min: input.min, max: input.max, step: input.step }));
+  assert.deepEqual(range, { min: '11:00', max: '20:55', step: '300' });
 
   await page.$eval('#pedido-hora-retirada', (input) => {
     input.value = '20:55';
@@ -118,11 +118,17 @@ try {
       value: input.value,
       valid: input.checkValidity(),
       message: document.getElementById('pedido-agendamento-erro')?.textContent?.trim() || '',
+      ariaInvalid: input.getAttribute('aria-invalid'),
+      errorHidden: document.getElementById('pedido-agendamento-erro')?.hidden,
+      errorAriaHidden: document.getElementById('pedido-agendamento-erro')?.getAttribute('aria-hidden'),
     };
   });
   assert.equal(belowMinimumResult.value, '', '10:55 deve ser descartado do campo.');
   assert.equal(belowMinimumResult.valid, false, '10:55 deve manter o campo inválido até o usuário corrigir.');
   assert.match(belowMinimumResult.message, /11h e 20:55.*5 minutos/i, '10:55 deve exibir a orientação correta.');
+  assert.equal(belowMinimumResult.ariaInvalid, 'true', '10:55 deve marcar aria-invalid.');
+  assert.equal(belowMinimumResult.errorHidden, false, '10:55 deve exibir o bloco de erro.');
+  assert.equal(belowMinimumResult.errorAriaHidden, 'false', '10:55 deve anunciar o erro.');
 
   const stepMismatchResult = await page.$eval('#pedido-hora-retirada', (input) => {
     input.value = '20:57';
@@ -132,11 +138,17 @@ try {
       value: input.value,
       valid: input.checkValidity(),
       message: document.getElementById('pedido-agendamento-erro')?.textContent?.trim() || '',
+      ariaInvalid: input.getAttribute('aria-invalid'),
+      errorHidden: document.getElementById('pedido-agendamento-erro')?.hidden,
+      errorAriaHidden: document.getElementById('pedido-agendamento-erro')?.getAttribute('aria-hidden'),
     };
   });
   assert.equal(stepMismatchResult.value, '', '20:57 deve ser descartado do campo.');
   assert.equal(stepMismatchResult.valid, false, '20:57 deve manter o campo inválido até o usuário corrigir.');
   assert.match(stepMismatchResult.message, /11h e 20:55.*5 minutos/i, '20:57 deve exibir a orientação correta.');
+  assert.equal(stepMismatchResult.ariaInvalid, 'true', '20:57 deve marcar aria-invalid.');
+  assert.equal(stepMismatchResult.errorHidden, false, '20:57 deve exibir o bloco de erro.');
+  assert.equal(stepMismatchResult.errorAriaHidden, 'false', '20:57 deve anunciar o erro.');
 
   const invalidResult = await page.$eval('#pedido-hora-retirada', (input) => {
     input.value = '21:00';
@@ -146,11 +158,17 @@ try {
       value: input.value,
       valid: input.checkValidity(),
       message: document.getElementById('pedido-agendamento-erro')?.textContent?.trim() || '',
+      ariaInvalid: input.getAttribute('aria-invalid'),
+      errorHidden: document.getElementById('pedido-agendamento-erro')?.hidden,
+      errorAriaHidden: document.getElementById('pedido-agendamento-erro')?.getAttribute('aria-hidden'),
     };
   });
   assert.equal(invalidResult.value, '', '21:00 deve ser descartado do campo.');
   assert.equal(invalidResult.valid, false, '21:00 deve manter o campo inválido até o usuário corrigir.');
   assert.match(invalidResult.message, /11h e 20:55.*5 minutos/i, '21:00 deve exibir a orientação correta.');
+  assert.equal(invalidResult.ariaInvalid, 'true', '21:00 deve marcar aria-invalid.');
+  assert.equal(invalidResult.errorHidden, false, '21:00 deve exibir o bloco de erro.');
+  assert.equal(invalidResult.errorAriaHidden, 'false', '21:00 deve anunciar o erro.');
 
   buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
     opacity: button.style.opacity,
@@ -166,10 +184,16 @@ try {
     return {
       valid: input.checkValidity(),
       message: document.getElementById('pedido-agendamento-erro')?.textContent?.trim() || '',
+      ariaInvalid: input.getAttribute('aria-invalid'),
+      errorHidden: document.getElementById('pedido-agendamento-erro')?.hidden,
+      errorAriaHidden: document.getElementById('pedido-agendamento-erro')?.getAttribute('aria-hidden'),
     };
   });
   assert.equal(clearedOnValidInput.valid, true, 'Um horário válido deve normalizar o campo.');
   assert.equal(clearedOnValidInput.message, '', 'Um horário válido deve limpar o aviso visual anterior.');
+  assert.equal(clearedOnValidInput.ariaInvalid, null, 'Um horário válido deve remover aria-invalid.');
+  assert.equal(clearedOnValidInput.errorHidden, true, 'Um horário válido deve ocultar o bloco de erro.');
+  assert.equal(clearedOnValidInput.errorAriaHidden, 'true', 'Um horário válido deve esconder o erro para leitores de tela.');
 
   await page.$eval('#pedido-whatsapp', (input) => {
     input.value = '';

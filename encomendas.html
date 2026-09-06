@@ -796,7 +796,7 @@
             <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">5. Data para retirada da encomenda *</label>
             <input id="pedido-data-retirada" type="date" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
             <label style="display: block; font-weight: 800; font-size: 0.9rem; margin: 10px 0 6px; color: #333;">6. Horário para retirada da encomenda *</label>
-            <input id="pedido-hora-retirada" type="time" min="11:00" max="20:55" step="300" aria-describedby="pedido-agendamento-instrucao pedido-agendamento-erro" aria-errormessage="pedido-agendamento-erro" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
+            <input id="pedido-hora-retirada" type="time" aria-describedby="pedido-agendamento-instrucao pedido-agendamento-erro" aria-errormessage="pedido-agendamento-erro" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
             <small id="pedido-agendamento-instrucao" style="color: #666; display: block; margin-top: 6px;">Prazo mínimo de 5 dias corridos para elaboração. Se precisar antes, consulte pronta entrega pelo WhatsApp. A data só é liberada a partir desse prazo e o horário deve ficar entre 11h e 20:55, em intervalos de 5 minutos.</small>
             <small id="pedido-agendamento-erro" role="alert" aria-live="assertive" hidden aria-hidden="true" style="color:#C62828; display:block; margin-top:4px; min-height:1.2em;"></small>
           </div>
@@ -1811,13 +1811,21 @@
         return data;
     }
 
+    var HORARIO_RETIRADA_ENCOMENDA_MIN = '11:00';
+    var HORARIO_RETIRADA_ENCOMENDA_MAX = '20:55';
+    var HORARIO_RETIRADA_ENCOMENDA_LIMITE = 21 * 60;
+    var HORARIO_RETIRADA_ENCOMENDA_STEP = 300;
+    var HORARIO_RETIRADA_ENCOMENDA_ERRO = 'Escolha um horário entre 11h e 20:55, em intervalos de 5 minutos.';
+
     function horarioRetiradaEncomendaValido(valorHora) {
         if (!/^\d{2}:\d{2}$/.test(valorHora || '')) return false;
         var partes = valorHora.split(':');
         var hora = Number(partes[0]);
         var minuto = Number(partes[1]);
         var totalMinutos = (hora * 60) + minuto;
-        return totalMinutos >= (11 * 60) && totalMinutos < (21 * 60) && (minuto % 5 === 0);
+        return totalMinutos >= ((Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(3, 5))) &&
+            totalMinutos < HORARIO_RETIRADA_ENCOMENDA_LIMITE &&
+            (totalMinutos % (HORARIO_RETIRADA_ENCOMENDA_STEP / 60) === 0);
     }
 
     function resetarErroHorarioRetiradaEncomenda() {
@@ -1840,8 +1848,9 @@
         if (!inputHora) return false;
         var erroHorario = document.getElementById('pedido-agendamento-erro');
         var valorOriginal = inputHora.value || '';
-        inputHora.min = '11:00';
-        inputHora.max = '20:55';
+        inputHora.min = HORARIO_RETIRADA_ENCOMENDA_MIN;
+        inputHora.max = HORARIO_RETIRADA_ENCOMENDA_MAX;
+        inputHora.step = String(HORARIO_RETIRADA_ENCOMENDA_STEP);
         inputHora.setCustomValidity('');
         var invalidoPreenchido = Boolean(valorOriginal) && (
             !horarioRetiradaEncomendaValido(valorOriginal) ||
@@ -1859,13 +1868,13 @@
         }
         var mostrarErro = erroPendente && inputHora.dataset.userTouched === '1';
         if (erroHorario) {
-            erroHorario.textContent = mostrarErro ? 'Escolha um horário entre 11h e 20:55, em intervalos de 5 minutos.' : '';
+            erroHorario.textContent = mostrarErro ? HORARIO_RETIRADA_ENCOMENDA_ERRO : '';
             erroHorario.hidden = !mostrarErro;
             erroHorario.setAttribute('aria-hidden', mostrarErro ? 'false' : 'true');
         }
         if (erroPendente) inputHora.setAttribute('aria-invalid', 'true');
         else inputHora.removeAttribute('aria-invalid');
-        inputHora.setCustomValidity(erroPendente ? 'Escolha um horário entre 11h e 20:55, em intervalos de 5 minutos.' : '');
+        inputHora.setCustomValidity(erroPendente ? HORARIO_RETIRADA_ENCOMENDA_ERRO : '');
         return !erroPendente;
     }
 
@@ -2137,7 +2146,7 @@
             var erroHorarioRetirada = document.getElementById('pedido-agendamento-erro');
             inputHoraRetirada.dataset.userTouched = '1';
             if (erroHorarioRetirada) {
-                erroHorarioRetirada.textContent = 'Escolha um horário entre 11h e 20:55, em intervalos de 5 minutos.';
+                erroHorarioRetirada.textContent = HORARIO_RETIRADA_ENCOMENDA_ERRO;
                 erroHorarioRetirada.hidden = false;
                 erroHorarioRetirada.setAttribute('aria-hidden', 'false');
             }
