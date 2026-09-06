@@ -1855,7 +1855,7 @@
         inputData.min = getSaoPauloDatePart(dataMinima);
         if (inputData.value && inputData.value < inputData.min) inputData.value = '';
         sincronizarCampoHoraRetiradaEncomenda();
-        setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda());
+        setBtnFinalizarState(podeFinalizarEncomenda());
     }
 
     function validarAgendamentoEncomenda() {
@@ -1869,8 +1869,21 @@
         return true;
     }
 
+    function podeFinalizarEncomenda() {
+        var nome = document.getElementById('pedido-nome').value.trim();
+        var retiradaConfirmada = document.getElementById('pedido-retirada').checked;
+        var tel = document.getElementById('pedido-whatsapp').value.trim().replace(/\D/g, '');
+        var cienciaConfirmada = document.getElementById('pedido-ciencia').checked;
+        return !window.__encomendaEnviando &&
+            nome.length >= 3 &&
+            retiradaConfirmada &&
+            /^16\d{8,9}$/.test(tel) &&
+            cienciaConfirmada &&
+            validarAgendamentoEncomenda();
+    }
+
     function atualizarEstadoAgendamentoEncomenda() {
-        setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda());
+        setBtnFinalizarState(podeFinalizarEncomenda());
     }
 
     // FUNÇÕES DO FLUXO DE 3 ETAPAS
@@ -1906,7 +1919,7 @@
         atualizarResumoEconomiaPicoles();
         prepararAgendamentoEncomenda();
         window.validarNome();
-        setBtnFinalizarState(!window.__encomendaEnviando && validarAgendamentoEncomenda() && document.getElementById('pedido-ciencia').checked);
+        setBtnFinalizarState(podeFinalizarEncomenda());
     };
 
     window.voltarParaRevisao = function() {
@@ -1974,7 +1987,7 @@
                 inputData.disabled = false;
                 inputHora.disabled = false;
                 prepararAgendamentoEncomenda();
-                setBtnFinalizarState(!window.__encomendaEnviando && validarAgendamentoEncomenda());
+                setBtnFinalizarState(podeFinalizarEncomenda());
             } else {
                 blocoAgendamento.style.opacity = '0.4';
                 blocoAgendamento.style.pointerEvents = 'none';
@@ -2148,6 +2161,10 @@
     var inputHoraRetirada = document.getElementById('pedido-hora-retirada');
     var inputRetiradaConfirmada = document.getElementById('pedido-retirada');
     var inputCienciaEncomenda = document.getElementById('pedido-ciencia');
+    var inputNomeEncomenda = document.getElementById('pedido-nome');
+    var inputWhatsappEncomenda = document.getElementById('pedido-whatsapp');
+    inputNomeEncomenda.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
+    inputWhatsappEncomenda.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
     inputDataRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
     inputHoraRetirada.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
     inputHoraRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
