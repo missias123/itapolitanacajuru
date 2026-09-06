@@ -819,9 +819,14 @@ async function handleLoginCliente(request, env) {
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
   const cel = String(body.cel || '').replace(/\D/g, '');
-  const cliente = await env.CLIENTES_KV.get(`cli:${cel}`, 'json');
-  if (!cliente) return jsonResp({ ok: false, error: 'Cliente não encontrado' }, 404);
-  return jsonResp({ ok: true, cliente });
+  if (!/^169\d{8}$/.test(cel)) return jsonResp({ ok: false, error: 'Celular inválido (DDD 16 + 9 dígitos)' }, 400);
+  const exists = await env.CLIENTES_KV.get(`cli:${cel}`);
+  if (!exists) return jsonResp({ ok: false, error: 'Cliente não encontrado' }, 404);
+  return jsonResp({
+    ok: false,
+    error: 'Login do cliente exige verificação adicional e não retorna dados sensíveis sem OTP.',
+    code: 'ADDITIONAL_VERIFICATION_REQUIRED',
+  }, 403);
 }
 
 async function handleGetClientes(env) {
@@ -1033,7 +1038,8 @@ async function handleGetSorteioBuscar(request, env, url) {
   const id = await env.CLIENTES_KV.get(sorteioNascKey(nome, dataNasc, loteMes));
   if (!id) return jsonResp({ found: false });
   const insc = await env.CLIENTES_KV.get(`sorteio:inscrito:${id}`, 'json');
-  return jsonResp({ found: true, registration: { id, phone: insc.phone, created_at: insc.created_at } });
+  if (!insc) return jsonResp({ found: false });
+  return jsonResp({ found: true });
 }
 
 async function handleGetSorteioInscritos(env) {
