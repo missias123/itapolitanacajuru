@@ -2144,9 +2144,13 @@
     window.addEventListener('hashchange', abrirSecaoPorRota);
     var inputDataRetirada = document.getElementById('pedido-data-retirada');
     var inputHoraRetirada = document.getElementById('pedido-hora-retirada');
+    var inputRetiradaConfirmada = document.getElementById('pedido-retirada');
+    var inputCienciaEncomenda = document.getElementById('pedido-ciencia');
     inputDataRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
     inputHoraRetirada.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
     inputHoraRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
+    inputRetiradaConfirmada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
+    inputCienciaEncomenda.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
     window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); window.validarWhatsapp(); });
 
     // Inicialização única: renderiza uma prévia e, em seguida, substitui pelos dados oficiais do estoque.
