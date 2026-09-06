@@ -1823,10 +1823,14 @@
         if (!inputHora) return false;
         var erroHorario = document.getElementById('pedido-agendamento-erro');
         var valorOriginal = inputHora.value || '';
-        var invalidoPreenchido = Boolean(valorOriginal) && !horarioRetiradaEncomendaValido(valorOriginal);
-        var erroPendente = inputHora.dataset.invalidAutoclear === '1';
         inputHora.min = '11:00';
         inputHora.max = '20:55';
+        inputHora.setCustomValidity('');
+        var invalidoPreenchido = Boolean(valorOriginal) && (
+            !horarioRetiradaEncomendaValido(valorOriginal) ||
+            !inputHora.checkValidity()
+        );
+        var erroPendente = inputHora.dataset.invalidAutoclear === '1';
         if (invalidoPreenchido) {
             inputHora.value = '';
             inputHora.dataset.invalidAutoclear = '1';
