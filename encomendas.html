@@ -2200,8 +2200,13 @@
         elemento.__encomendaListeners[tipo] = true;
     }
     function campoDelegadoEncomenda(alvo) {
-        if (!alvo || typeof alvo.closest !== 'function') return false;
-        return !!alvo.closest('#pedido-nome, #pedido-whatsapp, #pedido-data-retirada, #pedido-hora-retirada, #pedido-retirada, #pedido-ciencia');
+        if (!alvo || !alvo.id) return false;
+        return alvo.id === 'pedido-nome' ||
+            alvo.id === 'pedido-whatsapp' ||
+            alvo.id === 'pedido-data-retirada' ||
+            alvo.id === 'pedido-hora-retirada' ||
+            alvo.id === 'pedido-retirada' ||
+            alvo.id === 'pedido-ciencia';
     }
     // Permite trocar de gaveta por link/hash sem recarregar a página e sem criar outro renderizador.
     window.addEventListener('hashchange', abrirSecaoPorRota);
