@@ -122,7 +122,7 @@ try {
   });
   assert.equal(belowMinimumResult.value, '', '10:55 deve ser descartado do campo.');
   assert.equal(belowMinimumResult.valid, false, '10:55 deve manter o campo inválido até o usuário corrigir.');
-  assert.match(belowMinimumResult.message, /11h e antes de 21h/i, '10:55 deve exibir a orientação correta.');
+  assert.match(belowMinimumResult.message, /11h e 20:55.*5 minutos/i, '10:55 deve exibir a orientação correta.');
 
   const stepMismatchResult = await page.$eval('#pedido-hora-retirada', (input) => {
     input.value = '20:57';
@@ -136,7 +136,7 @@ try {
   });
   assert.equal(stepMismatchResult.value, '', '20:57 deve ser descartado do campo.');
   assert.equal(stepMismatchResult.valid, false, '20:57 deve manter o campo inválido até o usuário corrigir.');
-  assert.match(stepMismatchResult.message, /11h e antes de 21h/i, '20:57 deve exibir a orientação correta.');
+  assert.match(stepMismatchResult.message, /11h e 20:55.*5 minutos/i, '20:57 deve exibir a orientação correta.');
 
   const invalidResult = await page.$eval('#pedido-hora-retirada', (input) => {
     input.value = '21:00';
@@ -150,7 +150,7 @@ try {
   });
   assert.equal(invalidResult.value, '', '21:00 deve ser descartado do campo.');
   assert.equal(invalidResult.valid, false, '21:00 deve manter o campo inválido até o usuário corrigir.');
-  assert.match(invalidResult.message, /11h e antes de 21h/i, '21:00 deve exibir a orientação correta.');
+  assert.match(invalidResult.message, /11h e 20:55.*5 minutos/i, '21:00 deve exibir a orientação correta.');
 
   buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
     opacity: button.style.opacity,
