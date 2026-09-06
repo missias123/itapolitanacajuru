@@ -54,9 +54,34 @@ try {
   await page.waitForSelector('#modal-carrinho', { timeout: 10000 });
   await page.click('#btn-prosseguir');
 
+  let buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
+    opacity: button.style.opacity,
+    pointerEvents: button.style.pointerEvents,
+  }));
+  assert.equal(buttonState.opacity, '0.5', 'Sem preencher os campos obrigatórios, o botão deve iniciar bloqueado.');
+  assert.equal(buttonState.pointerEvents, 'none', 'Sem preencher os campos obrigatórios, o botão não pode liberar a finalização.');
+
   await page.type('#pedido-nome', 'Teste Encomenda');
+  buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
+    opacity: button.style.opacity,
+    pointerEvents: button.style.pointerEvents,
+  }));
+  assert.equal(buttonState.opacity, '0.5', 'Só o nome preenchido não deve liberar a finalização.');
+
   await page.click('#pedido-retirada');
+  buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
+    opacity: button.style.opacity,
+    pointerEvents: button.style.pointerEvents,
+  }));
+  assert.equal(buttonState.opacity, '0.5', 'Sem WhatsApp válido, o botão deve continuar bloqueado.');
+
   await page.type('#pedido-whatsapp', '(16) 99999-9999');
+  buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
+    opacity: button.style.opacity,
+    pointerEvents: button.style.pointerEvents,
+  }));
+  assert.equal(buttonState.opacity, '0.5', 'Sem a ciência e o agendamento, o botão deve continuar bloqueado.');
+
   await page.click('#pedido-ciencia');
 
   const dataMinima = await page.$eval('#pedido-data-retirada', (input) => input.min);
@@ -78,7 +103,7 @@ try {
     input.dispatchEvent(new Event('change', { bubbles: true }));
   });
 
-  let buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
+  buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
     opacity: button.style.opacity,
     pointerEvents: button.style.pointerEvents,
   }));
@@ -145,6 +170,16 @@ try {
   });
   assert.equal(clearedOnValidInput.valid, true, 'Um horário válido deve normalizar o campo.');
   assert.equal(clearedOnValidInput.message, '', 'Um horário válido deve limpar o aviso visual anterior.');
+
+  await page.$eval('#pedido-whatsapp', (input) => {
+    input.value = '';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
+    opacity: button.style.opacity,
+    pointerEvents: button.style.pointerEvents,
+  }));
+  assert.equal(buttonState.opacity, '0.5', 'Se o WhatsApp ficar inválido novamente, o botão deve voltar a bloquear.');
 
   await page.close();
 } finally {
