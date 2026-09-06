@@ -469,7 +469,7 @@
       titulo: '📦 Encomendas e Retirada',
       textos: [
         '✅ Pedidos de caixas de sorvete e picolés em atacado (mín. 100 un.).',
-        '✅ Retirada exclusiva na loja física com antecedência de até 5 dias úteis.',
+        '✅ Prazo mínimo de 5 dias corridos para elaboração ou consulte pronta entrega pelo WhatsApp.',
         '✅ Não realizamos entregas (delivery).'
       ],
       linkTexto: 'Fazer Encomenda',

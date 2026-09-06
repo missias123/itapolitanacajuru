@@ -725,7 +725,7 @@ body { overflow-x: hidden; }
             <strong>Referência oficial:</strong> esta ordem reproduz exatamente os quatro cards da página inicial de hoje. Edite aqui somente os textos visíveis no cabeçalho dos cards; os produtos e preços continuam sendo carregados da base única de produtos.
           </div>
           <div class="campo-edit"><label>Título da seção</label><input type="text" id="home-enc-titulo" maxlength="60" placeholder="Encomendas &amp; Complementos"/><div class="hint">Texto exibido acima dos quatro cards.</div></div>
-          <div class="campo-edit"><label>Subtítulo da seção</label><input type="text" id="home-enc-subtitulo" maxlength="90" placeholder="Peça com antecedência · Retirada na loja"/><div class="hint">Mensagem exibida logo abaixo do título.</div></div>
+          <div class="campo-edit"><label>Subtítulo da seção</label><input type="text" id="home-enc-subtitulo" maxlength="90" placeholder="5 dias corridos para elaboração · pronta entrega no WhatsApp"/><div class="hint">Mensagem exibida logo abaixo do título.</div></div>
           <div class="admin-site-mirror-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px">
             <div class="admin-site-mirror-card" style="border:1px solid #b7c9e8;border-radius:14px;padding:14px;background:linear-gradient(145deg,#123b97,#1f56c3);color:#fff">
               <strong style="display:block;font-size:1rem;margin-bottom:10px">1 · Sorvete em Caixa</strong>
@@ -1212,7 +1212,7 @@ body { overflow-x: hidden; }
         <div class="card-body">
           <div class="campo-edit">
             <label>Aviso de prazo das encomendas</label>
-            <textarea id="enc-aviso" rows="3" placeholder="Prazo mínimo de 03 dias úteis..."></textarea>
+            <textarea id="enc-aviso" rows="3" placeholder="Prazo mínimo de 5 dias corridos para elaboração..."></textarea>
             <div class="hint">Mensagem exibida ao cliente ao abrir o campo de encomendas. Max. 300 caracteres.</div>
           </div>
           <div class="campo-edit">
@@ -2579,16 +2579,16 @@ Talento</textarea>
         <div class="card-header"><h2>🛒 Encomendas — Configurações</h2><button class="btn btn-salvar" onclick="salvarEncomendas()">💾 Salvar</button></div>
         <div class="card-body">
           <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 16px;font-size:.82rem">
-            📌 <strong>Sobre encomendas:</strong> Configure o banner hero, badges e metadados SEO da página encomendas.html. Campos salvos em <code>dados/config.json → encomendasPagina{}</code> e <code>seoPaginas.encomendas{}</code>.
+            📌 <strong>Sobre encomendas:</strong> Configure o banner hero, badges e metadados SEO da página encomendas.html. A regra atual é prazo mínimo de 5 dias corridos para elaboração ou consulta de pronta entrega pelo WhatsApp. Campos salvos em <code>dados/config.json → encomendasPagina{}</code> e <code>seoPaginas.encomendas{}</code>.
           </div>
 
           <div class="seção-título">🏷️ Metadados SEO</div>
           <div class="campo-edit"><label>Título da Página (&lt;title&gt;)</label><input type="text" id="cfg-seo-encomendas-titulo" maxlength="80" placeholder="Encomendas | Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador e nos resultados de busca.</div></div>
-          <div class="campo-edit"><label>Descrição Meta (SEO)</label><textarea id="cfg-seo-encomendas-descricao" rows="2" maxlength="160" placeholder="Faça sua encomenda de sorvetes, tortas e picolés para festas e eventos em Cajuru/SP."></textarea><div class="hint">Descrição exibida nos resultados de busca do Google (máx. 160 caracteres).</div></div>
+          <div class="campo-edit"><label>Descrição Meta (SEO)</label><textarea id="cfg-seo-encomendas-descricao" rows="2" maxlength="160" placeholder="Faça sua encomenda de sorvetes, tortas e picolés para festas em Cajuru/SP. Prazo mínimo de 5 dias corridos ou consulte pronta entrega no WhatsApp."></textarea><div class="hint">Descrição exibida nos resultados de busca do Google (máx. 160 caracteres).</div></div>
 
           <div class="seção-título" style="margin-top:20px">🎯 Hero Banner</div>
           <div class="campo-edit"><label>Título Hero (permite HTML)</label><input type="text" id="encomendas-hero-titulo" maxlength="150" placeholder="🛒 Cardápio e Encomendas <span class=&quot;destaque&quot;>Itapolitana Cajuru</span>"/><div class="hint">Título principal do hero. Pode conter HTML para estilização (ex: &lt;span class="destaque"&gt;).</div></div>
-          <div class="campo-edit"><label>Descrição Hero</label><textarea id="encomendas-hero-descricao" rows="3" maxlength="250" placeholder="Sorvete Sorvete Itapolitana em caixa, tortas geladas, picolés em atacado e acréscimos..."></textarea><div class="hint">Texto descritivo abaixo do título hero (máx. 250 caracteres).</div></div>
+          <div class="campo-edit"><label>Descrição Hero</label><textarea id="encomendas-hero-descricao" rows="3" maxlength="250" placeholder="Carrinho para eventos, caixas 5L e 10L, tortas geladas, picolés no atacado e acréscimos. Pedidos com 5 dias corridos ou pronta entrega no WhatsApp."></textarea><div class="hint">Texto descritivo abaixo do título hero (máx. 250 caracteres).</div></div>
           <div class="campo-edit"><label>Badges do Hero (um por linha)</label><textarea id="encomendas-hero-badges" rows="5" maxlength="300" placeholder="✨ Sorvete Itapolitana&#10;🍦 39 sabores&#10;🎂 Tortas Especiais"></textarea><div class="hint">Badges exibidos abaixo do hero (uma linha = um badge).</div></div>
 
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarEncomendas()">💾 Salvar Encomendas</button></div>
@@ -3801,12 +3801,12 @@ function preencherHome(){
   document.getElementById('index-quem-somos-titulo').value=idxPag.quemSomosTitulo||'';
   // Espelho dos quatro cards de encomendas
   document.getElementById('home-enc-titulo').value=idxPag.encomendasTitulo||'Encomendas & Complementos';
-  document.getElementById('home-enc-subtitulo').value=idxPag.encomendasSubtitulo||'Peça com antecedência · Retirada na loja';
+  document.getElementById('home-enc-subtitulo').value=idxPag.encomendasSubtitulo||'5 dias corridos para elaboração · pronta entrega no WhatsApp';
   const encCards = idxPag.encomendasCards || {};
   const defCards = {
-    caixas: {titulo: 'Sorvete em Caixa', subtitulo: 'Veja tamanhos e escolha seu favorito', acao: 'Clique para abrir'},
-    tortas: {titulo: 'Torta de Sorvete', subtitulo: 'Escolha a torta para o seu momento especial', acao: 'Clique para abrir'},
-    picoles: {titulo: 'Picolés', subtitulo: 'Opções para festas, eventos e atacado', acao: 'Clique para abrir'},
+    caixas: {titulo: 'Sorvete em Caixa', subtitulo: '5L e 10L · 5 dias corridos ou pronta entrega no WhatsApp', acao: 'Clique para abrir'},
+    tortas: {titulo: 'Torta de Sorvete', subtitulo: 'Sob encomenda · 5 dias corridos ou pronta entrega no WhatsApp', acao: 'Clique para abrir'},
+    picoles: {titulo: 'Picolés', subtitulo: 'Atacado e eventos · 5 dias corridos ou pronta entrega no WhatsApp', acao: 'Clique para abrir'},
     acrescimos: {titulo: 'Acréscimos', subtitulo: 'Monte sua combinação com coberturas e complementos', acao: 'Clique para abrir'}
   };
   ['caixas','tortas','picoles','acrescimos'].forEach(k => {
@@ -4628,7 +4628,7 @@ function copiarPedidoAdmin(numPedido){
     });
   }
   if(e.total)txt+=`\n💰 TOTAL: R$ ${parseFloat(e.total).toFixed(2).replace('.',',')}\n`;
-  txt+=`\n⏰ Produzido em até 3 dias úteis após confirmação do pagamento.\n💳 Pagamento antecipado obrigatório.`;
+  txt+=`\n⏰ Produção com prazo mínimo de 5 dias corridos após confirmação do pagamento.\n📲 Se precisar antes, consulte pronta entrega pelo WhatsApp.\n💳 Pagamento antecipado obrigatório.`;
   copiarTextoSeguro(txt).then((ok)=>toast(ok?'✅ Pedido copiado!':'Erro ao copiar',ok?'sucesso':'erro'));
 }
 async function alterarStatusEncomenda(idx,novoStatus){
@@ -7048,9 +7048,9 @@ function carregarEncomendas() {
     prefillLog('[carregarEncomendas] encomendasPagina', ep);
 
     setFieldValue('cfg-seo-encomendas-titulo', seo.titulo || 'Encomendas | Sorveteria Itapolitana Cajuru', 'encomendas.seo.titulo');
-    setFieldValue('cfg-seo-encomendas-descricao', seo.descricao || 'Faça sua encomenda de sorvetes, tortas e picolés para festas e eventos em Cajuru/SP.', 'encomendas.seo.descricao');
+    setFieldValue('cfg-seo-encomendas-descricao', seo.descricao || 'Faça sua encomenda de sorvetes, tortas e picolés para festas em Cajuru/SP. Prazo mínimo de 5 dias corridos ou consulte pronta entrega no WhatsApp.', 'encomendas.seo.descricao');
     setFieldValue('encomendas-hero-titulo', ep.heroTitulo || '🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span>', 'encomendas.hero.titulo');
-    setFieldValue('encomendas-hero-descricao', ep.heroDescricao || 'Sorvete sorvete Itapolitana em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!', 'encomendas.hero.descricao');
+    setFieldValue('encomendas-hero-descricao', ep.heroDescricao || 'Carrinho para eventos, caixas de sorvete 5L e 10L, tortas geladas, picolés no atacado e acréscimos. Pedidos de encomendas têm 5 dias corridos para elaboração ou consulte pronta entrega pelo WhatsApp.', 'encomendas.hero.descricao');
     setFieldValue('encomendas-hero-badges', Array.isArray(ep.heroBadges) ? ep.heroBadges.join('\n') : '', 'encomendas.hero.badges');
   } catch (e) {
     console.error('[carregarEncomendas] Falha ao carregar seção Encomendas', e);
