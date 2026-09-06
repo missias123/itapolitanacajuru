@@ -1817,6 +1817,15 @@
     var HORARIO_RETIRADA_ENCOMENDA_MAX = '21:00';
     var HORARIO_RETIRADA_ENCOMENDA_STEP = 300;
     var HORARIO_RETIRADA_ENCOMENDA_ERRO = 'Escolha um horário entre 11h e 21h, em intervalos de 5 minutos.';
+    function obterPassoMinutosHorarioRetiradaEncomenda() {
+        var passoEmMinutos = Number(HORARIO_RETIRADA_ENCOMENDA_STEP) / 60;
+        if (!Number.isFinite(passoEmMinutos) || passoEmMinutos <= 0) return 5;
+        return Math.max(1, Math.round(passoEmMinutos));
+    }
+    function primeiroMinutoValidoHorarioRetiradaEncomenda(minMinutos, passoMinutos) {
+        var resto = ((minMinutos % passoMinutos) + passoMinutos) % passoMinutos;
+        return resto === 0 ? minMinutos : (minMinutos + (passoMinutos - resto));
+    }
 
     function horarioRetiradaEncomendaValido(valorHora) {
         if (!/^\d{2}:\d{2}$/.test(valorHora || '')) return false;
@@ -1826,9 +1835,24 @@
         var totalMinutos = (hora * 60) + minuto;
         var minMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(3, 5));
         var maxMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(3, 5));
+        var passoMinutos = obterPassoMinutosHorarioRetiradaEncomenda();
         return totalMinutos >= minMinutos &&
             totalMinutos <= maxMinutos &&
-            (totalMinutos % (HORARIO_RETIRADA_ENCOMENDA_STEP / 60) === 0);
+            (totalMinutos % passoMinutos === 0);
+    }
+
+    function assinaturaOpcoesHoraRetiradaEncomenda() {
+        return [HORARIO_RETIRADA_ENCOMENDA_MIN, HORARIO_RETIRADA_ENCOMENDA_MAX, HORARIO_RETIRADA_ENCOMENDA_STEP].join('|');
+    }
+
+    function quantidadeEsperadaOpcoesHoraRetiradaEncomenda() {
+        var minMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(3, 5));
+        var maxMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(3, 5));
+        var passoMinutos = obterPassoMinutosHorarioRetiradaEncomenda();
+        var quantidadeHorarios = 0;
+        var inicio = primeiroMinutoValidoHorarioRetiradaEncomenda(minMinutos, passoMinutos);
+        for (var total = inicio; total <= maxMinutos; total += passoMinutos) quantidadeHorarios += 1;
+        return quantidadeHorarios + 1;
     }
 
     function popularOpcoesHoraRetiradaEncomenda() {
@@ -1836,6 +1860,12 @@
         if (!inputHora) return;
         var valorAtual = inputHora.value || '';
         var placeholder = (inputHora.options && inputHora.options[0] && inputHora.options[0].textContent) || 'Selecione um horário';
+        var assinaturaAtual = assinaturaOpcoesHoraRetiradaEncomenda();
+        var quantidadeEsperada = quantidadeEsperadaOpcoesHoraRetiradaEncomenda();
+        if (inputHora.dataset.optionsSignature === assinaturaAtual && inputHora.options.length === quantidadeEsperada) {
+            if (valorAtual && horarioRetiradaEncomendaValido(valorAtual)) inputHora.value = valorAtual;
+            return;
+        }
         while (inputHora.firstChild) inputHora.removeChild(inputHora.firstChild);
         var opcaoPlaceholder = document.createElement('option');
         opcaoPlaceholder.value = '';
@@ -1843,8 +1873,9 @@
         inputHora.appendChild(opcaoPlaceholder);
         var minMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(3, 5));
         var maxMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(3, 5));
-        var passoMinutos = Number(HORARIO_RETIRADA_ENCOMENDA_STEP / 60) || 5;
-        for (var total = minMinutos; total <= maxMinutos; total += passoMinutos) {
+        var passoMinutos = obterPassoMinutosHorarioRetiradaEncomenda();
+        var inicio = primeiroMinutoValidoHorarioRetiradaEncomenda(minMinutos, passoMinutos);
+        for (var total = inicio; total <= maxMinutos; total += passoMinutos) {
             var hora = String(Math.floor(total / 60)).padStart(2, '0');
             var minuto = String(total % 60).padStart(2, '0');
             var valor = hora + ':' + minuto;
@@ -1853,6 +1884,7 @@
             opcao.textContent = valor;
             inputHora.appendChild(opcao);
         }
+        inputHora.dataset.optionsSignature = assinaturaAtual;
         if (valorAtual && horarioRetiradaEncomendaValido(valorAtual)) inputHora.value = valorAtual;
         else inputHora.value = '';
     }
