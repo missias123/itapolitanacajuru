@@ -2140,9 +2140,11 @@
     }
     // Permite trocar de gaveta por link/hash sem recarregar a página e sem criar outro renderizador.
     window.addEventListener('hashchange', abrirSecaoPorRota);
-    document.getElementById('pedido-data-retirada').addEventListener('change', atualizarEstadoAgendamentoEncomenda);
-    document.getElementById('pedido-hora-retirada').addEventListener('input', atualizarEstadoAgendamentoEncomenda);
-    document.getElementById('pedido-hora-retirada').addEventListener('change', atualizarEstadoAgendamentoEncomenda);
+    var inputDataRetirada = document.getElementById('pedido-data-retirada');
+    var inputHoraRetirada = document.getElementById('pedido-hora-retirada');
+    inputDataRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
+    inputHoraRetirada.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
+    inputHoraRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
     window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); window.validarWhatsapp(); });
 
     // Inicialização única: renderiza uma prévia e, em seguida, substitui pelos dados oficiais do estoque.
