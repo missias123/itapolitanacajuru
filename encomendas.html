@@ -1110,9 +1110,7 @@
 
     function todasAsCaixasComSaboresSelecionados() {
         if (!Array.isArray(PRODUTOS) || PRODUTOS.length === 0) return false;
-        var caixasElegiveis = PRODUTOS.filter(function (produto) {
-            return String(produto && produto.id || '').toLowerCase().indexOf('cx') === 0;
-        });
+        var caixasElegiveis = PRODUTOS.slice();
         if (caixasElegiveis.length === 0) return false;
         var idsElegiveis = new Set(caixasElegiveis.map(function (produto) { return produto.id; }));
         var totalCaixasSelecionadas = carrinho.reduce(function (total, item) {
