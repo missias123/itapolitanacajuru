@@ -3,7 +3,7 @@ const { test, expect } = require('@playwright/test');
 test.describe('Admin catálogo - edição manual', () => {
   test('marca o produto como esgotado automaticamente ao editar', async ({ page }) => {
     await page.addInitScript(() => {
-      sessionStorage.setItem('itap_github_token', 'ghp_' + 'a'.repeat(36));
+      sessionStorage.setItem('itap_worker_session_token', 'sessao-admin-teste');
     });
 
     await page.goto('/admin-catalogo.html', { waitUntil: 'domcontentloaded' });
@@ -27,7 +27,7 @@ test.describe('Admin catálogo - edição manual', () => {
 
   test('permite esgotar e reativar manualmente no catálogo antes de salvar', async ({ page }) => {
     await page.addInitScript(() => {
-      sessionStorage.setItem('itap_github_token', 'ghp_' + 'a'.repeat(36));
+      sessionStorage.setItem('itap_worker_session_token', 'sessao-admin-teste');
     });
 
     await page.goto('/admin-catalogo.html', { waitUntil: 'domcontentloaded' });

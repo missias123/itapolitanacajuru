@@ -166,3 +166,40 @@ test('lista encomendas mascaradas por padrão e libera sensível só com manage'
     globalThis.fetch = originalFetch;
   }
 });
+
+
+test('bloqueia login de cliente sem verificação adicional e não retorna PII', async () => {
+  const env = createEnv();
+  await env.CLIENTES_KV.put('cli:16912345678', JSON.stringify({
+    cel: '16912345678',
+    saldoPontos: 12,
+    codigosUsados: ['ABC'],
+  }));
+
+  const { status, json } = await request(env, '/api/clientes/login', {
+    method: 'POST',
+    body: { cel: '16912345678' },
+  });
+
+  assert.equal(status, 403);
+  assert.equal(json.code, 'ADDITIONAL_VERIFICATION_REQUIRED');
+  assert.equal('cliente' in json, false);
+});
+
+test('busca pública do sorteio não expõe telefone nem metadata da inscrição', async () => {
+  const env = createEnv();
+  const loteMes = new Date().toISOString().slice(0, 7);
+  const id = 'sorteio-test-001';
+  await env.CLIENTES_KV.put(`sorteio:idx:nasc:${loteMes}:maria_teste__2000-01-02`, id);
+  await env.CLIENTES_KV.put(`sorteio:inscrito:${id}`, JSON.stringify({
+    phone: '16912345678',
+    created_at: '2026-09-01T12:00:00.000Z',
+  }));
+
+  const response = await request(env, `/api/sorteio/buscar?nome=${encodeURIComponent('Maria Teste')}&dataNasc=2000-01-02`);
+
+  assert.equal(response.status, 200);
+  assert.equal(response.json.found, true);
+  assert.equal('registration' in response.json, false);
+  assert.equal(JSON.stringify(response.json).includes('16912345678'), false);
+});
