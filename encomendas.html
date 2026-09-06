@@ -383,6 +383,8 @@
         .sabor-item:hover, .sabor-item:focus-visible, .sabor-item.sel { transform: none; }
     }
 
+    body.carrinho-fixo-visivel .container { padding-bottom: calc(108px + env(safe-area-inset-bottom, 0px)); }
+
     .btn-carrinho-fixo {
         position: fixed; bottom: max(12px, env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(calc(100% - 24px), 480px); max-width: 480px; min-height: 56px;
         background: linear-gradient(135deg, #E8000D, #C62828); color: var(--white);
@@ -394,6 +396,24 @@
         transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .btn-carrinho-fixo:active { transform: translateX(-50%) scale(0.95); }
+    @media (max-width: 640px) {
+        body.carrinho-fixo-visivel .container { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+        .btn-carrinho-fixo {
+            left: auto;
+            right: 10px;
+            bottom: max(8px, env(safe-area-inset-bottom, 0px));
+            transform: none;
+            width: auto;
+            min-width: min(244px, calc(100vw - 20px));
+            max-width: calc(100vw - 20px);
+            min-height: 44px;
+            padding: 12px 16px;
+            gap: 10px;
+            font-size: .98rem;
+            line-height: 1.2;
+        }
+        .btn-carrinho-fixo:active { transform: scale(0.96); }
+    }
 
     @keyframes neonPulse {
         0% { box-shadow: 0 0 5px #E8000D, 0 0 10px #E8000D, 0 8px 32px rgba(232, 0, 13, 0.4); }
@@ -1489,70 +1509,99 @@
         });
     };
 
+    function totalPicolesSelecionadosAtual() {
+        var total = 0;
+        Object.keys(picolesSelecionados).forEach(function (key) {
+            total += Number(picolesSelecionados[key] || 0);
+        });
+        return total;
+    }
+
+    function calcularValorTotalPicoles(totalPicolesSelecionados) {
+        var valorTotal = 0;
+        Object.keys(picolesSelecionados).forEach(function (key) {
+            var partes = key.split('|');
+            var grupo = PICOLES_CATALOGO[partes[0]];
+            valorTotal += Number(picolesSelecionados[key] || 0) * precoAtualDoGrupo(grupo, totalPicolesSelecionados);
+        });
+        return valorTotal;
+    }
+
     window.abrirModalPicole = function() {
         if (!ESTOQUE_CARREGADO) {
             alert('Aguarde: consultando o estoque oficial.');
             return;
         }
-        var html = '';
-
-        Object.entries(PICOLES_CATALOGO).forEach(([tipo, grupo], index) => {
-            var iconId = tipo.includes('Água') ? 'drop' : tipo.includes('Recheado') ? 'chocolate' : tipo.includes('Esquimó') ? 'popsicle' : 'star';
-            var icon = (typeof window.ItapIcon === 'function') ? window.ItapIcon(iconId, 'orange small') : '';
-            var tipoCurto = tipo.replace(/\s+—\s+Atacado R\$ [0-9]+,[0-9]{2} acima de 100 un\.$/, '').trim();
-            var precoAtacadoTitulo = precoAtacadoDoGrupo(grupo).toFixed(2).replace('.', ',');
-            var tipoId = 'grupo-picole-' + index;
-            var pctGrupo = (grupo.precoVarejo > 0 && grupo.precoAtacado > 0 && grupo.precoVarejo > grupo.precoAtacado)
-                ? Math.round((1 - grupo.precoAtacado / grupo.precoVarejo) * 100) : 0;
-
-            var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
-            html += `<div class="picole-grupo-sec" data-tipo-id="${tipoId}" style="margin-bottom: 16px;">
-                <div class="picole-grupo-sec__titulo">
-                    <span class="picole-grupo-sec__icon">${icon}</span><span class="picole-grupo-sec__label">${escaparHtml(tipoCurto)}</span><span class="picole-grupo-sec__atacado">Atacado R$ ${precoAtacadoTitulo} acima de 100 un.</span>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 8px;">`;
-
-            grupo.sabores.forEach(s => {
-                var key = tipo + "|" + s;
-                var qtd = picolesSelecionados[key] || 0;
-                var info = infoEstoquePicole(tipo, s);
-                var indisponivel = Boolean(info.esgotado || Number(info.estoque || 0) <= 0);
-                var subtotal = qtd * precoAtualDoGrupo(grupo, totalPicolesSelecionados);
-                var hasSelected = qtd > 0;
-                var isAtacado = totalPicolesSelecionados >= MIN_PICOLES_ATACADO;
-
-                html += `
-                    <div data-picole-key="${key}" class="picole-card-row${hasSelected ? ' is-selected' : ''}${indisponivel ? ' is-esgotado' : ''}">
-                        <div class="picole-card-row__info">
-                            <div style="font-weight: 800; font-size: 0.92rem; color: #1A1A1A;">${escaparHtml(s)}</div>
-                            ${tipo.indexOf('Base Leite') !== -1 ? seloLeitePasteurizadoHtml() : ''}
-                            <div class="picole-precos" aria-label="Preço aplicado conforme a quantidade">
-                                <span class="picole-preco ${isAtacado ? 'picole-preco--atacado' : 'picole-preco--varejo'}" data-picole-price-key="${escaparHtml(key)}">${isAtacado ? 'Atacado' : 'Varejo'}: R$ ${precoAtualDoGrupo(grupo, totalPicolesSelecionados).toFixed(2).replace('.',',')} / un.</span>
-                                <span class="picole-pct-badge${isAtacado && pctGrupo > 0 ? ' visivel' : ''}" data-pct-key="${escaparHtml(key)}" data-pct="${pctGrupo}" aria-label="${pctGrupo > 0 ? pctGrupo + '% de desconto no atacado' : ''}">−${pctGrupo}%</span>
-                            </div>
-                            ${indisponivel ? '<div class="picole-linha__esgotado">Esgotado</div>' : `<div id="estoque-${key}" style="font-size: 0.74rem; font-weight: 700; color: #166534; margin-top: 2px;">Estoque: ${Number(info.estoque || 0)} un.</div>`}
-                            <div id="sub-${key}" style="font-size: 0.78rem; font-weight: 800; color: var(--success); margin-top: 2px;">Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}</div>
-                        </div>
-                        <div class="picole-card-row__controls" aria-label="Quantidade de ${escaparHtml(s)}">
-                            <button type="button" class="picole-qtd-btn picole-qtd-btn--minus" aria-label="Remover ${escaparHtml(s)}" title="Remover ${escaparHtml(s)}" onclick="window.addPicole('${key}', -1)" ${qtd <= 0 ? 'disabled' : ''} style="width:48px; min-width:48px; height:48px; min-height:48px; border:2px solid #D5D5D5; border-radius:50%; background:#fff; color:#333; font-size:1.2rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">−</button>
-                            <span id="q-${key}" style="min-width: 26px; text-align: center; font-weight: 900; font-size: 1.1rem; color: ${hasSelected ? 'var(--success)' : '#333'};">${formatarQuantidade(qtd)}</span>
-                            <button type="button" class="picole-qtd-btn picole-qtd-btn--plus" aria-label="Adicionar ${escaparHtml(s)}" title="Adicionar ${escaparHtml(s)}" onclick="window.addPicole('${key}', 1)" ${indisponivel || qtd >= MAX_PICOLES_POR_SABOR ? 'disabled' : ''} style="width:48px; min-width:48px; height:48px; min-height:48px; border:2px solid var(--primary); border-radius:50%; background:var(--primary); color:#fff; font-size:1.2rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">+</button>
-                        </div>
-                    </div>
-                `;
-            });
-            html += `</div></div>`;
-        });
-
-        document.getElementById('lista-sabores-picole').innerHTML = html;
-        atualizarAcaoPicoles();
+        var lista = document.getElementById('lista-sabores-picole');
+        if (!lista) return;
+        lista.innerHTML = '<div class="catalogo-status" role="status" style="padding:18px 0;text-align:center;">Carregando sabores dos picolés…</div>';
         window.abrirModal('modal-picoles');
+
+        window.requestAnimationFrame(function () {
+            var html = '';
+            var totalPicolesSelecionados = totalPicolesSelecionadosAtual();
+            var isAtacado = totalPicolesSelecionados >= MIN_PICOLES_ATACADO;
+            var modalidadePreco = isAtacado ? 'Atacado' : 'Varejo';
+            var tiposPicole = Object.keys(PICOLES_CATALOGO);
+
+            tiposPicole.forEach(function (tipo, index) {
+                var grupo = PICOLES_CATALOGO[tipo];
+                var iconId = tipo.includes('Água') ? 'drop' : tipo.includes('Recheado') ? 'chocolate' : tipo.includes('Esquimó') ? 'popsicle' : 'star';
+                var icon = (typeof window.ItapIcon === 'function') ? window.ItapIcon(iconId, 'orange small') : '';
+                var tipoCurto = tipo.replace(/\s+—\s+Atacado R\$ [0-9]+,[0-9]{2} acima de 100 un\.$/, '').trim();
+                var precoAtacadoTitulo = precoAtacadoDoGrupo(grupo).toFixed(2).replace('.', ',');
+                var tipoId = 'grupo-picole-' + index;
+                var pctGrupo = (grupo.precoVarejo > 0 && grupo.precoAtacado > 0 && grupo.precoVarejo > grupo.precoAtacado)
+                    ? Math.round((1 - grupo.precoAtacado / grupo.precoVarejo) * 100) : 0;
+                var precoAplicado = precoAtualDoGrupo(grupo, totalPicolesSelecionados);
+                var seloGrupo = tipo.indexOf('Base Leite') !== -1 ? seloLeitePasteurizadoHtml() : '';
+
+                html += `<div class="picole-grupo-sec" data-tipo-id="${tipoId}" style="margin-bottom: 16px;">
+                    <div class="picole-grupo-sec__titulo">
+                        <span class="picole-grupo-sec__icon">${icon}</span><span class="picole-grupo-sec__label">${escaparHtml(tipoCurto)}</span><span class="picole-grupo-sec__atacado">Atacado R$ ${precoAtacadoTitulo} acima de 100 un.</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">`;
+
+                grupo.sabores.forEach(function (s) {
+                    var key = tipo + "|" + s;
+                    var qtd = picolesSelecionados[key] || 0;
+                    var info = infoEstoquePicole(tipo, s);
+                    var indisponivel = Boolean(info.esgotado || Number(info.estoque || 0) <= 0);
+                    var subtotal = qtd * precoAplicado;
+                    var hasSelected = qtd > 0;
+
+                    html += `
+                        <div data-picole-key="${key}" class="picole-card-row${hasSelected ? ' is-selected' : ''}${indisponivel ? ' is-esgotado' : ''}">
+                            <div class="picole-card-row__info">
+                                <div style="font-weight: 800; font-size: 0.92rem; color: #1A1A1A;">${escaparHtml(s)}</div>
+                                ${seloGrupo}
+                                <div class="picole-precos" aria-label="Preço aplicado conforme a quantidade">
+                                    <span class="picole-preco ${isAtacado ? 'picole-preco--atacado' : 'picole-preco--varejo'}" data-picole-price-key="${escaparHtml(key)}">${modalidadePreco}: R$ ${precoAplicado.toFixed(2).replace('.',',')} / un.</span>
+                                    <span class="picole-pct-badge${isAtacado && pctGrupo > 0 ? ' visivel' : ''}" data-pct-key="${escaparHtml(key)}" data-pct="${pctGrupo}" aria-label="${pctGrupo > 0 ? pctGrupo + '% de desconto no atacado' : ''}">−${pctGrupo}%</span>
+                                </div>
+                                ${indisponivel ? '<div class="picole-linha__esgotado">Esgotado</div>' : `<div id="estoque-${key}" style="font-size: 0.74rem; font-weight: 700; color: #166534; margin-top: 2px;">Estoque: ${Number(info.estoque || 0)} un.</div>`}
+                                <div id="sub-${key}" style="font-size: 0.78rem; font-weight: 800; color: var(--success); margin-top: 2px;">Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}</div>
+                            </div>
+                            <div class="picole-card-row__controls" aria-label="Quantidade de ${escaparHtml(s)}">
+                                <button type="button" class="picole-qtd-btn picole-qtd-btn--minus" aria-label="Remover ${escaparHtml(s)}" title="Remover ${escaparHtml(s)}" onclick="window.addPicole('${key}', -1)" ${qtd <= 0 ? 'disabled' : ''} style="width:48px; min-width:48px; height:48px; min-height:48px; border:2px solid #D5D5D5; border-radius:50%; background:#fff; color:#333; font-size:1.2rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">−</button>
+                                <span id="q-${key}" style="min-width: 26px; text-align: center; font-weight: 900; font-size: 1.1rem; color: ${hasSelected ? 'var(--success)' : '#333'};">${formatarQuantidade(qtd)}</span>
+                                <button type="button" class="picole-qtd-btn picole-qtd-btn--plus" aria-label="Adicionar ${escaparHtml(s)}" title="Adicionar ${escaparHtml(s)}" onclick="window.addPicole('${key}', 1)" ${indisponivel || qtd >= MAX_PICOLES_POR_SABOR ? 'disabled' : ''} style="width:48px; min-width:48px; height:48px; min-height:48px; border:2px solid var(--primary); border-radius:50%; background:var(--primary); color:#fff; font-size:1.2rem; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">+</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+            });
+
+            lista.innerHTML = html;
+            atualizarAcaoPicoles();
+        });
     };
 
     var ultimaModalidadePicoles = null;
 
     window.addPicole = function(key, delta) {
-        var totalPicolesAntes = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
+        var totalPicolesAntes = totalPicolesSelecionadosAtual();
         var atual = picolesSelecionados[key] || 0;
         var partes = key.split('|');
         var tipo = partes[0];
@@ -1565,7 +1614,7 @@
         var tipoFull = key.split('|')[0];
         var grupo = PICOLES_CATALOGO[tipoFull];
         var subtotalEl = document.getElementById('sub-' + key);
-        var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
+        var totalPicolesSelecionados = totalPicolesSelecionadosAtual();
         if (subtotalEl && grupo) subtotalEl.textContent = 'Subtotal: R$ ' + (novo * precoAtualDoGrupo(grupo, totalPicolesSelecionados)).toFixed(2).replace('.',',');
         var estoqueEl = document.getElementById('estoque-' + key);
         if (estoqueEl) {
@@ -1608,13 +1657,9 @@
     }
 
     function atualizarAcaoPicoles(chaveAlterada, totalAnterior) {
-        var total = Object.values(picolesSelecionados).reduce((a, b) => a + Number(b || 0), 0);
+        var total = totalPicolesSelecionadosAtual();
         var pronto = total >= MIN_PICOLES_ATACADO;
-        var valorTotal = Object.entries(picolesSelecionados).reduce(function (soma, entry) {
-            var partes = entry[0].split('|');
-            var grupo = PICOLES_CATALOGO[partes[0]];
-            return soma + (Number(entry[1]) * precoAtualDoGrupo(grupo, total));
-        }, 0);
+        var valorTotal = calcularValorTotalPicoles(total);
         var valorFormatado = valorTotal.toFixed(2).replace('.', ',');
         var modalidadePreco = pronto ? 'Atacado' : 'Varejo';
         var modalidadeMudou = ultimaModalidadePicoles === null || modalidadePreco !== ultimaModalidadePicoles || totalAnterior === undefined;
@@ -1653,8 +1698,9 @@
         carrinho = carrinho.filter(i => !i.isPicole);
         window.carrinho = carrinho;
 
-        var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
-        Object.entries(picolesSelecionados).forEach(([key, qtd]) => {
+        var totalPicolesSelecionados = totalPicolesSelecionadosAtual();
+        Object.keys(picolesSelecionados).forEach(function (key) {
+            var qtd = picolesSelecionados[key];
             var parts = key.split('|');
             var tipoFull = parts[0];
             var sabor = parts.slice(1).join('|');
@@ -2167,10 +2213,12 @@
         var btn = document.getElementById('btn-carrinho-fixo');
         if (carrinho.length > 0) {
             btn.style.display = 'flex';
+            document.body.classList.add('carrinho-fixo-visivel');
             document.getElementById('carrinho-qtd').textContent = carrinho.length;
             document.getElementById('carrinho-total').textContent = "R$ " + total.toFixed(2).replace('.',',');
         } else {
             btn.style.display = 'none';
+            document.body.classList.remove('carrinho-fixo-visivel');
         }
     }
 

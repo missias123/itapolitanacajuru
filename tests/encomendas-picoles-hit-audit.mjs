@@ -52,7 +52,22 @@ try {
     await page.waitForSelector('button.btn-sabores--picoles', { timeout: 10000 });
     await page.evaluate(() => { if (typeof window.toggleSecao === 'function') window.toggleSecao('sec-picoles'); });
     await page.$eval('button.btn-sabores--picoles', (button) => button.scrollIntoView({ block: 'center', inline: 'nearest' }));
-    await page.click('button.btn-sabores--picoles');
+    const loadingState = await page.evaluate(() => {
+      const button = document.querySelector('button.btn-sabores--picoles');
+      if (!button) return null;
+      button.click();
+      const modal = document.getElementById('modal-picoles');
+      const lista = document.getElementById('lista-sabores-picole');
+      return {
+        modalVisivel: modal ? getComputedStyle(modal).display !== 'none' : false,
+        loadingText: lista ? lista.textContent.trim() : '',
+        renderedRows: lista ? lista.querySelectorAll('[data-picole-key]').length : 0,
+      };
+    });
+    assert.ok(loadingState, `${viewport.name}: botão de sabores de picolés não encontrado`);
+    assert.equal(loadingState.modalVisivel, true, `${viewport.name}: modal de picolés não abriu imediatamente`);
+    assert.match(loadingState.loadingText, /Carregando sabores/i, `${viewport.name}: modal de picolés não exibiu o estado temporário de carregamento`);
+    assert.equal(loadingState.renderedRows, 0, `${viewport.name}: sabores finais foram renderizados cedo demais antes do próximo frame`);
     await page.waitForSelector('#lista-sabores-picole [data-picole-key]', { timeout: 10000 });
 
     const flavorChecks = [];

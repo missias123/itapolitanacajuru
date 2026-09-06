@@ -112,17 +112,18 @@
       box-shadow: 0 0 8px rgba(255,255,255,0.65);
     }
 
-    /* WhatsApp fixo sobre todos os banners: topo esquerdo mantém a paginação e o ItaBot livres */
+    /* WhatsApp fixo no topo direito, compacto para não atrapalhar o carrossel */
     .itp-whatsapp-badge {
       position: absolute;
-      top: clamp(12px, 2.6vw, 28px);
-      left: clamp(12px, 2.6vw, 28px);
+      top: clamp(8px, 2vw, 20px);
+      right: clamp(8px, 2vw, 20px);
       z-index: 5;
       display: inline-flex;
       align-items: center;
-      gap: 9px;
-      min-height: 46px;
-      padding: 8px 14px 8px 10px;
+      gap: 8px;
+      min-height: 42px;
+      max-width: min(calc(100vw - 20px), 250px);
+      padding: 7px 12px 7px 9px;
       border: 1px solid rgba(255,255,255,.78);
       border-radius: 999px;
       color: #fff;
@@ -165,13 +166,14 @@
     .itp-whatsapp-icon svg { width: 18px; height: 18px; display: block; fill: currentColor; }
     .itp-whatsapp-copy { display: grid; gap: 3px; white-space: nowrap; }
     .itp-whatsapp-label { font: 800 10px/1 Arial, sans-serif; letter-spacing: .08em; text-transform: uppercase; opacity: .88; }
-    .itp-whatsapp-number { font: 900 clamp(12px, 1.6vw, 15px)/1 Arial, sans-serif; letter-spacing: .02em; }
+    .itp-whatsapp-number { font: 900 clamp(11px, 1.45vw, 14px)/1 Arial, sans-serif; letter-spacing: .02em; }
     @media (max-width: 600px) {
       .itp-whatsapp-badge {
-        top: 10px;
-        left: 10px;
-        min-height: 40px;
-        gap: 7px;
+        top: 8px;
+        right: 8px;
+        min-height: 38px;
+        gap: 6px;
+        max-width: calc(100vw - 16px);
         padding: 6px 10px 6px 7px;
       }
       .itp-whatsapp-icon { width: 25px; height: 25px; flex-basis: 25px; }

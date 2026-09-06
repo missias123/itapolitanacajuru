@@ -54,6 +54,29 @@
     let toastRede = null;
     let deferredPrompt = null;
     let monitorPromptAndroid = null;
+    let observadorCookie = null;
+    let observadorDocumentoCookie = null;
+    const aoRedimensionarJanela = function() {
+      posicionarBannerPwa();
+    };
+
+    function limparRecursosPwa() {
+      window.removeEventListener('resize', aoRedimensionarJanela);
+      window.removeEventListener('beforeunload', limparRecursosPwa);
+      window.removeEventListener('pagehide', limparRecursosPwa);
+      if (monitorPromptAndroid) {
+        clearInterval(monitorPromptAndroid);
+        monitorPromptAndroid = null;
+      }
+      if (observadorCookie) {
+        observadorCookie.disconnect();
+        observadorCookie = null;
+      }
+      if (observadorDocumentoCookie) {
+        observadorDocumentoCookie.disconnect();
+        observadorDocumentoCookie = null;
+      }
+    }
 
     function promptAdiadoAtivo() {
       try {
@@ -180,19 +203,64 @@
       }, 5000);
     }
 
-    window.addEventListener('beforeunload', function() {
-      if (monitorPromptAndroid) {
-        clearInterval(monitorPromptAndroid);
-        monitorPromptAndroid = null;
-      }
-    });
+    window.addEventListener('beforeunload', limparRecursosPwa);
+    window.addEventListener('pagehide', limparRecursosPwa);
 
     function injetarCss() {
       if (cssInjetado) return;
       cssInjetado = true;
       const style = document.createElement('style');
-      style.textContent = '.itap-pwa-banner{position:fixed;left:12px;right:12px;bottom:14px;z-index:9990;background:#fff;border:2px solid #EF0129;border-radius:14px;box-shadow:0 10px 28px rgba(0,0,0,.25);padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}.itap-pwa-msg{font-size:.86rem;font-weight:800;color:#1A0A00;line-height:1.25}.itap-pwa-acoes{display:flex;gap:8px;flex-shrink:0}.itap-pwa-btn{border:none;border-radius:999px;padding:8px 12px;font-size:.78rem;font-weight:900;cursor:pointer}.itap-pwa-btn.primary{background:#EF0129;color:#fff}.itap-pwa-btn.ghost{background:#f1f1f1;color:#333}.itap-net-toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:9991;pointer-events:none;background:#1A0A00;color:#fff;padding:8px 12px;border-radius:999px;font-size:.78rem;font-weight:800;box-shadow:0 8px 16px rgba(0,0,0,.24);opacity:0;transition:opacity .2s ease}.itap-net-toast.show{opacity:1}@media (min-width:768px){.itap-pwa-banner{max-width:560px;left:50%;right:auto;transform:translateX(-50%)}}';
+      style.textContent = '.itap-pwa-banner{position:fixed;left:12px;right:12px;bottom:14px;z-index:9990;background:#fff;border:2px solid #EF0129;border-radius:14px;box-shadow:0 10px 28px rgba(0,0,0,.25);padding:12px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px}.itap-pwa-msg{min-width:0;font-size:.86rem;font-weight:800;color:#1A0A00;line-height:1.25}.itap-pwa-acoes{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;flex-shrink:0}.itap-pwa-btn{border:none;border-radius:999px;padding:8px 12px;font-size:.78rem;font-weight:900;cursor:pointer;min-height:44px}.itap-pwa-btn.primary{background:#EF0129;color:#fff}.itap-pwa-btn.ghost{background:#f1f1f1;color:#333}.itap-net-toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:9991;pointer-events:none;background:#1A0A00;color:#fff;padding:8px 12px;border-radius:999px;font-size:.78rem;font-weight:800;box-shadow:0 8px 16px rgba(0,0,0,.24);opacity:0;transition:opacity .2s ease}.itap-net-toast.show{opacity:1}@media (max-width:767px){.itap-pwa-banner{grid-template-columns:1fr}.itap-pwa-acoes{justify-content:stretch}.itap-pwa-btn{flex:1 1 0}}@media (min-width:768px){.itap-pwa-banner{max-width:560px;left:50%;right:auto;transform:translateX(-50%)}}';
       document.head.appendChild(style);
+    }
+
+    function obterOffsetCookie() {
+      const bannerCookie = document.getElementById('cookie-banner');
+      if (!bannerCookie) return 0;
+      const estilo = window.getComputedStyle(bannerCookie);
+      if (estilo.display === 'none' || estilo.visibility === 'hidden') return 0;
+      const rect = bannerCookie.getBoundingClientRect();
+      const folgaInferior = Math.max(0, window.innerHeight - rect.bottom);
+      return Math.ceil((rect.height || 0) + folgaInferior);
+    }
+
+    function posicionarBannerPwa() {
+      if (!bannerPwa) return;
+      bannerPwa.style.bottom = (14 + obterOffsetCookie()) + 'px';
+    }
+
+    function conectarObservadorCookie(bannerCookie) {
+      if (!bannerCookie) return;
+      if (observadorCookie) observadorCookie.disconnect();
+      observadorCookie = new MutationObserver(function() {
+        posicionarBannerPwa();
+      });
+      observadorCookie.observe(bannerCookie, {
+        attributes: true,
+        attributeFilter: ['style', 'class', 'hidden']
+      });
+      posicionarBannerPwa();
+    }
+
+    function observarMudancaBannerCookie() {
+      const bannerCookie = document.getElementById('cookie-banner');
+      if (bannerCookie) {
+        conectarObservadorCookie(bannerCookie);
+        if (observadorDocumentoCookie) {
+          observadorDocumentoCookie.disconnect();
+          observadorDocumentoCookie = null;
+        }
+        return;
+      }
+      if (observadorDocumentoCookie || !document.body) return;
+      observadorDocumentoCookie = new MutationObserver(function() {
+        const bannerEncontrado = document.getElementById('cookie-banner');
+        if (!bannerEncontrado) return;
+        conectarObservadorCookie(bannerEncontrado);
+        observadorDocumentoCookie.disconnect();
+        observadorDocumentoCookie = null;
+      });
+      observadorDocumentoCookie.observe(document.body, { childList: true, subtree: true });
     }
 
     document.addEventListener('click', function(e) {
@@ -234,6 +302,7 @@
       acoes.appendChild(btnFechar);
 
       document.body.appendChild(bannerPwa);
+      posicionarBannerPwa();
     }
 
     function mostrarToast(texto, cor) {
@@ -263,6 +332,7 @@
     const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent || '');
 
     if (standalone) ocultarPromptsPwa();
+    observarMudancaBannerCookie();
 
     window.addEventListener('beforeinstallprompt', function(e) {
       e.preventDefault();
@@ -274,6 +344,8 @@
     window.addEventListener('appinstalled', function() {
       finalizarPromptInstalacao('accepted');
     });
+
+    window.addEventListener('resize', aoRedimensionarJanela, { passive: true });
 
     if (isIos && !standalone && !promptAdiadoAtivo()) {
       setTimeout(function() {

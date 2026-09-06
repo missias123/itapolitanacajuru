@@ -15,10 +15,13 @@
  */
 
 import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer';
 
 const base = process.env.AUDIT_BASE || 'http://127.0.0.1:8135';
 const out = process.env.AUDIT_OUT || '/tmp/itapolitana-site-wide-hit-audit.json';
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const VIEWPORTS = [
   { name: 'iphone-se',      width: 320, height: 700,  isMobile: true  },
@@ -29,18 +32,13 @@ const VIEWPORTS = [
   { name: 'desktop-fhd',    width: 1440, height: 900, isMobile: false },
 ];
 
-// Páginas públicas a auditar (sem admin)
-const PUBLIC_PAGES = [
-  'index.html',
-  'encomendas.html',
-  'retirada.html',
-  'promocao.html',
-  'sobre.html',
-  'dicas.html',
-  'carrossel.html',
-  'cardapio-acai-natureon.html',
-  'politica-privacidade.html',
-];
+async function listHtmlPages() {
+  const rootEntries = await fs.readdir(root, { withFileTypes: true });
+  return rootEntries
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.html') && !entry.name.startsWith('.'))
+    .map((entry) => entry.name)
+    .sort();
+}
 
 // Seletor amplo de candidatos a botão
 const BUTTON_SELECTOR =
@@ -378,6 +376,8 @@ const encomendaStates = [
 ];
 
 // ── executar auditoria ───────────────────────────────────────────────────────
+
+const PUBLIC_PAGES = await listHtmlPages();
 
 const browser = await puppeteer.launch({
   headless: true,
