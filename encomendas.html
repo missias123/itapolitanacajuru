@@ -1110,25 +1110,28 @@
 
     function todasAsCaixasComSaboresSelecionados() {
         if (!Array.isArray(PRODUTOS) || PRODUTOS.length === 0) return false;
+        var caixasElegiveis = PRODUTOS.filter(function (produto) {
+            return String(produto && produto.id || '').toLowerCase().indexOf('cx') === 0;
+        });
+        if (caixasElegiveis.length === 0) return false;
+        var idsElegiveis = new Set(caixasElegiveis.map(function (produto) { return produto.id; }));
         var totalCaixasSelecionadas = carrinho.filter(function (item) {
-            return !item.isPicole && !item.isAcrescimo && item.id !== 'torta' && Array.isArray(item.sabores) && item.sabores.length > 0;
+            return !item.isPicole &&
+                !item.isAcrescimo &&
+                idsElegiveis.has(item.id) &&
+                Array.isArray(item.sabores) &&
+                item.sabores.length > 0;
         }).length;
-        return totalCaixasSelecionadas >= PRODUTOS.length;
+        return totalCaixasSelecionadas >= caixasElegiveis.length;
     }
 
     function abrirAcrescimosComScroll() {
+        var secaoId = 'sec-acrescimos';
         var secao = document.getElementById('sec-acrescimos');
         if (!secao) return;
+        if (secao.style.display !== 'block') window.toggleSecao(secaoId);
         var categoria = secao.closest('.categoria');
-        document.querySelectorAll('.categoria').forEach(function (cat) { cat.style.display = 'block'; cat.classList.remove('open'); });
-        document.querySelectorAll('.categoria-conteudo').forEach(function (conteudo) { conteudo.style.display = 'none'; });
-        secao.style.display = 'block';
-        if (categoria) {
-            categoria.classList.add('open');
-            categoria.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-            secao.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        (categoria || secao).scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function atualizarFluxoAutomaticoCaixasParaAcrescimos() {
