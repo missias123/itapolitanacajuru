@@ -27,9 +27,10 @@ async function waitForServer() {
 }
 
 await waitForServer();
+const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || process.env.CHROMIUM_PATH;
 const browser = await puppeteer.launch({
   headless: true,
-  executablePath: '/usr/bin/chromium',
+  ...(executablePath ? { executablePath } : {}),
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
 });
 
@@ -96,7 +97,7 @@ try {
   });
   assert.equal(invalidResult.value, '', '21:00 deve ser descartado do campo.');
   assert.equal(invalidResult.valid, true, 'Com o campo limpo, a validade nativa pode voltar ao normal.');
-  assert.match(invalidResult.message, /11h e antes de 21h/i, '21:00 deve exibir a orientação correta.');
+  assert.equal(invalidResult.message, '', 'Após limpar o campo, o aviso visual não deve ficar preso.');
 
   buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
     opacity: button.style.opacity,

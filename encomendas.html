@@ -1824,14 +1824,13 @@
         var erroHorario = document.getElementById('pedido-agendamento-erro');
         var valorOriginal = inputHora.value || '';
         var invalidoPreenchido = Boolean(valorOriginal) && !horarioRetiradaEncomendaValido(valorOriginal);
-        var manterErroAnterior = !valorOriginal && erroHorario && erroHorario.textContent.trim();
         inputHora.min = '11:00';
         inputHora.max = '20:55';
         if (invalidoPreenchido) {
             inputHora.value = '';
         }
         if (erroHorario) {
-            erroHorario.textContent = (invalidoPreenchido || manterErroAnterior) ? 'Escolha um horário entre 11h e antes de 21h.' : '';
+            erroHorario.textContent = invalidoPreenchido ? 'Escolha um horário entre 11h e antes de 21h.' : '';
         }
         inputHora.setCustomValidity('');
         return !invalidoPreenchido;
