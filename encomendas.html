@@ -1844,7 +1844,8 @@
         if (erroHorario) {
             erroHorario.textContent = erroPendente ? 'Escolha um horário entre 11h e antes de 21h.' : '';
         }
-        inputHora.setAttribute('aria-invalid', erroPendente ? 'true' : 'false');
+        if (erroPendente) inputHora.setAttribute('aria-invalid', 'true');
+        else inputHora.removeAttribute('aria-invalid');
         inputHora.setCustomValidity(erroPendente ? 'Escolha um horário entre 11h e antes de 21h.' : '');
         return !erroPendente;
     }
