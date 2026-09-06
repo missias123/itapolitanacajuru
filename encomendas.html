@@ -1112,7 +1112,9 @@
     function todasAsCaixasComSaboresSelecionados() {
         if (!Array.isArray(PRODUTOS) || PRODUTOS.length === 0) return false;
         var caixasElegiveis = PRODUTOS.filter(function (produto) {
-            return IDS_CAIXAS_FLUXO_ACRESCIMOS.includes(produto.id);
+            return IDS_CAIXAS_FLUXO_ACRESCIMOS.includes(produto.id) &&
+                !produto.esgotado &&
+                Number(produto.estoque || 0) > 0;
         });
         if (caixasElegiveis.length === 0) return false;
         var idsElegiveis = new Set(caixasElegiveis.map(function (produto) { return produto.id; }));
