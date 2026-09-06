@@ -1822,6 +1822,10 @@
         if (!Number.isFinite(passoEmMinutos) || passoEmMinutos <= 0) return 5;
         return Math.max(1, Math.round(passoEmMinutos));
     }
+    function primeiroMinutoValidoHorarioRetiradaEncomenda(minMinutos, passoMinutos) {
+        var resto = ((minMinutos % passoMinutos) + passoMinutos) % passoMinutos;
+        return resto === 0 ? minMinutos : (minMinutos + (passoMinutos - resto));
+    }
 
     function horarioRetiradaEncomendaValido(valorHora) {
         if (!/^\d{2}:\d{2}$/.test(valorHora || '')) return false;
@@ -1834,7 +1838,7 @@
         var passoMinutos = obterPassoMinutosHorarioRetiradaEncomenda();
         return totalMinutos >= minMinutos &&
             totalMinutos <= maxMinutos &&
-            ((totalMinutos - minMinutos) % passoMinutos === 0);
+            (totalMinutos % passoMinutos === 0);
     }
 
     function assinaturaOpcoesHoraRetiradaEncomenda() {
@@ -1846,7 +1850,8 @@
         var maxMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(3, 5));
         var passoMinutos = obterPassoMinutosHorarioRetiradaEncomenda();
         var quantidadeHorarios = 0;
-        for (var total = minMinutos; total <= maxMinutos; total += passoMinutos) quantidadeHorarios += 1;
+        var inicio = primeiroMinutoValidoHorarioRetiradaEncomenda(minMinutos, passoMinutos);
+        for (var total = inicio; total <= maxMinutos; total += passoMinutos) quantidadeHorarios += 1;
         return quantidadeHorarios + 1;
     }
 
@@ -1869,7 +1874,8 @@
         var minMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(3, 5));
         var maxMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(3, 5));
         var passoMinutos = obterPassoMinutosHorarioRetiradaEncomenda();
-        for (var total = minMinutos; total <= maxMinutos; total += passoMinutos) {
+        var inicio = primeiroMinutoValidoHorarioRetiradaEncomenda(minMinutos, passoMinutos);
+        for (var total = inicio; total <= maxMinutos; total += passoMinutos) {
             var hora = String(Math.floor(total / 60)).padStart(2, '0');
             var minuto = String(total % 60).padStart(2, '0');
             var valor = hora + ':' + minuto;
