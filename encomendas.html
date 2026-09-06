@@ -1064,6 +1064,7 @@
     // Chave: "Tipo|Sabor"; cada linha mantém preço, quantidade e subtotal próprios.
     var MAX_PICOLES_POR_SABOR = 250;
     var MIN_PICOLES_ATACADO = 100;
+    var fluxoAcrescimosAutomaticoConcluido = false;
     window.toggleSecao = function(id) {
         var el = document.getElementById(id);
         var catPai = el.closest('.categoria');
@@ -1106,6 +1107,40 @@
         document.querySelectorAll('.categoria').forEach(cat => cat.style.display = 'block');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
+
+    function todasAsCaixasComSaboresSelecionados() {
+        if (!Array.isArray(PRODUTOS) || PRODUTOS.length === 0) return false;
+        return PRODUTOS.every(function (produto) {
+            return carrinho.some(function (item) {
+                return !item.isPicole && !item.isAcrescimo && item.id === produto.id;
+            });
+        });
+    }
+
+    function abrirAcrescimosComScroll() {
+        var secao = document.getElementById('sec-acrescimos');
+        if (!secao) return;
+        var categoria = secao.closest('.categoria');
+        document.querySelectorAll('.categoria').forEach(function (cat) { cat.style.display = 'block'; cat.classList.remove('open'); });
+        document.querySelectorAll('.categoria-conteudo').forEach(function (conteudo) { conteudo.style.display = 'none'; });
+        secao.style.display = 'block';
+        if (categoria) {
+            categoria.classList.add('open');
+            categoria.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            secao.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    function atualizarFluxoAutomaticoCaixasParaAcrescimos() {
+        if (!todasAsCaixasComSaboresSelecionados()) {
+            fluxoAcrescimosAutomaticoConcluido = false;
+            return;
+        }
+        if (fluxoAcrescimosAutomaticoConcluido) return;
+        fluxoAcrescimosAutomaticoConcluido = true;
+        abrirAcrescimosComScroll();
+    }
 
     window.abrirModal = function(id) {
         var modal = document.getElementById(id);
@@ -2153,6 +2188,7 @@
         } else {
             btn.style.display = 'none';
         }
+        atualizarFluxoAutomaticoCaixasParaAcrescimos();
     }
 
     function formatarDataMensagem(dataISO) {
