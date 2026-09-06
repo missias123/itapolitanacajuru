@@ -114,7 +114,7 @@ try {
     };
   });
   assert.equal(clearedOnFocus.valid, true, 'Ao voltar para corrigir, o campo deve limpar o estado inválido anterior.');
-  assert.match(clearedOnFocus.message, /11h e antes de 21h/i, 'Ao focar para corrigir, a orientação visual deve permanecer disponível.');
+  assert.equal(clearedOnFocus.message, '', 'Ao focar para corrigir, o aviso visual deve ser limpo para nova tentativa.');
 
   const clearedOnValidInput = await page.$eval('#pedido-hora-retirada', (input) => {
     input.value = '11:00';
