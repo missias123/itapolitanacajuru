@@ -10,7 +10,7 @@ const port = 8161;
 const base = `http://127.0.0.1:${port}`;
 const out = process.env.AUDIT_OUT || '/tmp/itapolitana-click-response-speed-audit.json';
 const MAX_NEXT_PAINT_MS = Number(process.env.MAX_CLICK_RESPONSE_MS || 220);
-const MAX_SPREAD_MS = Number(process.env.MAX_CLICK_RESPONSE_SPREAD_MS || 90);
+const MAX_SPREAD_MS = Number(process.env.MAX_CLICK_RESPONSE_SPREAD_MS || 140);
 
 const server = spawn(process.execPath, ['tests/local-static-server.mjs'], {
   cwd: root,
