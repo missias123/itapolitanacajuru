@@ -162,21 +162,23 @@ const SCENARIOS = [
   },
 ];
 
-async function medirClique(page, selector) {
+async function medirClique(page, selector, waitForFn) {
   const result = await page.evaluate((targetSelector) => {
     const el = document.querySelector(targetSelector);
     if (!el) return { missing: true };
     el.scrollIntoView({ block: 'center', inline: 'center' });
-    window.__clickResponseMetric = { nextPaintMs: null };
-    const start = performance.now();
+    window.__clickResponseMetric = { nextPaintMs: null, start: performance.now() };
     el.click();
-    requestAnimationFrame(() => {
-      window.__clickResponseMetric.nextPaintMs = performance.now() - start;
-    });
     return { missing: false };
   }, selector);
   if (result.missing) throw new Error(`Seletor não encontrado: ${selector}`);
-  await page.waitForFunction(() => window.__clickResponseMetric && window.__clickResponseMetric.nextPaintMs !== null, { timeout: 1000 });
+  await page.waitForFunction(waitForFn, { timeout: 1500 });
+  await page.evaluate(() => new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      window.__clickResponseMetric.nextPaintMs = performance.now() - window.__clickResponseMetric.start;
+      resolve();
+    });
+  }));
   return page.evaluate(() => window.__clickResponseMetric.nextPaintMs);
 }
 
@@ -202,8 +204,7 @@ async function runScenario(browser, viewport, scenario) {
 
     if (scenario.setup) await scenario.setup(page);
 
-    const nextPaintMs = await medirClique(page, scenario.selector);
-    await page.waitForFunction(scenario.waitFor, { timeout: 1500 });
+    const nextPaintMs = await medirClique(page, scenario.selector, scenario.waitFor);
 
     const result = {
       scenario: scenario.id,

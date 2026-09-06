@@ -23,23 +23,6 @@ const base = process.env.AUDIT_BASE || 'http://127.0.0.1:8135';
 const out = process.env.AUDIT_OUT || '/tmp/itapolitana-site-wide-hit-audit.json';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-const ACTIVE_ROOT_PAGES = [
-  '404.html',
-  'admin-catalogo.html',
-  'admin-painel.html',
-  'admin-picole.html',
-  'cardapio-acai-natureon.html',
-  'carrossel.html',
-  'dicas.html',
-  'encomendas.html',
-  'index.html',
-  'offline.html',
-  'politica-privacidade.html',
-  'promocao.html',
-  'retirada.html',
-  'sobre.html',
-];
-
 const VIEWPORTS = [
   { name: 'iphone-se',      width: 320, height: 700,  isMobile: true  },
   { name: 'iphone',         width: 390, height: 844,  isMobile: true  },
@@ -50,15 +33,11 @@ const VIEWPORTS = [
 ];
 
 async function listHtmlPages() {
-  const pages = [];
-  for (const page of ACTIVE_ROOT_PAGES) {
-    try {
-      await fs.access(path.join(root, page));
-      pages.push(page);
-    } catch (error) {
-      if (error && error.code !== 'ENOENT') throw error;
-    }
-  }
+  const rootEntries = await fs.readdir(root, { withFileTypes: true });
+  const pages = rootEntries
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.html') && !entry.name.startsWith('.'))
+    .map((entry) => entry.name)
+    .sort();
 
   const adminIndex = path.join(root, 'admin', 'index.html');
   try {

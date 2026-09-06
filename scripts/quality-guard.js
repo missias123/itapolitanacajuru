@@ -55,6 +55,7 @@
     let deferredPrompt = null;
     let monitorPromptAndroid = null;
     let observadorCookie = null;
+    let observadorDocumentoCookie = null;
 
     function promptAdiadoAtivo() {
       try {
@@ -190,6 +191,10 @@
         observadorCookie.disconnect();
         observadorCookie = null;
       }
+      if (observadorDocumentoCookie) {
+        observadorDocumentoCookie.disconnect();
+        observadorDocumentoCookie = null;
+      }
     });
 
     function injetarCss() {
@@ -205,7 +210,9 @@
       if (!bannerCookie) return 0;
       const estilo = window.getComputedStyle(bannerCookie);
       if (estilo.display === 'none' || estilo.visibility === 'hidden') return 0;
-      return Math.ceil(bannerCookie.getBoundingClientRect().height || 0);
+      const rect = bannerCookie.getBoundingClientRect();
+      const folgaInferior = Math.max(0, window.innerHeight - rect.bottom);
+      return Math.ceil((rect.height || 0) + folgaInferior);
     }
 
     function posicionarBannerPwa() {
@@ -213,9 +220,9 @@
       bannerPwa.style.bottom = (14 + obterOffsetCookie()) + 'px';
     }
 
-    function observarMudancaBannerCookie() {
-      const bannerCookie = document.getElementById('cookie-banner');
-      if (!bannerCookie || observadorCookie) return;
+    function conectarObservadorCookie(bannerCookie) {
+      if (!bannerCookie) return;
+      if (observadorCookie) observadorCookie.disconnect();
       observadorCookie = new MutationObserver(function() {
         posicionarBannerPwa();
       });
@@ -223,6 +230,28 @@
         attributes: true,
         attributeFilter: ['style', 'class', 'hidden']
       });
+      posicionarBannerPwa();
+    }
+
+    function observarMudancaBannerCookie() {
+      const bannerCookie = document.getElementById('cookie-banner');
+      if (bannerCookie) {
+        conectarObservadorCookie(bannerCookie);
+        if (observadorDocumentoCookie) {
+          observadorDocumentoCookie.disconnect();
+          observadorDocumentoCookie = null;
+        }
+        return;
+      }
+      if (observadorDocumentoCookie || !document.body) return;
+      observadorDocumentoCookie = new MutationObserver(function() {
+        const bannerEncontrado = document.getElementById('cookie-banner');
+        if (!bannerEncontrado) return;
+        conectarObservadorCookie(bannerEncontrado);
+        observadorDocumentoCookie.disconnect();
+        observadorDocumentoCookie = null;
+      });
+      observadorDocumentoCookie.observe(document.body, { childList: true, subtree: true });
     }
 
     document.addEventListener('click', function(e) {
