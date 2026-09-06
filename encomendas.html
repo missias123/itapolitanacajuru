@@ -1863,6 +1863,11 @@
         return true;
     }
 
+    function atualizarEstadoAgendamentoEncomenda() {
+        sincronizarCampoHoraRetiradaEncomenda();
+        setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda());
+    }
+
     // FUNÇÕES DO FLUXO DE 3 ETAPAS
     window.irParaFormulario = function() {
         document.getElementById('titulo-etapa-carrinho').textContent = "🛒 Etapa 2: Identificação do Cliente";
@@ -2137,8 +2142,8 @@
             this.setCustomValidity('');
         }
     });
-    document.getElementById('pedido-hora-retirada').addEventListener('input', function() { sincronizarCampoHoraRetiradaEncomenda(); setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda()); });
-    document.getElementById('pedido-hora-retirada').addEventListener('change', function() { sincronizarCampoHoraRetiradaEncomenda(); setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda()); });
+    document.getElementById('pedido-hora-retirada').addEventListener('input', atualizarEstadoAgendamentoEncomenda);
+    document.getElementById('pedido-hora-retirada').addEventListener('change', atualizarEstadoAgendamentoEncomenda);
     window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); window.validarWhatsapp(); });
 
     // Inicialização única: renderiza uma prévia e, em seguida, substitui pelos dados oficiais do estoque.
