@@ -1115,13 +1115,15 @@
         });
         if (caixasElegiveis.length === 0) return false;
         var idsElegiveis = new Set(caixasElegiveis.map(function (produto) { return produto.id; }));
-        var totalCaixasSelecionadas = carrinho.filter(function (item) {
-            return !item.isPicole &&
+        var totalCaixasSelecionadas = carrinho.reduce(function (total, item) {
+            var elegivel = !item.isPicole &&
                 !item.isAcrescimo &&
                 idsElegiveis.has(item.id) &&
                 Array.isArray(item.sabores) &&
                 item.sabores.length > 0;
-        }).length;
+            if (!elegivel) return total;
+            return total + Math.max(1, Number(item.quantidade || 1));
+        }, 0);
         return totalCaixasSelecionadas >= caixasElegiveis.length;
     }
 
