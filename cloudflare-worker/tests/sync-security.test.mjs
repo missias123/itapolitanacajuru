@@ -203,3 +203,41 @@ test('busca pública do sorteio não expõe telefone nem metadata da inscrição
   assert.equal('registration' in response.json, false);
   assert.equal(JSON.stringify(response.json).includes('16912345678'), false);
 });
+
+
+test('worker preserva formatação JSON com quebra de linha final ao salvar arquivo admin', async () => {
+  const env = createEnv();
+  await env.RATE_KV.put('session:t3', JSON.stringify({ permissions: ['catalog:write'], expiresAt: Date.now() + 60000 }));
+
+  const originalFetch = globalThis.fetch;
+  let savedBody = null;
+  globalThis.fetch = async (url, options = {}) => {
+    const target = String(url);
+    if (target.includes('/contents/dados/produtos.json') && (!options.method || options.method === 'GET')) {
+      return new Response(JSON.stringify({ sha: 'sha-produtos' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    if (target.includes('/contents/dados/produtos.json') && options.method === 'PUT') {
+      savedBody = JSON.parse(options.body);
+      return new Response(JSON.stringify({ content: { sha: 'sha-novo' } }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    throw new Error(`URL inesperada: ${target}`);
+  };
+
+  try {
+    const { status, json } = await request(env, '/api/admin/github-file', {
+      method: 'PUT',
+      headers: { 'X-Itap-Session-Token': 't3' },
+      body: { path: 'dados/produtos.json', content: { ok: true } },
+    });
+    assert.equal(status, 200);
+    assert.equal(json.ok, true);
+    assert.ok(savedBody, 'PUT no GitHub deve ter sido executado');
+    const decoded = Buffer.from(savedBody.content, 'base64').toString('utf8');
+    assert.equal(decoded, `{
+  "ok": true
+}
+`);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

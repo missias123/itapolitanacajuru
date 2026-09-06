@@ -755,10 +755,13 @@ async function handleAdminGitHubFilePut(request, env) {
       providedRevision: ifMatch,
     }, 409);
   }
+  const normalizedContent = typeof body.content === 'string'
+    ? (body.content.endsWith('\n') ? body.content : `${body.content}\n`)
+    : `${JSON.stringify(body.content, null, 2)}\n`;
   const putResp = await fetch(GH_API + filePath, {
     method: 'PUT',
     headers: { 'Authorization': `token ${env.GITHUB_TOKEN}`, 'Content-Type': 'application/json', 'User-Agent': 'Itapolitana-Worker' },
-    body: JSON.stringify({ message: `Admin: alteração em ${filePath}`, content: encodeBase64(JSON.stringify(body.content, null, 2)), sha: getJson.sha })
+    body: JSON.stringify({ message: `Admin: alteração em ${filePath}`, content: encodeBase64(normalizedContent), sha: getJson.sha })
   });
   if (putResp.status === 409) return jsonResp({ ok: false, error: 'Conflito de versão', code: 'VERSION_CONFLICT' }, 409);
   if (!putResp.ok) return jsonResp({ ok: false, error: 'Falha ao gravar arquivo' }, 500);
