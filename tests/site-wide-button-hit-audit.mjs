@@ -51,7 +51,9 @@ async function listHtmlPages() {
     adminPages = adminEntries
       .filter((entry) => entry.isFile() && entry.name.endsWith('.html'))
       .map((entry) => `admin/${entry.name}`);
-  } catch {}
+  } catch (error) {
+    if (error && error.code !== 'ENOENT') throw error;
+  }
 
   return [...rootPages, ...adminPages].sort((a, b) => a.localeCompare(b, 'pt-BR'));
 }
