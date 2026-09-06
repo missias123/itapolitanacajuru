@@ -1110,11 +1110,10 @@
 
     function todasAsCaixasComSaboresSelecionados() {
         if (!Array.isArray(PRODUTOS) || PRODUTOS.length === 0) return false;
-        return PRODUTOS.every(function (produto) {
-            return carrinho.some(function (item) {
-                return !item.isPicole && !item.isAcrescimo && item.id === produto.id;
-            });
-        });
+        var totalCaixasSelecionadas = carrinho.filter(function (item) {
+            return !item.isPicole && !item.isAcrescimo && item.id !== 'torta' && Array.isArray(item.sabores) && item.sabores.length > 0;
+        }).length;
+        return totalCaixasSelecionadas >= PRODUTOS.length;
     }
 
     function abrirAcrescimosComScroll() {
