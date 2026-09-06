@@ -22,6 +22,11 @@ let serverOutput = '';
 server.stdout.on('data', (chunk) => { serverOutput += chunk.toString(); });
 server.stderr.on('data', (chunk) => { serverOutput += chunk.toString(); });
 
+function waitForChildExit(child) {
+  if (!child || child.exitCode !== null || child.killed) return Promise.resolve();
+  return new Promise((resolve) => child.once('exit', resolve));
+}
+
 async function waitForServer() {
   const deadline = Date.now() + 8000;
   while (Date.now() < deadline) {
@@ -164,12 +169,10 @@ async function medirClique(page, selector) {
     el.scrollIntoView({ block: 'center', inline: 'center' });
     window.__clickResponseMetric = { nextPaintMs: null };
     const start = performance.now();
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        window.__clickResponseMetric.nextPaintMs = performance.now() - start;
-      });
-    });
     el.click();
+    requestAnimationFrame(() => {
+      window.__clickResponseMetric.nextPaintMs = performance.now() - start;
+    });
     return { missing: false };
   }, selector);
   if (result.missing) throw new Error(`Seletor não encontrado: ${selector}`);
@@ -239,7 +242,7 @@ try {
 } finally {
   await browser.close();
   server.kill('SIGTERM');
-  await new Promise((resolve) => server.once('exit', resolve));
+  await waitForChildExit(server);
 }
 
 const summaryByViewport = VIEWPORTS.map((viewport) => {

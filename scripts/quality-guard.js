@@ -54,6 +54,7 @@
     let toastRede = null;
     let deferredPrompt = null;
     let monitorPromptAndroid = null;
+    let observadorCookie = null;
 
     function promptAdiadoAtivo() {
       try {
@@ -185,6 +186,10 @@
         clearInterval(monitorPromptAndroid);
         monitorPromptAndroid = null;
       }
+      if (observadorCookie) {
+        observadorCookie.disconnect();
+        observadorCookie = null;
+      }
     });
 
     function injetarCss() {
@@ -206,6 +211,18 @@
     function posicionarBannerPwa() {
       if (!bannerPwa) return;
       bannerPwa.style.bottom = (14 + obterOffsetCookie()) + 'px';
+    }
+
+    function observarMudancaBannerCookie() {
+      const bannerCookie = document.getElementById('cookie-banner');
+      if (!bannerCookie || observadorCookie) return;
+      observadorCookie = new MutationObserver(function() {
+        posicionarBannerPwa();
+      });
+      observadorCookie.observe(bannerCookie, {
+        attributes: true,
+        attributeFilter: ['style', 'class', 'hidden']
+      });
     }
 
     document.addEventListener('click', function(e) {
@@ -277,6 +294,7 @@
     const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent || '');
 
     if (standalone) ocultarPromptsPwa();
+    observarMudancaBannerCookie();
 
     window.addEventListener('beforeinstallprompt', function(e) {
       e.preventDefault();
