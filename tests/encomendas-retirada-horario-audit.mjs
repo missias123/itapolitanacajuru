@@ -91,11 +91,11 @@ try {
     return {
       value: input.value,
       valid: input.checkValidity(),
-      message: input.validationMessage,
+      message: document.getElementById('pedido-agendamento-erro')?.textContent?.trim() || '',
     };
   });
   assert.equal(invalidResult.value, '', '21:00 deve ser descartado do campo.');
-  assert.equal(invalidResult.valid, false, '21:00 deve manter o campo inválido.');
+  assert.equal(invalidResult.valid, true, 'Com o campo limpo, a validade nativa pode voltar ao normal.');
   assert.match(invalidResult.message, /11h e antes de 21h/i, '21:00 deve exibir a orientação correta.');
 
   buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({

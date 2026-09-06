@@ -798,6 +798,7 @@
             <label style="display: block; font-weight: 800; font-size: 0.9rem; margin: 10px 0 6px; color: #333;">6. Horário para retirada da encomenda *</label>
             <input id="pedido-hora-retirada" type="time" min="11:00" max="20:55" step="300" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
             <small id="pedido-agendamento-instrucao" style="color: #666; display: block; margin-top: 6px;">Prazo mínimo de 5 dias corridos. A data só é liberada a partir desse prazo e o horário deve ficar entre 11h e antes de 21h.</small>
+            <small id="pedido-agendamento-erro" role="status" aria-live="polite" style="color:#C62828; display:block; margin-top:4px; min-height:1.2em;"></small>
           </div>
         </div>
       </div>
@@ -1820,16 +1821,20 @@
     function sincronizarCampoHoraRetiradaEncomenda() {
         var inputHora = document.getElementById('pedido-hora-retirada');
         if (!inputHora) return false;
+        var erroHorario = document.getElementById('pedido-agendamento-erro');
         var valorOriginal = inputHora.value || '';
         var invalidoPreenchido = Boolean(valorOriginal) && !horarioRetiradaEncomendaValido(valorOriginal);
-        var manterErroAnterior = !valorOriginal && inputHora.validity && inputHora.validity.customError;
+        var manterErroAnterior = !valorOriginal && erroHorario && erroHorario.textContent.trim();
         inputHora.min = '11:00';
         inputHora.max = '20:55';
         if (invalidoPreenchido) {
             inputHora.value = '';
         }
-        inputHora.setCustomValidity((invalidoPreenchido || manterErroAnterior) ? 'Escolha um horário entre 11h e antes de 21h.' : '');
-        return !(invalidoPreenchido || manterErroAnterior);
+        if (erroHorario) {
+            erroHorario.textContent = (invalidoPreenchido || manterErroAnterior) ? 'Escolha um horário entre 11h e antes de 21h.' : '';
+        }
+        inputHora.setCustomValidity('');
+        return !invalidoPreenchido;
     }
 
     function prepararAgendamentoEncomenda() {
