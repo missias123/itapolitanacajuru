@@ -34,20 +34,10 @@ const VIEWPORTS = [
 
 async function listHtmlPages() {
   const rootEntries = await fs.readdir(root, { withFileTypes: true });
-  const pages = rootEntries
+  return rootEntries
     .filter((entry) => entry.isFile() && entry.name.endsWith('.html') && !entry.name.startsWith('.'))
     .map((entry) => entry.name)
     .sort();
-
-  const adminIndex = path.join(root, 'admin', 'index.html');
-  try {
-    await fs.access(adminIndex);
-    pages.push('admin/index.html');
-  } catch (error) {
-    if (error && error.code !== 'ENOENT') throw error;
-  }
-
-  return pages;
 }
 
 // Seletor amplo de candidatos a botão

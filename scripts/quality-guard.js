@@ -56,6 +56,27 @@
     let monitorPromptAndroid = null;
     let observadorCookie = null;
     let observadorDocumentoCookie = null;
+    const aoRedimensionarJanela = function() {
+      posicionarBannerPwa();
+    };
+
+    function limparRecursosPwa() {
+      window.removeEventListener('resize', aoRedimensionarJanela);
+      window.removeEventListener('beforeunload', limparRecursosPwa);
+      window.removeEventListener('pagehide', limparRecursosPwa);
+      if (monitorPromptAndroid) {
+        clearInterval(monitorPromptAndroid);
+        monitorPromptAndroid = null;
+      }
+      if (observadorCookie) {
+        observadorCookie.disconnect();
+        observadorCookie = null;
+      }
+      if (observadorDocumentoCookie) {
+        observadorDocumentoCookie.disconnect();
+        observadorDocumentoCookie = null;
+      }
+    }
 
     function promptAdiadoAtivo() {
       try {
@@ -182,20 +203,8 @@
       }, 5000);
     }
 
-    window.addEventListener('beforeunload', function() {
-      if (monitorPromptAndroid) {
-        clearInterval(monitorPromptAndroid);
-        monitorPromptAndroid = null;
-      }
-      if (observadorCookie) {
-        observadorCookie.disconnect();
-        observadorCookie = null;
-      }
-      if (observadorDocumentoCookie) {
-        observadorDocumentoCookie.disconnect();
-        observadorDocumentoCookie = null;
-      }
-    });
+    window.addEventListener('beforeunload', limparRecursosPwa);
+    window.addEventListener('pagehide', limparRecursosPwa);
 
     function injetarCss() {
       if (cssInjetado) return;
@@ -336,7 +345,7 @@
       finalizarPromptInstalacao('accepted');
     });
 
-    window.addEventListener('resize', posicionarBannerPwa, { passive: true });
+    window.addEventListener('resize', aoRedimensionarJanela, { passive: true });
 
     if (isIos && !standalone && !promptAdiadoAtivo()) {
       setTimeout(function() {

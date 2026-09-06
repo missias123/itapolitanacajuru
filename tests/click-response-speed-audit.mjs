@@ -241,23 +241,22 @@ async function runScenario(browser, viewport, scenario) {
   }
 }
 
-await waitForServer();
-
-const browser = await puppeteer.launch({
-  headless: true,
-  executablePath: '/usr/bin/chromium',
-  args: ['--no-sandbox', '--disable-setuid-sandbox'],
-});
-
 const results = [];
+let browser = null;
 try {
+  await waitForServer();
+  browser = await puppeteer.launch({
+    headless: true,
+    executablePath: '/usr/bin/chromium',
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
   for (const viewport of VIEWPORTS) {
     for (const scenario of SCENARIOS) {
       results.push(await runScenario(browser, viewport, scenario));
     }
   }
 } finally {
-  await browser.close();
+  if (browser) await browser.close();
   server.kill('SIGTERM');
   await waitForChildExit(server);
 }
