@@ -2191,7 +2191,7 @@
     var inputCienciaEncomenda = document.getElementById('pedido-ciencia');
     var inputNomeEncomenda = document.getElementById('pedido-nome');
     var inputWhatsappEncomenda = document.getElementById('pedido-whatsapp');
-    if (inputNomeEncomenda && inputWhatsappEncomenda && inputDataRetirada && inputHoraRetirada && inputRetiradaConfirmada && inputCienciaEncomenda) {
+    if (!window.__encomendaFormListenersRegistrados && inputNomeEncomenda && inputWhatsappEncomenda && inputDataRetirada && inputHoraRetirada && inputRetiradaConfirmada && inputCienciaEncomenda) {
         inputNomeEncomenda.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
         inputWhatsappEncomenda.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
         inputDataRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
@@ -2199,6 +2199,7 @@
         inputHoraRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
         inputRetiradaConfirmada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
         inputCienciaEncomenda.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
+        window.__encomendaFormListenersRegistrados = true;
     }
     window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); window.validarWhatsapp(); });
 
