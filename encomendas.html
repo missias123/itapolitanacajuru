@@ -796,8 +796,8 @@
             <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">5. Data para retirada da encomenda *</label>
             <input id="pedido-data-retirada" type="date" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
             <label style="display: block; font-weight: 800; font-size: 0.9rem; margin: 10px 0 6px; color: #333;">6. Horário para retirada da encomenda *</label>
-            <input id="pedido-hora-retirada" type="time" min="10:00" max="20:00" step="300" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
-            <small style="color: #666; display: block; margin-top: 6px;">A data só é liberada a partir de 5 dias corridos e o horário deve estar entre 10h e 20h.</small>
+            <input id="pedido-hora-retirada" type="time" min="11:00" max="20:55" step="300" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
+            <small style="color: #666; display: block; margin-top: 6px;">A data só é liberada a partir de 5 dias corridos e o horário deve estar entre 11h e antes de 21h.</small>
           </div>
         </div>
       </div>
@@ -1810,12 +1810,33 @@
         return data;
     }
 
+    function horarioRetiradaEncomendaValido(valorHora) {
+        if (!/^\d{2}:\d{2}$/.test(valorHora || '')) return false;
+        var partes = valorHora.split(':');
+        var totalMinutos = (Number(partes[0]) * 60) + Number(partes[1]);
+        return totalMinutos >= (11 * 60) && totalMinutos < (21 * 60);
+    }
+
+    function sincronizarCampoHoraRetiradaEncomenda() {
+        var inputHora = document.getElementById('pedido-hora-retirada');
+        if (!inputHora) return false;
+        inputHora.min = '11:00';
+        inputHora.max = '20:55';
+        if (inputHora.value && !horarioRetiradaEncomendaValido(inputHora.value)) {
+            inputHora.value = '';
+        }
+        var valido = !inputHora.value || horarioRetiradaEncomendaValido(inputHora.value);
+        inputHora.setCustomValidity(valido ? '' : 'Escolha um horário entre 11h e antes de 21h.');
+        return valido;
+    }
+
     function prepararAgendamentoEncomenda() {
         var inputData = document.getElementById('pedido-data-retirada');
         if (!inputData) return;
         var dataMinima = adicionarDiasCorridos(saoPauloHojeDate(), 5);
         inputData.min = getSaoPauloDatePart(dataMinima);
         if (inputData.value && inputData.value < inputData.min) inputData.value = '';
+        sincronizarCampoHoraRetiradaEncomenda();
         setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda());
     }
 
@@ -1826,6 +1847,7 @@
         if (!inputData.value || !inputHora.value) return false;
         var dataMin = inputData.min || '';
         if (dataMin && inputData.value < dataMin) return false;
+        if (!sincronizarCampoHoraRetiradaEncomenda()) return false;
         return true;
     }
 
@@ -2052,6 +2074,11 @@
             document.getElementById('pedido-data-retirada').focus();
             return;
         }
+        if (!horarioRetiradaEncomendaValido(horaRetirada)) {
+            alert("Escolha um horário para retirada entre 11h e antes de 21h.");
+            document.getElementById('pedido-hora-retirada').focus();
+            return;
+        }
         if (window.__encomendaEnviando) return;
 
         var resumoEconomia = calcularResumoEconomiaPicoles();
@@ -2092,7 +2119,8 @@
     // Permite trocar de gaveta por link/hash sem recarregar a página e sem criar outro renderizador.
     window.addEventListener('hashchange', abrirSecaoPorRota);
     document.getElementById('pedido-data-retirada').addEventListener('change', function() { setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda()); });
-    document.getElementById('pedido-hora-retirada').addEventListener('change', function() { setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda()); });
+    document.getElementById('pedido-hora-retirada').addEventListener('input', function() { sincronizarCampoHoraRetiradaEncomenda(); setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda()); });
+    document.getElementById('pedido-hora-retirada').addEventListener('change', function() { sincronizarCampoHoraRetiradaEncomenda(); setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda()); });
     window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); window.validarWhatsapp(); });
 
     // Inicialização única: renderiza uma prévia e, em seguida, substitui pelos dados oficiais do estoque.
