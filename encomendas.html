@@ -610,7 +610,7 @@
 </div>
 
 <div class="banner-alerta">
-  <h1 style="font-size: inherit; margin: 0; display: inline;">🚨 ATENÇÃO: COMPRAR EXIGEM PRAZO MÍNIMO DE 5 DIAS ÚTEIS DE ANTECEDÊNCIA!</h1>
+<h1 style="font-size: inherit; margin: 0; display: inline;">🚨 ATENÇÃO: PEDIDOS DE ENCOMENDAS TÊM 5 DIAS CORRIDOS PARA ELABORAÇÃO OU CONSULTE PRONTA ENTREGA PELO WHATSAPP.</h1>
 </div>
 
 <div class="container">
@@ -737,7 +737,7 @@
       <div id="etapa-formulario" style="display: none;">
         <div style="padding: 16px; background: #FFF9C4; border: 1px solid #FFEE58; border-radius: 12px; margin-bottom: 16px;">
           <p style="font-size: 0.85rem; color: #5D4037; margin: 0; line-height: 1.4;">
-            ⚠️ <strong>Importante:</strong> Prazo mínimo de <strong>5 dias corridos</strong> após a confirmação e o pagamento. A encomenda será <strong>retirada na loja</strong>; não realizamos delivery. Entraremos em contato pelo WhatsApp para confirmar tudo.
+            ⚠️ <strong>Importante:</strong> Carrinho de picolés, tortas e caixas de sorvete 5L/10L têm prazo mínimo de <strong>5 dias corridos</strong> para elaboração, após confirmação e pagamento. Se precisar antes, <strong>consulte pronta entrega pelo WhatsApp</strong>. A encomenda será <strong>retirada na loja</strong>; não realizamos delivery.
           </p>
         </div>
         <div style="padding: 14px; background: #F5F9FF; border: 1px solid #D7E7FF; border-radius: 12px; margin-bottom: 16px;">
@@ -789,15 +789,16 @@
           <div id="bloco-ciencia" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; margin-top: 10px; padding: 12px; background: #F8F9FA; border-radius: 10px; border: 1px solid #DEE2E6;">
             <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #333; line-height: 1.4;">
               <input id="pedido-ciencia" type="checkbox" onchange="window.validarWhatsapp()" style="width: 20px; height: 20px; margin-top: 2px;" disabled />
-              <span>4. Estou ciente do prazo de 5 dias corridos após o pagamento e da retirada obrigatória na loja. O pedido só segue após confirmação humana no WhatsApp.</span>
+              <span>4. Estou ciente do prazo de 5 dias corridos para elaboração após o pagamento e da retirada obrigatória na loja. Se precisar antes, devo consultar pronta entrega no WhatsApp. O pedido só segue após confirmação humana.</span>
             </label>
           </div>
           <div id="bloco-agendamento" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; margin-top: 10px; padding: 12px; background: #F8F9FA; border-radius: 10px; border: 1px solid #DEE2E6;">
             <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">5. Data para retirada da encomenda *</label>
             <input id="pedido-data-retirada" type="date" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
             <label style="display: block; font-weight: 800; font-size: 0.9rem; margin: 10px 0 6px; color: #333;">6. Horário para retirada da encomenda *</label>
-            <input id="pedido-hora-retirada" type="time" min="10:00" max="20:00" step="300" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
-            <small style="color: #666; display: block; margin-top: 6px;">A data só é liberada a partir de 5 dias corridos e o horário deve estar entre 10h e 20h.</small>
+            <input id="pedido-hora-retirada" type="time" aria-describedby="pedido-agendamento-instrucao pedido-agendamento-erro" aria-errormessage="pedido-agendamento-erro" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
+            <small id="pedido-agendamento-instrucao" style="color: #666; display: block; margin-top: 6px;">Prazo mínimo de 5 dias corridos para elaboração. Se precisar antes, consulte pronta entrega pelo WhatsApp. A data só é liberada a partir desse prazo e o horário deve ficar entre 11h e 20:55, em intervalos de 5 minutos.</small>
+            <small id="pedido-agendamento-erro" role="alert" aria-live="assertive" hidden aria-hidden="true" style="color:#C62828; display:block; margin-top:4px; min-height:1.2em;"></small>
           </div>
         </div>
       </div>
@@ -1810,13 +1811,81 @@
         return data;
     }
 
+    var HORARIO_RETIRADA_ENCOMENDA_MIN = '11:00';
+    var HORARIO_RETIRADA_ENCOMENDA_MAX = '20:55';
+    var HORARIO_RETIRADA_ENCOMENDA_LIMITE = 21 * 60;
+    var HORARIO_RETIRADA_ENCOMENDA_STEP = 300;
+    var HORARIO_RETIRADA_ENCOMENDA_ERRO = 'Escolha um horário entre 11h e 20:55, em intervalos de 5 minutos.';
+
+    function horarioRetiradaEncomendaValido(valorHora) {
+        if (!/^\d{2}:\d{2}$/.test(valorHora || '')) return false;
+        var partes = valorHora.split(':');
+        var hora = Number(partes[0]);
+        var minuto = Number(partes[1]);
+        var totalMinutos = (hora * 60) + minuto;
+        return totalMinutos >= ((Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(3, 5))) &&
+            totalMinutos < HORARIO_RETIRADA_ENCOMENDA_LIMITE &&
+            (totalMinutos % (HORARIO_RETIRADA_ENCOMENDA_STEP / 60) === 0);
+    }
+
+    function resetarErroHorarioRetiradaEncomenda() {
+        var inputHora = document.getElementById('pedido-hora-retirada');
+        var erroHorario = document.getElementById('pedido-agendamento-erro');
+        if (!inputHora) return;
+        delete inputHora.dataset.invalidAutoclear;
+        delete inputHora.dataset.userTouched;
+        inputHora.setCustomValidity('');
+        inputHora.removeAttribute('aria-invalid');
+        if (erroHorario) {
+            erroHorario.textContent = '';
+            erroHorario.hidden = true;
+            erroHorario.setAttribute('aria-hidden', 'true');
+        }
+    }
+
+    function sincronizarCampoHoraRetiradaEncomenda() {
+        var inputHora = document.getElementById('pedido-hora-retirada');
+        if (!inputHora) return false;
+        var erroHorario = document.getElementById('pedido-agendamento-erro');
+        var valorOriginal = inputHora.value || '';
+        inputHora.min = HORARIO_RETIRADA_ENCOMENDA_MIN;
+        inputHora.max = HORARIO_RETIRADA_ENCOMENDA_MAX;
+        inputHora.step = String(HORARIO_RETIRADA_ENCOMENDA_STEP);
+        inputHora.setCustomValidity('');
+        var invalidoPreenchido = Boolean(valorOriginal) && (
+            !horarioRetiradaEncomendaValido(valorOriginal) ||
+            !inputHora.checkValidity()
+        );
+        var erroPendente = inputHora.dataset.invalidAutoclear === '1';
+        if (invalidoPreenchido) {
+            inputHora.value = '';
+            inputHora.dataset.invalidAutoclear = '1';
+            inputHora.dataset.userTouched = '1';
+            erroPendente = true;
+        } else if (valorOriginal && horarioRetiradaEncomendaValido(valorOriginal)) {
+            delete inputHora.dataset.invalidAutoclear;
+            erroPendente = false;
+        }
+        var mostrarErro = erroPendente && inputHora.dataset.userTouched === '1';
+        if (erroHorario) {
+            erroHorario.textContent = mostrarErro ? HORARIO_RETIRADA_ENCOMENDA_ERRO : '';
+            erroHorario.hidden = !mostrarErro;
+            erroHorario.setAttribute('aria-hidden', mostrarErro ? 'false' : 'true');
+        }
+        if (erroPendente) inputHora.setAttribute('aria-invalid', 'true');
+        else inputHora.removeAttribute('aria-invalid');
+        inputHora.setCustomValidity(erroPendente ? HORARIO_RETIRADA_ENCOMENDA_ERRO : '');
+        return !erroPendente;
+    }
+
     function prepararAgendamentoEncomenda() {
         var inputData = document.getElementById('pedido-data-retirada');
         if (!inputData) return;
         var dataMinima = adicionarDiasCorridos(saoPauloHojeDate(), 5);
         inputData.min = getSaoPauloDatePart(dataMinima);
         if (inputData.value && inputData.value < inputData.min) inputData.value = '';
-        setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda());
+        sincronizarCampoHoraRetiradaEncomenda();
+        setBtnFinalizarState(podeFinalizarEncomenda());
     }
 
     function validarAgendamentoEncomenda() {
@@ -1826,7 +1895,25 @@
         if (!inputData.value || !inputHora.value) return false;
         var dataMin = inputData.min || '';
         if (dataMin && inputData.value < dataMin) return false;
+        if (!sincronizarCampoHoraRetiradaEncomenda()) return false;
         return true;
+    }
+
+    function podeFinalizarEncomenda() {
+        var nome = document.getElementById('pedido-nome').value.trim();
+        var retiradaConfirmada = document.getElementById('pedido-retirada').checked;
+        var tel = document.getElementById('pedido-whatsapp').value.trim().replace(/\D/g, '');
+        var cienciaConfirmada = document.getElementById('pedido-ciencia').checked;
+        return !window.__encomendaEnviando &&
+            nome.length >= 3 &&
+            retiradaConfirmada &&
+            /^16\d{8,9}$/.test(tel) &&
+            cienciaConfirmada &&
+            validarAgendamentoEncomenda();
+    }
+
+    function atualizarEstadoAgendamentoEncomenda() {
+        setBtnFinalizarState(podeFinalizarEncomenda());
     }
 
     // FUNÇÕES DO FLUXO DE 3 ETAPAS
@@ -1844,6 +1931,7 @@
             document.getElementById('pedido-ciencia').checked = false;
             document.getElementById('pedido-data-retirada').value = '';
             document.getElementById('pedido-hora-retirada').value = '';
+            resetarErroHorarioRetiradaEncomenda();
             document.getElementById('bloco-retirada').style.opacity = '0.4';
             document.getElementById('bloco-retirada').style.pointerEvents = 'none';
             document.getElementById('pedido-retirada').disabled = true;
@@ -1862,7 +1950,7 @@
         atualizarResumoEconomiaPicoles();
         prepararAgendamentoEncomenda();
         window.validarNome();
-        setBtnFinalizarState(!window.__encomendaEnviando && validarAgendamentoEncomenda() && document.getElementById('pedido-ciencia').checked);
+        setBtnFinalizarState(podeFinalizarEncomenda());
     };
 
     window.voltarParaRevisao = function() {
@@ -1890,6 +1978,7 @@
             inputRetirada.checked = false;
             window.validarRetirada();
         }
+        atualizarEstadoAgendamentoEncomenda();
     };
 
     window.validarRetirada = function() {
@@ -1908,6 +1997,7 @@
             inputWp.value = '';
             window.validarWhatsapp();
         }
+        atualizarEstadoAgendamentoEncomenda();
     };
 
     window.validarWhatsapp = function() {
@@ -1930,7 +2020,6 @@
                 inputData.disabled = false;
                 inputHora.disabled = false;
                 prepararAgendamentoEncomenda();
-                setBtnFinalizarState(!window.__encomendaEnviando && validarAgendamentoEncomenda());
             } else {
                 blocoAgendamento.style.opacity = '0.4';
                 blocoAgendamento.style.pointerEvents = 'none';
@@ -1938,7 +2027,7 @@
                 inputHora.disabled = true;
                 inputData.value = '';
                 inputHora.value = '';
-                setBtnFinalizarState(false);
+                resetarErroHorarioRetiradaEncomenda();
             }
         } else {
             blocoCiencia.style.opacity = '0.4';
@@ -1951,8 +2040,9 @@
             inputHora.disabled = true;
             inputData.value = '';
             inputHora.value = '';
-            setBtnFinalizarState(false);
+            resetarErroHorarioRetiradaEncomenda();
         }
+        atualizarEstadoAgendamentoEncomenda();
     };
 
     window.editarItem = function(i) {
@@ -2018,7 +2108,7 @@
         var zap = document.getElementById('pedido-whatsapp').value.trim();
         var tel = zap.replace(/\D/g, '');
         var dataRetirada = document.getElementById('pedido-data-retirada').value;
-        var horaRetirada = document.getElementById('pedido-hora-retirada').value;
+        var inputHoraRetirada = document.getElementById('pedido-hora-retirada');
         var dataMinima = document.getElementById('pedido-data-retirada').min || '';
 
         if (nome.length < 3) {
@@ -2052,6 +2142,19 @@
             document.getElementById('pedido-data-retirada').focus();
             return;
         }
+        if (!sincronizarCampoHoraRetiradaEncomenda() || !inputHoraRetirada.checkValidity()) {
+            var erroHorarioRetirada = document.getElementById('pedido-agendamento-erro');
+            inputHoraRetirada.dataset.userTouched = '1';
+            if (erroHorarioRetirada) {
+                erroHorarioRetirada.textContent = HORARIO_RETIRADA_ENCOMENDA_ERRO;
+                erroHorarioRetirada.hidden = false;
+                erroHorarioRetirada.setAttribute('aria-hidden', 'false');
+            }
+            inputHoraRetirada.setAttribute('aria-invalid', 'true');
+            inputHoraRetirada.focus();
+            return;
+        }
+        var horaRetirada = inputHoraRetirada.value;
         if (window.__encomendaEnviando) return;
 
         var resumoEconomia = calcularResumoEconomiaPicoles();
@@ -2089,10 +2192,40 @@
         var id = mapa[rota];
         if (id) window.toggleSecao(id);
     }
+    function registrarListenerEncomenda(elemento, tipo, handler) {
+        if (!elemento || !tipo || typeof handler !== 'function') return;
+        if (!elemento.__encomendaListeners) elemento.__encomendaListeners = {};
+        if (elemento.__encomendaListeners[tipo]) return;
+        elemento.addEventListener(tipo, handler);
+        elemento.__encomendaListeners[tipo] = true;
+    }
+    function campoDelegadoEncomenda(alvo) {
+        if (!alvo || !alvo.id) return false;
+        return alvo.id === 'pedido-nome' ||
+            alvo.id === 'pedido-whatsapp' ||
+            alvo.id === 'pedido-data-retirada' ||
+            alvo.id === 'pedido-hora-retirada' ||
+            alvo.id === 'pedido-retirada' ||
+            alvo.id === 'pedido-ciencia';
+    }
     // Permite trocar de gaveta por link/hash sem recarregar a página e sem criar outro renderizador.
     window.addEventListener('hashchange', abrirSecaoPorRota);
-    document.getElementById('pedido-data-retirada').addEventListener('change', function() { setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda()); });
-    document.getElementById('pedido-hora-retirada').addEventListener('change', function() { setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda()); });
+    var inputDataRetirada = document.getElementById('pedido-data-retirada');
+    var inputHoraRetirada = document.getElementById('pedido-hora-retirada');
+    var inputRetiradaConfirmada = document.getElementById('pedido-retirada');
+    var inputCienciaEncomenda = document.getElementById('pedido-ciencia');
+    var inputNomeEncomenda = document.getElementById('pedido-nome');
+    var inputWhatsappEncomenda = document.getElementById('pedido-whatsapp');
+    if (inputNomeEncomenda && inputWhatsappEncomenda && inputDataRetirada && inputHoraRetirada && inputRetiradaConfirmada && inputCienciaEncomenda) {
+        registrarListenerEncomenda(document, 'input', function(event) {
+            if (!campoDelegadoEncomenda(event.target)) return;
+            atualizarEstadoAgendamentoEncomenda();
+        });
+        registrarListenerEncomenda(document, 'change', function(event) {
+            if (!campoDelegadoEncomenda(event.target)) return;
+            atualizarEstadoAgendamentoEncomenda();
+        });
+    }
     window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); window.validarWhatsapp(); });
 
     // Inicialização única: renderiza uma prévia e, em seguida, substitui pelos dados oficiais do estoque.
