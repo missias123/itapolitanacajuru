@@ -165,7 +165,9 @@ async function medirClique(page, selector) {
     window.__clickResponseMetric = { nextPaintMs: null };
     const start = performance.now();
     requestAnimationFrame(() => {
-      window.__clickResponseMetric.nextPaintMs = performance.now() - start;
+      requestAnimationFrame(() => {
+        window.__clickResponseMetric.nextPaintMs = performance.now() - start;
+      });
     });
     el.click();
     return { missing: false };
@@ -177,43 +179,46 @@ async function medirClique(page, selector) {
 
 async function runScenario(browser, viewport, scenario) {
   const page = await browser.newPage();
-  await page.setViewport({
-    width: viewport.width,
-    height: viewport.height,
-    deviceScaleFactor: 1,
-    isMobile: viewport.isMobile,
-    hasTouch: viewport.hasTouch,
-  });
+  try {
+    await page.setViewport({
+      width: viewport.width,
+      height: viewport.height,
+      deviceScaleFactor: 1,
+      isMobile: viewport.isMobile,
+      hasTouch: viewport.hasTouch,
+    });
 
-  const pageErrors = [];
-  page.on('pageerror', (error) => pageErrors.push(String(error?.message || error)));
+    const pageErrors = [];
+    page.on('pageerror', (error) => pageErrors.push(String(error?.message || error)));
 
-  await page.goto(`${base}/${scenario.page}?click-response-speed-audit=${viewport.name}-${scenario.id}`, {
-    waitUntil: 'domcontentloaded',
-    timeout: 30000,
-  });
-  await new Promise((resolve) => setTimeout(resolve, 700));
+    await page.goto(`${base}/${scenario.page}?click-response-speed-audit=${viewport.name}-${scenario.id}`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 30000,
+    });
+    await new Promise((resolve) => setTimeout(resolve, 700));
 
-  if (scenario.setup) await scenario.setup(page);
+    if (scenario.setup) await scenario.setup(page);
 
-  const nextPaintMs = await medirClique(page, scenario.selector);
-  await page.waitForFunction(scenario.waitFor, { timeout: 1500 });
+    const nextPaintMs = await medirClique(page, scenario.selector);
+    await page.waitForFunction(scenario.waitFor, { timeout: 1500 });
 
-  const result = {
-    scenario: scenario.id,
-    page: scenario.page,
-    viewport: viewport.name,
-    selector: scenario.selector,
-    nextPaintMs: Number(nextPaintMs.toFixed(2)),
-    pass: nextPaintMs <= MAX_NEXT_PAINT_MS,
-    pageErrors,
-  };
+    const result = {
+      scenario: scenario.id,
+      page: scenario.page,
+      viewport: viewport.name,
+      selector: scenario.selector,
+      nextPaintMs: Number(nextPaintMs.toFixed(2)),
+      pass: nextPaintMs <= MAX_NEXT_PAINT_MS,
+      pageErrors,
+    };
 
-  assert.deepEqual(pageErrors, [], `${scenario.id}/${viewport.name}: erros de página`);
-  assert.ok(nextPaintMs <= MAX_NEXT_PAINT_MS, `${scenario.id}/${viewport.name}: resposta lenta (${nextPaintMs.toFixed(2)}ms)`);
+    assert.deepEqual(pageErrors, [], `${scenario.id}/${viewport.name}: erros de página`);
+    assert.ok(nextPaintMs <= MAX_NEXT_PAINT_MS, `${scenario.id}/${viewport.name}: resposta lenta (${nextPaintMs.toFixed(2)}ms)`);
 
-  await page.close();
-  return result;
+    return result;
+  } finally {
+    await page.close();
+  }
 }
 
 await waitForServer();
@@ -234,6 +239,7 @@ try {
 } finally {
   await browser.close();
   server.kill('SIGTERM');
+  await new Promise((resolve) => server.once('exit', resolve));
 }
 
 const summaryByViewport = VIEWPORTS.map((viewport) => {
