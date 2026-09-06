@@ -1839,7 +1839,9 @@
         var minMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(3, 5));
         var maxMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(3, 5));
         var passoMinutos = Number(HORARIO_RETIRADA_ENCOMENDA_STEP / 60) || 5;
-        return Math.floor((maxMinutos - minMinutos) / passoMinutos) + 2;
+        var quantidadeHorarios = 0;
+        for (var total = minMinutos; total <= maxMinutos; total += passoMinutos) quantidadeHorarios += 1;
+        return quantidadeHorarios + 1;
     }
 
     function popularOpcoesHoraRetiradaEncomenda() {
