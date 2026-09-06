@@ -23,6 +23,23 @@ const base = process.env.AUDIT_BASE || 'http://127.0.0.1:8135';
 const out = process.env.AUDIT_OUT || '/tmp/itapolitana-site-wide-hit-audit.json';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
+const ACTIVE_ROOT_PAGES = [
+  '404.html',
+  'admin-catalogo.html',
+  'admin-painel.html',
+  'admin-picole.html',
+  'cardapio-acai-natureon.html',
+  'carrossel.html',
+  'dicas.html',
+  'encomendas.html',
+  'index.html',
+  'offline.html',
+  'politica-privacidade.html',
+  'promocao.html',
+  'retirada.html',
+  'sobre.html',
+];
+
 const VIEWPORTS = [
   { name: 'iphone-se',      width: 320, height: 700,  isMobile: true  },
   { name: 'iphone',         width: 390, height: 844,  isMobile: true  },
@@ -32,30 +49,22 @@ const VIEWPORTS = [
   { name: 'desktop-fhd',    width: 1440, height: 900, isMobile: false },
 ];
 
-const PAGE_IGNORE = new Set([
-  'painel-qualidade.html',
-  'galeria.html',
-  'promocao-v2.html',
-]);
-
 async function listHtmlPages() {
-  const entries = await fs.readdir(root, { withFileTypes: true });
-  const rootPages = entries
-    .filter((entry) => entry.isFile() && entry.name.endsWith('.html') && !PAGE_IGNORE.has(entry.name))
-    .map((entry) => entry.name);
+  const pages = [];
+  for (const page of ACTIVE_ROOT_PAGES) {
+    await fs.access(path.join(root, page));
+    pages.push(page);
+  }
 
-  const adminDir = path.join(root, 'admin');
-  let adminPages = [];
+  const adminIndex = path.join(root, 'admin', 'index.html');
   try {
-    const adminEntries = await fs.readdir(adminDir, { withFileTypes: true });
-    adminPages = adminEntries
-      .filter((entry) => entry.isFile() && entry.name.endsWith('.html'))
-      .map((entry) => `admin/${entry.name}`);
+    await fs.access(adminIndex);
+    pages.push('admin/index.html');
   } catch (error) {
     if (error && error.code !== 'ENOENT') throw error;
   }
 
-  return [...rootPages, ...adminPages].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  return pages;
 }
 
 // Seletor amplo de candidatos a botão
