@@ -740,6 +740,14 @@
             ⚠️ <strong>Importante:</strong> Prazo mínimo de <strong>5 dias corridos</strong> após a confirmação e o pagamento. A encomenda será <strong>retirada na loja</strong>; não realizamos delivery. Entraremos em contato pelo WhatsApp para confirmar tudo.
           </p>
         </div>
+        <div style="padding: 14px; background: #F5F9FF; border: 1px solid #D7E7FF; border-radius: 12px; margin-bottom: 16px;">
+          <p style="font-size: 0.84rem; color: #0F3F73; margin: 0 0 8px; font-weight: 800;">✅ Como preencher sem confusão</p>
+          <ol style="margin: 0; padding-left: 18px; color: #1D3557; font-size: 0.82rem; line-height: 1.5;">
+            <li>Revise os itens no carrinho antes de continuar.</li>
+            <li>Preencha seu nome e WhatsApp com DDD 16 para contato rápido.</li>
+            <li>Escolha data e horário de retirada para enviarmos a confirmação completa.</li>
+          </ol>
+        </div>
 
         <div id="resumo-economia-picoles" class="resumo-economia-picoles" style="display:none;" role="status" aria-live="polite">
           <span id="titulo-resumo-picoles" class="resumo-economia-picoles__titulo">RESUMO DOS PICOLÉS</span>
@@ -761,7 +769,7 @@
 
         <div style="display: flex; flex-direction: column; gap: 14px;">
           <div>
-            <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">1. Seu Nome Completo *</label>
+            <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">1. Nome completo para identificação *</label>
             <input id="pedido-nome" type="text" oninput="window.validarNome()" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="Digite seu nome completo" />
           </div>
 
@@ -773,15 +781,15 @@
           </div>
 
           <div id="bloco-whatsapp" style="opacity: 0.4; pointer-events: none; transition: all 0.3s;">
-            <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">3. WhatsApp de Contato (Apenas DDD 16) *</label>
+            <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">3. WhatsApp para confirmação (somente DDD 16) *</label>
             <input id="pedido-whatsapp" type="tel" oninput="window.validarWhatsapp()" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="(16) 99999-9999" disabled />
-            <small style="color: #666; display: block; margin-top: 4px;">Exigido DDD 16 para validação na região.</small>
+            <small style="color: #666; display: block; margin-top: 4px;">Digite o número com DDD 16. Exemplo: (16) 99999-9999.</small>
           </div>
 
           <div id="bloco-ciencia" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; margin-top: 10px; padding: 12px; background: #F8F9FA; border-radius: 10px; border: 1px solid #DEE2E6;">
             <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #333; line-height: 1.4;">
               <input id="pedido-ciencia" type="checkbox" onchange="window.validarWhatsapp()" style="width: 20px; height: 20px; margin-top: 2px;" disabled />
-              <span>4. Estou ciente do prazo de 5 dias corridos após o pagamento e da retirada obrigatória na loja.</span>
+              <span>4. Estou ciente do prazo de 5 dias corridos após o pagamento e da retirada obrigatória na loja. O pedido só segue após confirmação humana no WhatsApp.</span>
             </label>
           </div>
           <div id="bloco-agendamento" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; margin-top: 10px; padding: 12px; background: #F8F9FA; border-radius: 10px; border: 1px solid #DEE2E6;">
@@ -789,7 +797,7 @@
             <input id="pedido-data-retirada" type="date" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
             <label style="display: block; font-weight: 800; font-size: 0.9rem; margin: 10px 0 6px; color: #333;">6. Horário para retirada da encomenda *</label>
             <input id="pedido-hora-retirada" type="time" min="10:00" max="20:00" step="300" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
-            <small style="color: #666; display: block; margin-top: 6px;">A data só é liberada a partir de 5 dias corridos.</small>
+            <small style="color: #666; display: block; margin-top: 6px;">A data só é liberada a partir de 5 dias corridos e o horário deve estar entre 10h e 20h.</small>
           </div>
         </div>
       </div>
@@ -1998,6 +2006,12 @@
         }
     }
 
+    function formatarDataMensagem(dataISO) {
+        if (!dataISO || !/^\d{4}-\d{2}-\d{2}$/.test(dataISO)) return dataISO || 'Não informada';
+        var partes = dataISO.split('-');
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
     window.finalizarPedido = function() {
         var nome = document.getElementById('pedido-nome').value.trim();
         var retiradaConfirmada = document.getElementById('pedido-retirada').checked;
@@ -2042,12 +2056,18 @@
 
         var resumoEconomia = calcularResumoEconomiaPicoles();
         var economiaTotal = Math.max(0, resumoEconomia.varejo - resumoEconomia.atacado);
-        var texto = `🍦 *ENCOMENDA — ITAPOLITANA CAJURU*\n━━━━━━━━━━━━━━━━━━━━━\n\n👤 *CLIENTE*\n• Nome: ${nome}\n• WhatsApp: ${zap}\n\n🕒 *RETIRADA PROGRAMADA*\n• Data: ${dataRetirada}\n• Horário: ${horaRetirada} (Brasília)\n\n✅ Ciente do prazo mínimo de 5 dias corridos após o pagamento.\n✅ Retirada na loja — não realizamos delivery.\n\n━━━━━━━━━━━━━━━━━━━━━\n🛒 *ITENS*\n\n` +
+        var dataRetiradaFmt = formatarDataMensagem(dataRetirada);
+        var totalUnidadesPedido = carrinho.reduce((acc, item) => acc + Number(item.quantidade || 1), 0);
+        var texto = `🍦 *ENCOMENDA — ITAPOLITANA CAJURU*\n━━━━━━━━━━━━━━━━━━━━━\n\n👤 *CLIENTE*\n• Nome: ${nome}\n• WhatsApp: ${zap}\n\n🕒 *RETIRADA PROGRAMADA*\n• Data: ${dataRetiradaFmt}\n• Horário: ${horaRetirada} (Brasília)\n\n✅ Ciente do prazo mínimo de 5 dias corridos após o pagamento.\n✅ Retirada na loja — não realizamos delivery.\n✅ Pedido enviado para conferência da equipe.\n\n━━━━━━━━━━━━━━━━━━━━━\n🛒 *ITENS DO PEDIDO*\n\n` +
             carrinho.map((item, i) => {
-                var desc = item.isPicole ? `${item.quantidade} un × R$ ${item.precoUnit.toFixed(2).replace('.',',')}` : item.isAcrescimo ? `${item.quantidade} un × R$ ${item.precoUnit.toFixed(2).replace('.',',')}` : `Sabores escolhidos:\n${item.sabores.map(function(s){ return '  • ' + s; }).join('\n')}`;
-                return `*${i+1}. ${item.tipo}: ${item.nome}*\n• ${desc}${item.isAcrescimo ? '' : `\n• ✔️ Subtotal: *R$ ${Number(item.preco || 0).toFixed(2).replace('.',',')}*`}`;
+                var subtotal = `R$ ${Number(item.preco || 0).toFixed(2).replace('.',',')}`;
+                if (item.isPicole || item.isAcrescimo) {
+                    return `*${i+1}. ${item.tipo}: ${item.nome}*\n• Quantidade: ${item.quantidade} un\n• Valor unitário: R$ ${item.precoUnit.toFixed(2).replace('.',',')}\n• ✔️ Subtotal: *${subtotal}*`;
+                }
+                var sabores = Array.isArray(item.sabores) && item.sabores.length ? `\n• Sabores escolhidos:\n${item.sabores.map(function(s){ return '  ◦ ' + s; }).join('\n')}` : '';
+                return `*${i+1}. ${item.tipo}: ${item.nome}*\n• Quantidade: ${item.quantidade || 1} unidade(s)${sabores}\n• ✔️ Subtotal: *${subtotal}*`;
             }).join('\n\n') +
-            `\n\n━━━━━━━━━━━━━━━━━━━━━\n💸 Varejo (referência): R$ ${resumoEconomia.varejo.toFixed(2).replace('.',',')}\n🎉 Desconto atacado (picolés): R$ ${economiaTotal.toFixed(2).replace('.',',')}\n🧾 *TOTAL A PAGAR: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}*\n━━━━━━━━━━━━━━━━━━━━━\n\n⚠️ _Pedido sujeito à confirmação da loja._\n_Sem retorno em 15 min, ligue/chame no WhatsApp: (16) 99606-2046_`;
+            `\n\n━━━━━━━━━━━━━━━━━━━━━\n📦 Total de unidades no pedido: ${totalUnidadesPedido}\n💸 Varejo (referência): R$ ${resumoEconomia.varejo.toFixed(2).replace('.',',')}\n🎉 Desconto atacado (picolés): R$ ${economiaTotal.toFixed(2).replace('.',',')}\n🧾 *TOTAL A PAGAR: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}*\n━━━━━━━━━━━━━━━━━━━━━\n\n⚠️ _Pedido sujeito à confirmação da loja._\n_Sem retorno em 15 min, ligue/chame no WhatsApp: (16) 99606-2046_`;
         window.__encomendaEnviando = true;
         setBtnFinalizarState(false, { busy: true });
         document.getElementById('btn-finalizar-pedido').textContent = 'Abrindo WhatsApp...';
