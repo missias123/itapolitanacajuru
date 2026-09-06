@@ -99,6 +99,13 @@ try {
   assert.equal(invalidResult.valid, false, '21:00 deve manter o campo inválido até o usuário corrigir.');
   assert.match(invalidResult.message, /11h e antes de 21h/i, '21:00 deve exibir a orientação correta.');
 
+  buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
+    opacity: button.style.opacity,
+    pointerEvents: button.style.pointerEvents,
+  }));
+  assert.equal(buttonState.opacity, '0.5', '21:00 não pode validar o formulário.');
+  assert.equal(buttonState.pointerEvents, 'none', '21:00 não pode liberar a finalização.');
+
   const clearedOnFocus = await page.$eval('#pedido-hora-retirada', (input) => {
     input.dispatchEvent(new Event('focus', { bubbles: true }));
     return {
@@ -107,14 +114,19 @@ try {
     };
   });
   assert.equal(clearedOnFocus.valid, true, 'Ao voltar para corrigir, o campo deve limpar o estado inválido anterior.');
-  assert.equal(clearedOnFocus.message, '', 'Ao focar para corrigir, o aviso visual deve ser limpo.');
+  assert.match(clearedOnFocus.message, /11h e antes de 21h/i, 'Ao focar para corrigir, a orientação visual deve permanecer disponível.');
 
-  buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
-    opacity: button.style.opacity,
-    pointerEvents: button.style.pointerEvents,
-  }));
-  assert.equal(buttonState.opacity, '0.5', '21:00 não pode validar o formulário.');
-  assert.equal(buttonState.pointerEvents, 'none', '21:00 não pode liberar a finalização.');
+  const clearedOnValidInput = await page.$eval('#pedido-hora-retirada', (input) => {
+    input.value = '11:00';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    return {
+      valid: input.checkValidity(),
+      message: document.getElementById('pedido-agendamento-erro')?.textContent?.trim() || '',
+    };
+  });
+  assert.equal(clearedOnValidInput.valid, true, 'Um horário válido deve normalizar o campo.');
+  assert.equal(clearedOnValidInput.message, '', 'Um horário válido deve limpar o aviso visual anterior.');
 
   await page.close();
 } finally {
