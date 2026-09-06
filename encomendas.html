@@ -1107,6 +1107,24 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    function abrirAcrescimosComScroll() {
+        var secaoId = 'sec-acrescimos';
+        var secao = document.getElementById('sec-acrescimos');
+        if (!secao) return false;
+        if (window.getComputedStyle(secao).display !== 'block') window.toggleSecao(secaoId);
+        var categoria = secao.closest('.categoria');
+        (categoria || secao).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.setTimeout(function () {
+            var primeiroBotao = secao.querySelector('button[data-role="acrescimo-plus"]:not([disabled])');
+            if (primeiroBotao && typeof primeiroBotao.focus === 'function') primeiroBotao.focus({ preventScroll: true });
+        }, 320);
+        return true;
+    }
+
+    function isCaixaEncomendaId(id) {
+        return Array.isArray(PRODUTOS) && PRODUTOS.some(function (produto) { return produto && produto.id === id; });
+    }
+
     window.abrirModal = function(id) {
         var modal = document.getElementById(id);
         if (!modal) return;
@@ -1216,7 +1234,7 @@
                 <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin:8px 0 10px;" aria-label="Quantidade de ${nome}">
                     <button type="button" aria-label="Diminuir quantidade de ${nome}" onclick="window.alterarQuantidadeAcrescimo('${p.id}', -1)" ${quantidade <= 0 ? 'disabled' : ''} style="width:44px;height:44px;border:1px solid #D5D5D5;border-radius:50%;background:#fff;color:#333;font-size:1.2rem;font-weight:900;cursor:pointer;">−</button>
                     <span id="qtd-acr-${p.id}" style="min-width:30px;text-align:center;font-size:1.15rem;font-weight:900;">${formatarQuantidade(quantidade)}</span>
-                    <button type="button" aria-label="Aumentar quantidade de ${nome}" onclick="window.alterarQuantidadeAcrescimo('${p.id}', 1)" ${indisponivel || quantidade >= Number(p.estoque || 0) ? 'disabled' : ''} style="width:44px;height:44px;border:1px solid var(--primary);border-radius:50%;background:var(--primary);color:#fff;font-size:1.2rem;font-weight:900;cursor:pointer;">+</button>
+                    <button type="button" data-role="acrescimo-plus" aria-label="Aumentar quantidade de ${nome}" onclick="window.alterarQuantidadeAcrescimo('${p.id}', 1)" ${indisponivel || quantidade >= Number(p.estoque || 0) ? 'disabled' : ''} style="width:44px;height:44px;border:1px solid var(--primary);border-radius:50%;background:var(--primary);color:#fff;font-size:1.2rem;font-weight:900;cursor:pointer;">+</button>
                 </div>
                 <div id="subtotal-acr-${p.id}" class="acrescimo-total-carrinho" aria-live="polite">${quantidade > 0 ? '✓ ' + formatarQuantidade(quantidade) + ' un. no carrinho · Total: R$ ' + subtotal.toFixed(2).replace('.',',') : 'Aguardando seleção...'}</div>
             </div>`;
@@ -1451,6 +1469,7 @@
         else carrinho.push(item);
         window.fecharModal('modal-sabores');
         atualizarCarrinhoFixo();
+        if (isCaixaEncomendaId(item.id)) abrirAcrescimosComScroll();
     };
 
     window.filtrarSecaoPicole = function(tipoId) {
