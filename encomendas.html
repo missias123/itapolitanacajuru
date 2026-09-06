@@ -1836,7 +1836,7 @@
         if (!inputHora) return;
         var valorAtual = inputHora.value || '';
         var placeholder = (inputHora.options && inputHora.options[0] && inputHora.options[0].textContent) || 'Selecione um horário';
-        inputHora.innerHTML = '';
+        while (inputHora.firstChild) inputHora.removeChild(inputHora.firstChild);
         var opcaoPlaceholder = document.createElement('option');
         opcaoPlaceholder.value = '';
         opcaoPlaceholder.textContent = placeholder;
