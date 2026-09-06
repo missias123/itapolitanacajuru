@@ -1064,7 +1064,6 @@
     // Chave: "Tipo|Sabor"; cada linha mantém preço, quantidade e subtotal próprios.
     var MAX_PICOLES_POR_SABOR = 250;
     var MIN_PICOLES_ATACADO = 100;
-    var IDS_CAIXAS_FLUXO_ACRESCIMOS = ['cx5l_2s', 'cx5l_3s', 'cx10l_2s', 'cx10l_3s'];
     window.toggleSecao = function(id) {
         var el = document.getElementById(id);
         var catPai = el.closest('.categoria');
@@ -1116,6 +1115,10 @@
         var categoria = secao.closest('.categoria');
         (categoria || secao).scrollIntoView({ behavior: 'smooth', block: 'start' });
         return true;
+    }
+
+    function isCaixaEncomendaId(id) {
+        return Array.isArray(PRODUTOS) && PRODUTOS.some(function (produto) { return produto && produto.id === id; });
     }
 
     window.abrirModal = function(id) {
@@ -1462,7 +1465,7 @@
         else carrinho.push(item);
         window.fecharModal('modal-sabores');
         atualizarCarrinhoFixo();
-        if (IDS_CAIXAS_FLUXO_ACRESCIMOS.includes(item.id)) abrirAcrescimosComScroll();
+        if (isCaixaEncomendaId(item.id)) abrirAcrescimosComScroll();
     };
 
     window.filtrarSecaoPicole = function(tipoId) {
