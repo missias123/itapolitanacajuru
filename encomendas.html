@@ -2109,6 +2109,7 @@
         var tel = zap.replace(/\D/g, '');
         var dataRetirada = document.getElementById('pedido-data-retirada').value;
         var inputHoraRetirada = document.getElementById('pedido-hora-retirada');
+        var horaRetirada = inputHoraRetirada ? inputHoraRetirada.value : '';
         var dataMinima = document.getElementById('pedido-data-retirada').min || '';
 
         if (nome.length < 3) {
@@ -2154,7 +2155,6 @@
             inputHoraRetirada.focus();
             return;
         }
-        var horaRetirada = inputHoraRetirada.value;
         if (window.__encomendaEnviando) return;
 
         var resumoEconomia = calcularResumoEconomiaPicoles();
