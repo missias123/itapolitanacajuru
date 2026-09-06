@@ -1846,15 +1846,6 @@
         return !erroPendente;
     }
 
-    function limparErroHorarioRetiradaEncomenda() {
-        var inputHora = document.getElementById('pedido-hora-retirada');
-        var erroHorario = document.getElementById('pedido-agendamento-erro');
-        if (!inputHora) return;
-        delete inputHora.dataset.invalidAutoclear;
-        inputHora.setCustomValidity('');
-        if (erroHorario) erroHorario.textContent = '';
-    }
-
     function prepararAgendamentoEncomenda() {
         var inputData = document.getElementById('pedido-data-retirada');
         if (!inputData) return;
@@ -1877,10 +1868,6 @@
     }
 
     function atualizarEstadoAgendamentoEncomenda() {
-        var inputHora = document.getElementById('pedido-hora-retirada');
-        if (inputHora && inputHora.value && inputHora.dataset.invalidAutoclear === '1') {
-            limparErroHorarioRetiradaEncomenda();
-        }
         sincronizarCampoHoraRetiradaEncomenda();
         setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda());
     }
