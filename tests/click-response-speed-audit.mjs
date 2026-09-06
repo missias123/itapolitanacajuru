@@ -163,23 +163,39 @@ const SCENARIOS = [
 ];
 
 async function medirClique(page, selector, waitForFn) {
-  const result = await page.evaluate((targetSelector) => {
+  const result = await page.evaluate(async (targetSelector, waitForSource) => {
     const el = document.querySelector(targetSelector);
     if (!el) return { missing: true };
+    const waitForState = new Function(`return (${waitForSource})();`);
     el.scrollIntoView({ block: 'center', inline: 'center' });
-    window.__clickResponseMetric = { nextPaintMs: null, start: performance.now() };
+    const start = performance.now();
     el.click();
-    return { missing: false };
-  }, selector);
-  if (result.missing) throw new Error(`Seletor não encontrado: ${selector}`);
-  await page.waitForFunction(waitForFn, { timeout: 1500 });
-  await page.evaluate(() => new Promise((resolve) => {
-    requestAnimationFrame(() => {
-      window.__clickResponseMetric.nextPaintMs = performance.now() - window.__clickResponseMetric.start;
-      resolve();
+    const nextPaintMs = await new Promise((resolve, reject) => {
+      const deadline = performance.now() + 1500;
+      function check() {
+        let done = false;
+        try {
+          done = !!waitForState();
+        } catch (error) {
+          reject(error);
+          return;
+        }
+        if (done) {
+          requestAnimationFrame(() => resolve(performance.now() - start));
+          return;
+        }
+        if (performance.now() > deadline) {
+          reject(new Error(`Estado visual não mudou a tempo para ${targetSelector}`));
+          return;
+        }
+        requestAnimationFrame(check);
+      }
+      check();
     });
-  }));
-  return page.evaluate(() => window.__clickResponseMetric.nextPaintMs);
+    return { missing: false, nextPaintMs };
+  }, selector, waitForFn.toString());
+  if (result.missing) throw new Error(`Seletor não encontrado: ${selector}`);
+  return result.nextPaintMs;
 }
 
 async function runScenario(browser, viewport, scenario) {
