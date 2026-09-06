@@ -85,6 +85,20 @@ try {
   assert.equal(buttonState.opacity, '1', '20:55 deve manter o formulário válido.');
   assert.notEqual(buttonState.pointerEvents, 'none', '20:55 deve permitir finalizar.');
 
+  const belowMinimumResult = await page.$eval('#pedido-hora-retirada', (input) => {
+    input.value = '10:55';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    return {
+      value: input.value,
+      valid: input.checkValidity(),
+      message: document.getElementById('pedido-agendamento-erro')?.textContent?.trim() || '',
+    };
+  });
+  assert.equal(belowMinimumResult.value, '', '10:55 deve ser descartado do campo.');
+  assert.equal(belowMinimumResult.valid, false, '10:55 deve manter o campo inválido até o usuário corrigir.');
+  assert.match(belowMinimumResult.message, /11h e antes de 21h/i, '10:55 deve exibir a orientação correta.');
+
   const stepMismatchResult = await page.$eval('#pedido-hora-retirada', (input) => {
     input.value = '20:57';
     input.dispatchEvent(new Event('input', { bubbles: true }));
