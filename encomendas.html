@@ -1831,11 +1831,28 @@
             (totalMinutos % (HORARIO_RETIRADA_ENCOMENDA_STEP / 60) === 0);
     }
 
+    function assinaturaOpcoesHoraRetiradaEncomenda() {
+        return [HORARIO_RETIRADA_ENCOMENDA_MIN, HORARIO_RETIRADA_ENCOMENDA_MAX, HORARIO_RETIRADA_ENCOMENDA_STEP].join('|');
+    }
+
+    function quantidadeEsperadaOpcoesHoraRetiradaEncomenda() {
+        var minMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MIN.slice(3, 5));
+        var maxMinutos = (Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(0, 2)) * 60) + Number(HORARIO_RETIRADA_ENCOMENDA_MAX.slice(3, 5));
+        var passoMinutos = Number(HORARIO_RETIRADA_ENCOMENDA_STEP / 60) || 5;
+        return Math.floor((maxMinutos - minMinutos) / passoMinutos) + 2;
+    }
+
     function popularOpcoesHoraRetiradaEncomenda() {
         var inputHora = document.getElementById('pedido-hora-retirada');
         if (!inputHora) return;
         var valorAtual = inputHora.value || '';
         var placeholder = (inputHora.options && inputHora.options[0] && inputHora.options[0].textContent) || 'Selecione um horário';
+        var assinaturaAtual = assinaturaOpcoesHoraRetiradaEncomenda();
+        var quantidadeEsperada = quantidadeEsperadaOpcoesHoraRetiradaEncomenda();
+        if (inputHora.dataset.optionsSignature === assinaturaAtual && inputHora.options.length === quantidadeEsperada) {
+            if (valorAtual && horarioRetiradaEncomendaValido(valorAtual)) inputHora.value = valorAtual;
+            return;
+        }
         while (inputHora.firstChild) inputHora.removeChild(inputHora.firstChild);
         var opcaoPlaceholder = document.createElement('option');
         opcaoPlaceholder.value = '';
@@ -1853,6 +1870,7 @@
             opcao.textContent = valor;
             inputHora.appendChild(opcao);
         }
+        inputHora.dataset.optionsSignature = assinaturaAtual;
         if (valorAtual && horarioRetiradaEncomendaValido(valorAtual)) inputHora.value = valorAtual;
         else inputHora.value = '';
     }
