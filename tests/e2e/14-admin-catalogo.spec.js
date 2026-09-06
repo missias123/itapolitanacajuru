@@ -52,4 +52,64 @@ test.describe('Admin catálogo - edição manual', () => {
     await expect(row.locator('label.status')).toContainText('Esgotado');
     await expect(page.locator('#pending')).toContainText('3 alteração');
   });
+
+  test('salva pelo Worker com token de sessão e mantém a sessão ativa', async ({ page }) => {
+    let requestHeaders;
+    let requestBody;
+
+    await page.route('https://api.itapolitanacajuru.com.br/api/admin/github-file', async (route) => {
+      requestHeaders = route.request().headers();
+      requestBody = JSON.parse(route.request().postData() || '{}');
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: true, revision: 'sha-novo' }),
+      });
+    });
+
+    await page.addInitScript(() => {
+      sessionStorage.setItem('itap_worker_session_token', 'sessao-admin-teste');
+    });
+
+    await page.goto('/admin-catalogo.html', { waitUntil: 'domcontentloaded' });
+    const row = page.locator('#productsPanel tr[data-key]').first();
+    const nome = row.locator('input[data-field="nome"]');
+    const valorOriginal = await nome.inputValue();
+    await nome.fill(`${valorOriginal} teste`);
+    await page.click('#save');
+
+    await expect(page.locator('#notice')).toContainText('Site atualizado. A base única foi enviada pelo Worker seguro');
+    await expect(page.locator('#pending')).toBeEmpty();
+    await expect.poll(() => page.evaluate(() => sessionStorage.getItem('itap_worker_session_token'))).toBe('sessao-admin-teste');
+    expect(requestHeaders['x-itap-session-token']).toBe('sessao-admin-teste');
+    expect(requestBody.path).toBe('dados/produtos.json');
+    expect(requestBody.content).toBeTruthy();
+  });
+
+  test('limpa a sessão local e pede novo login quando o Worker retorna 401', async ({ page }) => {
+    await page.route('https://api.itapolitanacajuru.com.br/api/admin/github-file', async (route) => {
+      await route.fulfill({
+        status: 401,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: false, error: 'Sessão expirada' }),
+      });
+    });
+
+    await page.addInitScript(() => {
+      sessionStorage.setItem('itap_worker_session_token', 'sessao-expirada');
+    });
+
+    await page.goto('/admin-catalogo.html', { waitUntil: 'domcontentloaded' });
+    const row = page.locator('#productsPanel tr[data-key]').first();
+    const nome = row.locator('input[data-field="nome"]');
+    const valorOriginal = await nome.inputValue();
+    await nome.fill(`${valorOriginal} teste`);
+    await page.click('#save');
+
+    await expect(page.locator('#notice')).toContainText('Sua sessão administrativa não está mais autorizada');
+    await expect.poll(() => page.evaluate(() => sessionStorage.getItem('itap_worker_session_token'))).toBeNull();
+    await expect(page.locator('#save')).toBeEnabled();
+    await page.click('#tokenBtn');
+    await expect(page.locator('#sessionDescription')).toContainText('faça login no admin-painel.html');
+  });
 });

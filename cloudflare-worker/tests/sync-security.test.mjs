@@ -204,6 +204,25 @@ test('busca pública do sorteio não expõe telefone nem metadata da inscrição
   assert.equal(JSON.stringify(response.json).includes('16912345678'), false);
 });
 
+test('busca pública do sorteio ainda encontra inscrição de meses anteriores sem expor PII', async () => {
+  const env = createEnv();
+  const id = 'sorteio-test-002';
+  await env.CLIENTES_KV.put(`sorteio:inscrito:${id}`, JSON.stringify({
+    id,
+    nome: 'Maria Teste',
+    birthdate: '2000-01-02',
+    lote_mes: '2026-08',
+    phone: '16912345678',
+    created_at: '2026-08-12T12:00:00.000Z',
+  }));
+
+  const response = await request(env, `/api/sorteio/buscar?nome=${encodeURIComponent('Maria Teste')}&dataNasc=2000-01-02`);
+
+  assert.equal(response.status, 200);
+  assert.equal(response.json.found, true);
+  assert.equal(JSON.stringify(response.json).includes('16912345678'), false);
+});
+
 test('worker aplica headers rígidos de hardening nas respostas da API', async () => {
   const env = createEnv();
   const response = await request(env, '/api/health');

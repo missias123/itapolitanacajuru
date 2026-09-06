@@ -1077,7 +1077,19 @@ async function handleGetSorteioBuscar(request, env, url) {
   const nome = sanitizeString(url.searchParams.get('nome'), 200);
   const dataNasc = sanitizeString(url.searchParams.get('dataNasc'), 20);
   const loteMes = new Date().toISOString().slice(0, 7);
-  const id = await env.CLIENTES_KV.get(sorteioNascKey(nome, dataNasc, loteMes));
+  let id = await env.CLIENTES_KV.get(sorteioNascKey(nome, dataNasc, loteMes));
+  if (!id) {
+    const nomeNormalizado = normalizarNomeSorteio(nome);
+    const lista = await env.CLIENTES_KV.list({ prefix: 'sorteio:inscrito:' });
+    for (const entry of lista.keys) {
+      const inscricao = await env.CLIENTES_KV.get(entry.name, 'json');
+      if (!inscricao) continue;
+      if (normalizarNomeSorteio(inscricao.nome) === nomeNormalizado && String(inscricao.birthdate || '') === dataNasc) {
+        id = inscricao.id || entry.name.replace('sorteio:inscrito:', '');
+        break;
+      }
+    }
+  }
   if (!id) return jsonResp({ found: false });
   const insc = await env.CLIENTES_KV.get(`sorteio:inscrito:${id}`, 'json');
   if (!insc) return jsonResp({ found: false });
