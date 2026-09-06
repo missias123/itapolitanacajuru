@@ -137,7 +137,7 @@ try {
     };
   });
   assert.equal(invalidOptionResult.value, '', 'Horário fora da lista deve ser descartado do campo.');
-  assert.equal(invalidOptionResult.valid, true, 'Com select bloqueado por opções, o navegador não deve aceitar valor inválido.');
+  assert.equal(invalidOptionResult.valid, false, 'Com select obrigatório e bloqueado por opções, valor fora da lista deve manter o campo inválido.');
   assert.equal(invalidOptionResult.message, '', 'Sem valor fora da lista persistido, não deve haver mensagem de erro.');
   assert.equal(invalidOptionResult.ariaInvalid, null, 'Sem valor inválido persistido, aria-invalid deve permanecer limpo.');
   assert.equal(invalidOptionResult.errorHidden, true, 'Sem valor inválido persistido, o bloco de erro deve permanecer oculto.');
