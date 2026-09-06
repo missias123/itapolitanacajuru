@@ -32,7 +32,7 @@
       </div>
       <div class="actions">
         <a class="button" href="admin-painel.html">Configurações do site</a>
-        <button class="button token-btn" id="tokenBtn" type="button">🔑 Token GitHub</button>
+        <button class="button token-btn" id="tokenBtn" type="button">🔒 Sessão admin</button>
         <button class="button primary" id="save" type="button">Atualizar site</button>
       </div>
     </header>
@@ -91,35 +91,16 @@
     </div>
   </main>
 
-  <dialog id="tokenDialog" aria-labelledby="tokenTitle">
+  <dialog id="sessionDialog" aria-labelledby="sessionTitle">
     <div class="token-card">
-      <h2 id="tokenTitle">Token GitHub</h2>
-      <p class="sub">Necessário para salvar alterações no catálogo. O token é salvo no navegador e permanece ativo entre sessões. Clique em "Remover token" para apagá-lo.</p>
-      <div id="tokenActiveBar" class="token-active-bar hide">✅ Token ativo — edições serão salvas no GitHub.</div>
-      <div class="token-field-wrap">
-        <input type="password" id="tokenInput" placeholder="ghp_…" autocomplete="off" spellcheck="false">
-        <button class="token-eye" id="tokenEye" type="button" aria-label="Mostrar/ocultar token">👁</button>
-      </div>
-      <p class="token-hint">Gere um token em github.com → Settings → Developer settings → Personal access tokens → Fine-grained. Permissão necessária: <strong>Contents: Read and write</strong> no repositório.</p>
+      <h2 id="sessionTitle">Sessão administrativa protegida</h2>
+      <p class="sub" id="sessionDescription" role="status" aria-live="polite">Para publicar alterações no catálogo, faça login no admin-painel.html. O catálogo usa apenas a sessão segura do Worker e não aceita mais token GitHub ou PIN no navegador.</p>
+      <div id="sessionActiveBar" class="token-active-bar hide">✅ Sessão administrativa ativa nesta aba.</div>
+      <p class="token-hint">A sessão é temporária e fica somente em <strong>sessionStorage</strong> da aba atual. Para encerrar, use o botão abaixo.</p>
       <div class="confirm-actions">
-        <button class="button" id="tokenClear" type="button">Remover token</button>
-        <button class="button" id="tokenCancel" type="button">Cancelar</button>
-        <button class="button primary" id="tokenSave" type="button">Confirmar</button>
-      </div>
-    </div>
-  </dialog>
-
-  <dialog id="pinDialog" aria-labelledby="pinTitle">
-    <div class="confirm-card">
-      <h2 id="pinTitle">🔒 Confirmar publicação</h2>
-      <p>Digite o PIN para atualizar o site:</p>
-      <div class="token-field-wrap">
-        <input type="password" id="pinInput" maxlength="4" inputmode="numeric" placeholder="····" autocomplete="off" style="letter-spacing:.4em;font-size:1.5rem;text-align:center;width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);outline:none">
-      </div>
-      <p id="pinError" style="color:var(--red);font-size:13px;font-weight:800;min-height:18px;margin:6px 0 0"></p>
-      <div class="confirm-actions" style="margin-top:14px">
-        <button class="button" id="pinCancel" type="button">Cancelar</button>
-        <button class="button primary" id="pinConfirm" type="button">Publicar no site</button>
+        <a class="button primary" id="sessionOpenAdmin" href="admin-painel.html">Abrir painel admin</a>
+        <button class="button" id="sessionClear" type="button">Encerrar sessão desta aba</button>
+        <button class="button" id="sessionClose" type="button">Fechar</button>
       </div>
     </div>
   </dialog>
@@ -140,15 +121,16 @@
   <script>
   (function(){
     'use strict';
-    const REPO='missias123/itapolitanacajuru', PATH='dados/produtos.json', BRANCH='main', PIN='2046';
+    const PATH='dados/produtos.json', ITAP_WORKER_API='https://api.itapolitanacajuru.com.br', WORKER_SESSION_TOKEN_KEY='itap_worker_session_token';
     const state={raw:null,query:'',skuQuery:'',category:'',activeOnly:false,soldOutOnly:false,dirty:false,tab:'produtos',pending:[],confirmation:null};
     const $=id=>document.getElementById(id);
     const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
     const money=v=>Number.isFinite(Number(v))?Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):'—';
-    const getToken=()=>{try{return localStorage.getItem('itap_github_token')||sessionStorage.getItem('itap_github_token')||''}catch(e){try{return sessionStorage.getItem('itap_github_token')||''}catch(_e){return ''}}};
-    const setToken=v=>{let localOk=false;try{if(v)localStorage.setItem('itap_github_token',v);else localStorage.removeItem('itap_github_token');localOk=true}catch(e){}try{if(!localOk){if(v)sessionStorage.setItem('itap_github_token',v);else sessionStorage.removeItem('itap_github_token')}else sessionStorage.removeItem('itap_github_token')}catch(e){}};
-    const updateTokenBtn=()=>{const has=!!getToken();$('tokenBtn').className='button token-btn'+(has?' active':'');$('tokenBtn').textContent=has?'🔑 Token ativo':'🔑 Token GitHub'};
+    const getWorkerSessionToken=()=>{try{return sessionStorage.getItem(WORKER_SESSION_TOKEN_KEY)||''}catch(e){return ''}};
+    const clearWorkerSession=()=>{try{sessionStorage.removeItem(WORKER_SESSION_TOKEN_KEY)}catch(e){}};
+    const hasWriteSession=()=>Boolean(getWorkerSessionToken());
+    const updateTokenBtn=()=>{const has=hasWriteSession();$('tokenBtn').className='button token-btn'+(has?' active':'');$('tokenBtn').textContent=has?'🔒 Sessão admin ativa':'🔒 Fazer login admin'};
     const clone=value=>JSON.parse(JSON.stringify(value));
     const notice=(text,type='')=>{$('notice').textContent=text;$('notice').className='notice '+type};
     const master=()=>state.raw?.cadastro_skus?.por_chave||{};
@@ -183,10 +165,10 @@
       return Number.isFinite(parsed)?parsed:null;
     };
     const confirmarSenhaAcao=acao=>{
-      const pin=window.prompt(`Digite a senha 2046 para confirmar ${acao}:`);
-      if(pin===null) return false;
-      if(pin.trim()!==PIN){notice('Senha incorreta. Operação cancelada.');return false;}
-      return true;
+      if(hasWriteSession()) return true;
+      notice(`Faça login no painel administrativo antes de ${acao}.`);
+      openSessionDialog();
+      return false;
     };
     const fillCategoryInput=()=>{
       const categoryField=$('category');
@@ -195,7 +177,7 @@
       if(manual&&!manual.value) manual.value=categoryField.value||'';
     };
     const appendPending=(message,{dedupe=false}={})=>{if(!message)return;if(dedupe&&state.pending.includes(message))return;state.pending.push(message)};
-    const updateSave=()=>{$('save').disabled=false;$('saveBottom').disabled=false;$('pending').textContent=state.pending.length?`${state.pending.length} alteração(ões) pronta(s) para atualizar.`:'';updateTokenBtn()};
+    const updateSave=()=>{const canAttempt=state.dirty;$('save').disabled=!canAttempt;$('saveBottom').disabled=!canAttempt;$('save').textContent='Atualizar site';$('saveBottom').textContent='Atualizar site';$('pending').textContent=state.pending.length?`${state.pending.length} alteração(ões) pronta(s) para atualizar.`:'';updateTokenBtn()};
     const setDirty=()=>{state.dirty=true;updateSave()};
     const syncFilterButtons=()=>{
       $('activeOnly').setAttribute('aria-pressed',String(state.activeOnly));
@@ -433,10 +415,10 @@
     function applyBatch(category,active){if(!confirmarSenhaAcao('o esgotamento em lote'))return;const rows=records().filter(r=>categoriaVisual(r)===category);if(!rows.length)return;state.confirmation={kind:'lote',rows:rows.map(r=>r.key),next:active,label:category,sku:`${rows.length} SKU(s)`};$('confirmTitle').textContent=active?'Confirmar retorno da linha':'Confirmar esgotamento da linha';$('confirmDescription').textContent=`${category} · ${rows.length} SKU(s)`;$('confirmImpact').textContent=`Todos os produtos desta linha serão ${active?'reativados':'marcados como esgotados'}.`;$('confirmAvailability').textContent=active?'Confirmar retorno':'Confirmar esgotamento';$('availabilityDialog').showModal()}
     function applyFlavorBatch(active){if(!confirmarSenhaAcao('o esgotamento dos sabores'))return;const flavors=state.raw?.sabores_sorvete||[];const rows=flavors.map(flavor=>'massas.'+flavor.codigo);const label=`${flavors.length} sabores de massa`;state.confirmation={kind:'lote',rows,next:active,label,sku:`${flavors.length} sabores`};$('confirmTitle').textContent=active?'Confirmar retorno dos sabores':'Confirmar esgotamento dos sabores';$('confirmDescription').textContent=label;$('confirmImpact').textContent=`Todos os sabores de massa serão ${active?'reativados':'marcados como esgotados'}.`;$('confirmAvailability').textContent=active?'Confirmar retorno':'Confirmar esgotamento';$('availabilityDialog').showModal()}
     function deleteProductRecord(key){if(!confirmarSenhaAcao('a exclusão de produto'))return;const record=getRecord(key);if(!record)return;if(!window.confirm(`Excluir ${record.sku} · ${record.nome}?`))return;delete state.raw.cadastro_skus.por_chave[key];appendPending(`${record.sku}: produto removido manualmente`);setDirty();render();notice(`Produto ${record.sku} removido da base. Clique em Atualizar site para publicar.`,'success')}
-    function attemptSaveFromPanel(){if(!state.dirty){notice('Nenhuma alteração pendente para atualizar.');return}if(!getToken()){notice('Configure o Token GitHub no botão 🔑 Token GitHub antes de atualizar.');return}requestSave()}
+    function attemptSaveFromPanel(){if(!state.dirty){notice('Nenhuma alteração pendente para atualizar.');return}if(!hasWriteSession()){notice('Faça login no painel administrativo antes de publicar alterações no catálogo.');openSessionDialog();return}requestSave()}
     function validate(){const seen=new Set(),issues=[],packs=packaging(),deps=packagingIndex();records().forEach(r=>{if(!/^[A-Z0-9][A-Z0-9_-]{1,63}$/.test(String(r.sku||'')))issues.push(`${r.key}: SKU inválido`);if(seen.has(r.sku))issues.push(`${r.key}: SKU duplicado (${r.sku})`);seen.add(r.sku);if(!String(r.nome||'').trim())issues.push(`${r.sku}: nome obrigatório`);if(r.preco!=null&&(!Number.isFinite(Number(r.preco))||Number(r.preco)<0))issues.push(`${r.sku}: valor inválido`);(r.dependencias_embalagem||[]).forEach(dep=>{if(!packs[dep])issues.push(`${r.sku}: embalagem dependente inexistente (${dep})`)});if(r.categoria==='Picolés'&&((!Number.isFinite(Number(r.preco_varejo))||Number(r.preco_varejo)<0)||(!Number.isFinite(Number(r.preco_atacado))||Number(r.preco_atacado)<0)))issues.push(`${r.sku}: preços de varejo e atacado obrigatórios`)});Object.entries(packs).forEach(([sku,pack])=>{if(!String(pack.nome||'').trim())issues.push(`${sku}: nome da embalagem obrigatório`);if(pack.ativo!==true&&pack.ativo!==false)issues.push(`${sku}: estado da embalagem inválido`);(deps[sku]||[]).forEach(depSku=>{if(!findBySku(depSku))issues.push(`${sku}: SKU dependente inexistente (${depSku})`)})});return issues}
-    async function save(){syncPackagingDependencies();syncAcaiBaseFlags();applyHierarchicalSaveOrder();const errors=validate();if(errors.length){notice(`Não foi possível atualizar: ${errors.slice(0,3).join(' · ')}${errors.length>3?' …':''}`);return}const token=getToken();if(!token){notice('Configure o Token GitHub clicando no botão 🔑 Token GitHub no topo da página.');return}try{$('save').disabled=true;$('saveBottom').disabled=true;notice('Atualizando a base única no GitHub…');const url=`https://api.github.com/repos/${REPO}/contents/${PATH}`;const current=await fetch(url+`?ref=${BRANCH}`,{headers:{Authorization:`token ${token}`,Accept:'application/vnd.github+json'}});if(!current.ok)throw Error('Não foi possível obter a versão atual do catálogo.');const currentJson=await current.json();const copy=clone(state.raw);const json=JSON.stringify(copy,null,2)+'\n';const content=btoa(unescape(encodeURIComponent(json)));const put=await fetch(url,{method:'PUT',headers:{Authorization:`token ${token}`,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'Admin: atualizar disponibilidade na base única de SKUs',branch:BRANCH,sha:currentJson.sha,content})});if(!put.ok){const detail=await put.json().catch(()=>({}));throw Error(detail.message||'Falha ao salvar o catálogo.')}state.raw=copy;state.dirty=false;state.pending=[];notice('Site atualizado. A base única foi enviada ao GitHub e será usada em todo o catálogo.','success');render()}catch(error){notice(`Erro ao atualizar: ${error.message}`)}finally{updateSave()}}
-    async function load(){try{const response=await fetch('dados/produtos.json?v='+Date.now(),{cache:'no-store'});if(!response.ok)throw Error('Cadastro indisponível');state.raw=await response.json();if(!records().length)throw Error('Cadastro mestre sem produtos');syncPackagingDependencies();syncAcaiBaseFlags();notice(getToken()?'Base única carregada. Edite e salve quando necessário.':'Base única carregada em modo de consulta. Clique em 🔑 Token GitHub para habilitar o salvamento.','success');render();fillCategoryInput();updateTokenBtn()}catch(error){notice(`Não foi possível carregar a base única: ${error.message}`);$('productsPanel').innerHTML='<div class="section empty">Tente atualizar a página.</div>'}}
+    async function save(){syncPackagingDependencies();syncAcaiBaseFlags();applyHierarchicalSaveOrder();const errors=validate();if(errors.length){notice(`Não foi possível atualizar: ${errors.slice(0,3).join(' · ')}${errors.length>3?' …':''}`);return}const sessionToken=getWorkerSessionToken();if(!sessionToken){notice('Sessão administrativa ausente. Faça login no painel admin para publicar.');openSessionDialog();return}try{$('save').disabled=true;$('saveBottom').disabled=true;notice('Atualizando a base única pelo Worker seguro…');const copy=clone(state.raw);const response=await fetch(`${ITAP_WORKER_API}/api/admin/github-file`,{method:'PUT',headers:{'Content-Type':'application/json','X-Itap-Session-Token':sessionToken},body:JSON.stringify({path:PATH,content:copy})});const detail=await response.json().catch(()=>({}));if(!response.ok){if(response.status===401||response.status===403){clearWorkerSession();updateSave();throw Error('Sua sessão administrativa não está mais autorizada. Entre novamente no painel admin.')}throw Error(detail.error||'Falha ao salvar o catálogo.')}state.raw=copy;state.dirty=false;state.pending=[];notice('Site atualizado. A base única foi enviada pelo Worker seguro e será usada em todo o catálogo.','success');render()}catch(error){notice(`Erro ao atualizar: ${error.message}`)}finally{updateSave()}}
+    async function load(){try{const response=await fetch('dados/produtos.json?v='+Date.now(),{cache:'no-store'});if(!response.ok)throw Error('Cadastro indisponível');state.raw=await response.json();if(!records().length)throw Error('Cadastro mestre sem produtos');syncPackagingDependencies();syncAcaiBaseFlags();notice(hasWriteSession()?'Base única carregada. Sessão admin ativa nesta aba.':'Base única carregada em modo de consulta. Faça login no painel admin para publicar alterações.','success');render();fillCategoryInput();updateTokenBtn()}catch(error){notice(`Não foi possível carregar a base única: ${error.message}`);$('productsPanel').innerHTML='<div class="section empty">Tente atualizar a página.</div>'}}
     $('search').addEventListener('input',event=>{state.query=event.target.value;renderProducts()});
     $('category').addEventListener('change',event=>{state.category=event.target.value;fillCategoryInput();renderProducts()});
     $('activeOnly').addEventListener('click',()=>{state.activeOnly=!state.activeOnly;if(state.activeOnly)state.soldOutOnly=false;syncFilterButtons();renderProducts()});
@@ -455,17 +437,12 @@
     document.addEventListener('click',event=>{const batch=event.target.closest('[data-batch]');if(batch)applyBatch(batch.dataset.category,batch.dataset.batch==='on');const flavorBatch=event.target.closest('[data-flavor-batch]');if(flavorBatch)applyFlavorBatch(flavorBatch.dataset.flavorBatch==='on')});
     $('confirmAvailability').addEventListener('click',()=>{const action=state.confirmation;if(action?.kind==='lote'){action.rows.forEach(id=>{const record=getRecord(id);if(record)record.ativo=action.next});if(action.rows.includes('massas.MAS-039'))syncAcaiBaseFlags();appendPending(`${action.sku}: ${action.next?'reativado(s)':'esgotado(s)'}`);state.confirmation=null;$('availabilityDialog').close();setDirty();render();notice(`Alteração confirmada para ${action.label}. Clique em Atualizar site para enviar a base oficial ao GitHub.`,'success')}else applyConfirmation()});
     $('cancelAvailability').addEventListener('click',()=>{$('availabilityDialog').close();state.confirmation=null});
-    function openTokenDialog(){const has=!!getToken();$('tokenInput').value='';$('tokenInput').type='password';$('tokenEye').textContent='👁';$('tokenActiveBar').classList.toggle('hide',!has);$('tokenSave').textContent=has?'Substituir token':'Confirmar';$('tokenDialog').showModal();setTimeout(()=>$('tokenInput').focus(),50)}
-    function requestSave(){if(!state.dirty){notice('Nenhuma alteração pendente para atualizar.');return}if(!getToken()){notice('Configure o Token GitHub no botão 🔑 Token GitHub antes de atualizar.');openTokenDialog();return}$('pinInput').value='';$('pinError').textContent='';$('pinDialog').showModal();setTimeout(()=>$('pinInput').focus(),50)}
+    function openSessionDialog(){const has=hasWriteSession();$('sessionActiveBar').classList.toggle('hide',!has);$('sessionDescription').textContent=has?'A sessão protegida desta aba está ativa. Você pode publicar alterações no catálogo sem expor token GitHub no navegador.':'Para publicar alterações no catálogo, faça login no admin-painel.html. O catálogo usa apenas a sessão segura do Worker e não aceita mais token GitHub ou PIN no navegador.';$('sessionOpenAdmin').textContent=has?'Abrir painel admin':'Fazer login no painel admin';$('sessionDialog').showModal()}
+    function requestSave(){if(!state.dirty){notice('Nenhuma alteração pendente para atualizar.');return}if(!hasWriteSession()){notice('Sessão administrativa ausente. Faça login no painel admin para publicar.');openSessionDialog();return}save()}
     $('save').addEventListener('click',requestSave);$('saveBottom').addEventListener('click',requestSave);
-    $('pinConfirm').addEventListener('click',()=>{if($('pinInput').value.trim()===PIN){$('pinDialog').close();save()}else{$('pinError').textContent='PIN incorreto. Tente novamente.';$('pinInput').value='';$('pinInput').focus()}});
-    $('pinCancel').addEventListener('click',()=>{$('pinDialog').close()});
-    $('pinInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('pinConfirm').click()});
-    $('tokenBtn').addEventListener('click',openTokenDialog);
-    $('tokenEye').addEventListener('click',()=>{const show=$('tokenInput').type==='password';$('tokenInput').type=show?'text':'password';$('tokenEye').textContent=show?'🙈':'👁'});
-    $('tokenSave').addEventListener('click',()=>{const v=$('tokenInput').value.trim();if(!v){notice('Token não pode estar em branco.');return}if(!/^(ghp_|github_pat_|gho_|ghu_|ghs_|ghr_)/.test(v)){notice('Token inválido. Tokens GitHub começam com ghp_, github_pat_, gho_, etc.');return}setToken(v);$('tokenDialog').close();updateTokenBtn();updateSave();notice('Token GitHub configurado. Agora edite o catálogo e clique em Atualizar site.','success')});
-    $('tokenClear').addEventListener('click',()=>{setToken('');$('tokenDialog').close();updateTokenBtn();updateSave();notice('Token removido. A página voltou ao modo somente leitura.')});
-    $('tokenCancel').addEventListener('click',()=>{$('tokenDialog').close()});
+    $('tokenBtn').addEventListener('click',openSessionDialog);
+    $('sessionClear').addEventListener('click',()=>{clearWorkerSession();$('sessionDialog').close();updateTokenBtn();updateSave();notice('Sessão administrativa removida desta aba. O catálogo voltou ao modo de consulta.')});
+    $('sessionClose').addEventListener('click',()=>{$('sessionDialog').close()});
     load();
   })();
   </script>

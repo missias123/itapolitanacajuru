@@ -2239,8 +2239,8 @@ Talento</textarea>
           <div class="campo-edit"><label>Descrição da página (aparece no Google abaixo do título)</label><textarea id="cfg-seo-descricao" rows="3" maxlength="160" placeholder="Sorvete Sorvete Itapolitana, açaí, picolés e milkshakes em Cajuru/SP. 39 sabores, produção própria com leite fresco. Encomendas pelo WhatsApp."></textarea><div class="hint">Máximo 160 caracteres. Descreva o que a sorveteria oferece e onde fica. Inclua: sorvete, açaí, picolés, Cajuru.</div></div>
           <div class="campo-edit"><label>Palavras-chave (separadas por vírgula)</label><input type="text" id="cfg-seo-palavras" maxlength="200" placeholder="sorveteria cajuru, sorvete Sorvete Itapolitana cajuru, açaí cajuru, picolés cajuru"/><div class="hint">Palavras que as pessoas digitam no Google para encontrar sua sorveteria. Separe por vírgula. Inclua o nome da cidade.</div></div>
           <div class="seção-título">&#x1F512; Segurança</div>
-          <div class="campo-edit"><label>Nova senha do Admin (deixe em branco para manter)</label><div class="inp-wrap"><input type="password" id="cfg-nova-senha" placeholder="Nova senha..."/><button class="eye" onclick="toggleSenhaCfg()">&#x1F441;&#xFE0F;</button></div></div>
-          <div class="campo-edit"><label>Confirmar nova senha</label><input type="password" id="cfg-conf-senha" placeholder="Confirmar senha..."/></div>
+          <div class="campo-edit"><label>Rotação da senha do Admin</label><div class="hint">A senha administrativa não pode mais ser alterada pelo frontend. Faça a rotação apenas no segredo seguro do Worker (ADMIN_PASSWORD_RECORD / ADMIN_SECRET) e nunca em arquivos públicos do site.</div><div class="inp-wrap"><input type="password" id="cfg-nova-senha" placeholder="Gerenciada apenas no backend" disabled aria-disabled="true"/><button class="eye" type="button" onclick="toggleSenhaCfg()" disabled aria-disabled="true">&#x1F441;&#xFE0F;</button></div></div>
+          <div class="campo-edit"><label>Confirmar nova senha</label><input type="password" id="cfg-conf-senha" placeholder="Gerenciada apenas no backend" disabled aria-disabled="true"/></div>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarConfig()">&#x1F4BE; Salvar Configurações</button></div>
         </div>
       </div>
@@ -2932,7 +2932,7 @@ function getWorkerAuthHeaders(extra={}){
   return {'Content-Type':'application/json',...(sessionToken?{'X-Itap-Session-Token':sessionToken}:{}),...extra};
 }
 async function iniciarSessaoWorkerComSenha(senha){
-  if(!senha)return{ok:false,error:'Senha ausente'};
+  if(!senha)return{ok:false,error:'Senha ausente',kind:'validation'};
   try{
     const r=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/session',{
       method:'POST',
@@ -2940,13 +2940,20 @@ async function iniciarSessaoWorkerComSenha(senha){
       body:JSON.stringify({password:senha})
     },12000);
     const ct=r.headers.get('content-type')||'';
-    if(!ct.includes('application/json'))return{ok:false,error:'Resposta inesperada de autenticação do Worker.'};
+    if(!ct.includes('application/json'))return{ok:false,error:'Resposta inesperada de autenticação do Worker.',kind:'server'};
     const dados=await r.json();
-    if(!r.ok||!dados.ok||!dados.token)return{ok:false,error:dados.error||'Falha na autenticação do Worker.'};
+    if(!r.ok||!dados.ok||!dados.token){
+      return{
+        ok:false,
+        error:dados.error||'Falha na autenticação do Worker.',
+        status:r.status,
+        kind:r.status===401?'invalid_credentials':'server'
+      };
+    }
     setWorkerSessionToken(dados.token);
     return{ok:true};
   }catch(e){
-    return{ok:false,error:e&&e.message?e.message:'Falha de rede no Worker.'};
+    return{ok:false,error:e&&e.message?e.message:'Falha de rede no Worker.',kind:'network'};
   }
 }
 function invalidarTokenGitHub(msg='⚠️ Token GitHub expirado. Informe um novo token para continuar editando.'){
@@ -3112,29 +3119,13 @@ function aplicarConfigAdmin(cfg){
   if(cfg&&cfg.content){
     STATE.config=cfg.content;
     STATE.configSha=cfg.sha;
-    if(!STATE.senhaAdmin&&cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;
   }
   return cfg;
 }
-let _authLoadPromise=null;
-function aplicarAuth(result){
-  if(result&&result.content){
-    STATE.auth=result.content;
-    STATE.authSha=result.sha;
-    if(result.content.senhaAdmin)STATE.senhaAdmin=result.content.senhaAdmin;
-  }
-  return result;
-}
-async function carregarAuth(forceRefresh=false){
-  if(forceRefresh||!_authLoadPromise){
-    _authLoadPromise=ghGet(PATHS.auth)
-      .then(aplicarAuth)
-      .catch(e=>{
-        console.warn('[Admin] carregarAuth falhou',e);
-        return{content:null,sha:null};
-      });
-  }
-  return _authLoadPromise;
+async function carregarAuth(){
+  STATE.auth=null;
+  STATE.authSha=null;
+  return {content:null,sha:null,disabled:true};
 }
 async function carregarConfigAdmin(forceRefresh=false){
   const deveAtualizarConfig=Boolean(getAdminToken()&&STATE.config&&STATE.configSha===null);
@@ -3225,17 +3216,13 @@ async function entrar(){
     return;
   }
   mostrarLoading('Verificando...');
-  const[cfg,_,senhaHash]=await Promise.all([carregarConfigAdmin(),carregarAuth(),sha256(senha)]);
-  if(!cfg.content){
+  const workerAuth=await iniciarSessaoWorkerComSenha(senha);
+  if(!workerAuth.ok){
     ocultarLoading();
-    loginErro.innerHTML='⚠️ Não foi possível carregar a configuração do admin. Verifique a conexão e tente novamente.';
-    loginErro.style.display='block';
-    return;
-  }
-  const senhaOk = STATE.senhaAdmin && (senhaHash === STATE.senhaAdmin || senha === STATE.senhaAdmin);
-  if(!senhaOk){
-    ocultarLoading();
-    loginErro.innerHTML='&#x274C; Senha incorreta.';
+    clearWorkerSessionToken();
+    loginErro.innerHTML=workerAuth.kind==='invalid_credentials'
+      ? '&#x274C; Senha incorreta.'
+      : '⚠️ Não foi possível validar o acesso no Worker seguro agora. Verifique a conexão/configuração e tente novamente.';
     loginErro.style.display='block';
     return;
   }
@@ -3270,11 +3257,6 @@ async function entrar(){
     if(!githubToken){
       atualizarStatusGitHubToken('ℹ️ Token GitHub não informado. Admin em modo somente leitura.','info');
     }
-  }
-  const workerAuth=await iniciarSessaoWorkerComSenha(senha);
-  if(!workerAuth.ok){
-    console.warn('[Admin] Sessão do Worker indisponível:',workerAuth.error);
-    clearWorkerSessionToken();
   }
   ocultarLoading();
   loginErro.style.display='none';
@@ -3352,7 +3334,7 @@ async function carregarTudo(){
     if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
     if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
     if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
-    if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;if(!STATE.senhaAdmin&&cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;}else{console.error('[BOOT] Falha ao carregar config');}
+    if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;}else{console.error('[BOOT] Falha ao carregar config');}
     const falhasCarregamento=[
       [PATHS.promo,pr],
       [PATHS.clientes,cl],
@@ -6713,10 +6695,6 @@ function preencherConfig(){
   const encMin=document.getElementById('enc-min-picolés'); if(encMin) encMin.value=cfg.encomendaMinPicoles??100;
 }
 async function salvarConfig(){
-  const novaSenha=document.getElementById('cfg-nova-senha').value;
-  const confSenha=document.getElementById('cfg-conf-senha').value;
-  if(novaSenha&&novaSenha!==confSenha){toast('⚠️ As senhas não coincidem. Verifique e tente novamente.','erro');return;}
-  if(novaSenha&&novaSenha.length<6){toast('⚠️ A senha deve ter pelo menos 6 caracteres.','erro');return;}
   const whats=document.getElementById('cfg-whatsapp').value.trim().replace(/\D/g,'');
   if(whats&&(whats.length<10||whats.length>13)){toast('⚠️ Número de WhatsApp inválido. Use o formato com DDD: (16) 99999-9999.','erro');document.getElementById('cfg-whatsapp').focus();return;}
   const instagramSafe=cmsLerUrlCampo('cfg-instagram-url','URL do Instagram',{allowRelative:false});
@@ -6794,15 +6772,8 @@ async function salvarConfig(){
   const seoCarDesEl=document.getElementById('cfg-seo-carrossel-descricao'); if(seoCarDesEl) cfg.seoPaginas.carrossel.descricao=seoCarDesEl.value.trim();
   const seoCarPalEl=document.getElementById('cfg-seo-carrossel-palavras'); if(seoCarPalEl) cfg.seoPaginas.carrossel.palavrasChave=seoCarPalEl.value.trim();
   delete cfg.senhaAdmin;
-  if(novaSenha){
-    const novaHash=await sha256(novaSenha);
-    const authData={...(STATE.auth||{}),senhaAdmin:novaHash};
-    const okAuth=await salvarArquivo(PATHS.auth,authData,'authSha','Admin: atualizar senha');
-    if(okAuth)STATE.senhaAdmin=novaHash;
-  }
   STATE.config=cfg;
-  const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
-  if(ok){document.getElementById('cfg-nova-senha').value='';document.getElementById('cfg-conf-senha').value='';}
+  await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
 }
 async function salvarFidHero() {
   const cfg = STATE.config || {};

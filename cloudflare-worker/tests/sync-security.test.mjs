@@ -47,7 +47,7 @@ async function request(env, path, { method = 'GET', headers = {}, body } = {}) {
   });
   const res = await workerModule.fetch(req, env);
   const json = await res.json();
-  return { status: res.status, json };
+  return { status: res.status, json, headers: Object.fromEntries(res.headers.entries()) };
 }
 
 test('bloqueia leitura de sync domains sem audit:read', async () => {
@@ -162,6 +162,164 @@ test('lista encomendas mascaradas por padrão e libera sensível só com manage'
     assert.equal(manager.status, 200);
     assert.equal(manager.json.includeSensitive, true);
     assert.equal(manager.json.encomendas[0].cliente.nome, 'Maria Teste');
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+
+test('bloqueia login de cliente sem verificação adicional e não retorna PII', async () => {
+  const env = createEnv();
+  await env.CLIENTES_KV.put('cli:16912345678', JSON.stringify({
+    cel: '16912345678',
+    saldoPontos: 12,
+    codigosUsados: ['ABC'],
+  }));
+
+  const { status, json } = await request(env, '/api/clientes/login', {
+    method: 'POST',
+    body: { cel: '16912345678' },
+  });
+
+  assert.equal(status, 403);
+  assert.equal(json.code, 'ADDITIONAL_VERIFICATION_REQUIRED');
+  assert.equal('cliente' in json, false);
+});
+
+test('busca pública do sorteio não expõe telefone nem metadata da inscrição', async () => {
+  const env = createEnv();
+  const loteMes = new Date().toISOString().slice(0, 7);
+  const id = 'sorteio-test-001';
+  await env.CLIENTES_KV.put(`sorteio:idx:nasc:${loteMes}:maria_teste__2000-01-02`, id);
+  await env.CLIENTES_KV.put(`sorteio:inscrito:${id}`, JSON.stringify({
+    phone: '16912345678',
+    created_at: '2026-09-01T12:00:00.000Z',
+  }));
+
+  const response = await request(env, `/api/sorteio/buscar?nome=${encodeURIComponent('Maria Teste')}&dataNasc=2000-01-02`);
+
+  assert.equal(response.status, 200);
+  assert.equal(response.json.found, true);
+  assert.equal('registration' in response.json, false);
+  assert.equal(JSON.stringify(response.json).includes('16912345678'), false);
+});
+
+test('busca pública do sorteio ainda encontra inscrição de meses anteriores sem expor PII', async () => {
+  const env = createEnv();
+  const id = 'sorteio-test-002';
+  await env.CLIENTES_KV.put('sorteio:idx:nasc-global:maria_teste__2000-01-02', id);
+  await env.CLIENTES_KV.put(`sorteio:inscrito:${id}`, JSON.stringify({
+    id,
+    nome: 'Maria Teste',
+    birthdate: '2000-01-02',
+    lote_mes: '2026-08',
+    phone: '16912345678',
+    created_at: '2026-08-12T12:00:00.000Z',
+  }));
+
+  const response = await request(env, `/api/sorteio/buscar?nome=${encodeURIComponent('Maria Teste')}&dataNasc=2000-01-02`);
+
+  assert.equal(response.status, 200);
+  assert.equal(response.json.found, true);
+  assert.equal(JSON.stringify(response.json).includes('16912345678'), false);
+});
+
+test('cadastro do sorteio grava índice global privado para buscas futuras', async () => {
+  const env = createEnv();
+  const response = await request(env, '/api/promocao/cadastro', {
+    method: 'POST',
+    body: {
+      name: 'Cliente Sorteio',
+      birthdate: '1999-12-31',
+      phone: '16912345678',
+      regulation_accept: true,
+    },
+  });
+  assert.equal(response.status, 201);
+  const globalIndex = await env.CLIENTES_KV.get('sorteio:idx:nasc-global:cliente_sorteio__1999-12-31');
+  assert.equal(globalIndex, response.json.registrationId);
+});
+
+test('worker aplica headers rígidos de hardening nas respostas da API', async () => {
+  const env = createEnv();
+  const response = await request(env, '/api/health');
+  assert.equal(response.status, 200);
+  assert.equal(response.headers['x-content-type-options'], 'nosniff');
+  assert.equal(response.headers['x-frame-options'], 'DENY');
+  assert.equal(response.headers['referrer-policy'], 'no-referrer');
+  assert.equal(response.headers['x-permitted-cross-domain-policies'], 'none');
+  assert.equal(response.headers['x-robots-tag'], 'noindex, nofollow, noarchive, nosnippet');
+  assert.match(response.headers['strict-transport-security'] || '', /includeSubDomains; preload/);
+  assert.match(response.headers['content-security-policy'] || '', /form-action 'none'; object-src 'none'/);
+  assert.match(response.headers['cache-control'] || '', /no-store/);
+});
+
+test('bloqueia busca pública do sorteio após limite por IP', async () => {
+  const env = createEnv();
+  const rlKey = 'rl:unknown:buscar-sorteio';
+  await env.RATE_KV.put(rlKey, JSON.stringify({ count: 5, window: Date.now() }));
+  const response = await request(env, '/api/sorteio/buscar?nome=Maria&dataNasc=2000-01-02');
+  assert.equal(response.status, 429);
+  assert.equal(response.json.found, false);
+});
+
+test('bloqueia escrita administrativa após limite por IP', async () => {
+  const env = createEnv();
+  await env.RATE_KV.put('session:t4', JSON.stringify({ permissions: ['catalog:write'], expiresAt: Date.now() + 60000 }));
+  await env.RATE_KV.put('rl:unknown:admin-write', JSON.stringify({ count: 30, window: Date.now() }));
+  const response = await request(env, '/api/admin/github-file', {
+    method: 'PUT',
+    headers: { 'X-Itap-Session-Token': 't4' },
+    body: { path: 'dados/produtos.json', content: { ok: true } },
+  });
+  assert.equal(response.status, 429);
+  assert.equal(response.json.ok, false);
+});
+
+test('bloqueia cadastro de clientes após limite por IP', async () => {
+  const env = createEnv();
+  await env.RATE_KV.put('rl:unknown:post-cliente', JSON.stringify({ count: 10, window: Date.now() }));
+  const response = await request(env, '/api/clientes', {
+    method: 'POST',
+    body: { cel: '16912345678' },
+  });
+  assert.equal(response.status, 429);
+  assert.equal(response.json.ok, false);
+});
+
+
+test('worker preserva formatação JSON com quebra de linha final ao salvar arquivo admin', async () => {
+  const env = createEnv();
+  await env.RATE_KV.put('session:t3', JSON.stringify({ permissions: ['catalog:write'], expiresAt: Date.now() + 60000 }));
+
+  const originalFetch = globalThis.fetch;
+  let savedBody = null;
+  globalThis.fetch = async (url, options = {}) => {
+    const target = String(url);
+    if (target.includes('/contents/dados/produtos.json') && (!options.method || options.method === 'GET')) {
+      return new Response(JSON.stringify({ sha: 'sha-produtos' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    if (target.includes('/contents/dados/produtos.json') && options.method === 'PUT') {
+      savedBody = JSON.parse(options.body);
+      return new Response(JSON.stringify({ content: { sha: 'sha-novo' } }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    throw new Error(`URL inesperada: ${target}`);
+  };
+
+  try {
+    const { status, json } = await request(env, '/api/admin/github-file', {
+      method: 'PUT',
+      headers: { 'X-Itap-Session-Token': 't3' },
+      body: { path: 'dados/produtos.json', content: { ok: true } },
+    });
+    assert.equal(status, 200);
+    assert.equal(json.ok, true);
+    assert.ok(savedBody, 'PUT no GitHub deve ter sido executado');
+    const decoded = Buffer.from(savedBody.content, 'base64').toString('utf8');
+    assert.equal(decoded, `{
+  "ok": true
+}
+`);
   } finally {
     globalThis.fetch = originalFetch;
   }

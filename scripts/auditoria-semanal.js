@@ -25,6 +25,28 @@ function add({ id, domain, severity = 'warning', status, detail, evidence = [] }
   results.push({ id, domain, severity, status, detail, evidence });
 }
 
+const adminPage = await request(`${SITE}/admin-painel.html`);
+if (adminPage.ok) {
+  const adminNoStore = /no-store/i.test(adminPage.headers['cache-control'] || '');
+  const adminNoIndex = /noindex/i.test(adminPage.headers['x-robots-tag'] || '');
+  add({
+    id: 'admin-surface-cache',
+    domain: 'Superfície administrativa',
+    severity: adminNoStore ? 'info' : 'warning',
+    status: adminNoStore ? 'APROVADO' : 'AVISO',
+    detail: adminNoStore ? 'Admin com cache bloqueado.' : 'Admin sem no-store visível; confirmar headers de hardening.',
+    evidence: [`${SITE}/admin-painel.html`, adminPage.headers['cache-control'] || 'ausente'],
+  });
+  add({
+    id: 'admin-surface-index',
+    domain: 'Superfície administrativa',
+    severity: adminNoIndex ? 'info' : 'warning',
+    status: adminNoIndex ? 'APROVADO' : 'AVISO',
+    detail: adminNoIndex ? 'Admin marcado como noindex.' : 'Admin sem X-Robots-Tag noindex visível; confirmar headers de hardening.',
+    evidence: [`${SITE}/admin-painel.html`, adminPage.headers['x-robots-tag'] || 'ausente'],
+  });
+}
+
 function run(label, command, args) {
   const proc = spawnSync(command, args, {
     cwd: ROOT,
@@ -139,21 +161,23 @@ async function checkPublicSurface() {
 
   const root = await request(`${SITE}/`);
   if (root.ok) {
-    const requiredHeaders = [
-      ['strict-transport-security', 'HSTS'],
-      ['x-content-type-options', 'X-Content-Type-Options'],
-      ['referrer-policy', 'Referrer-Policy'],
-      ['content-security-policy', 'Content-Security-Policy'],
+    const headerChecks = [
+      ['strict-transport-security', (value) => /max-age=\d+/i.test(value), 'HSTS forte presente.'],
+      ['x-content-type-options', (value) => value.toLowerCase() === 'nosniff', 'X-Content-Type-Options rígido presente.'],
+      ['referrer-policy', (value) => /strict-origin-when-cross-origin|no-referrer/i.test(value), 'Referrer-Policy seguro presente.'],
+      ['permissions-policy', (value) => /camera=\(\)/i.test(value) && /microphone=\(\)/i.test(value) && /geolocation=\(\)/i.test(value), 'Permissions-Policy restritiva presente.'],
+      ['content-security-policy', (value) => /object-src 'none'/i.test(value) && /frame-ancestors 'none'/i.test(value) && /base-uri 'self'/i.test(value), 'CSP endurecida presente.'],
     ];
-    for (const [header, label] of requiredHeaders) {
-      const present = Boolean(root.headers[header]);
+    for (const [header, predicate, successDetail] of headerChecks) {
+      const value = root.headers[header] || '';
+      const ok = Boolean(value) && predicate(value);
       add({
         id: `header-${header}`,
         domain: 'Segurança HTTP',
-        severity: present ? 'info' : 'warning',
-        status: present ? 'APROVADO' : 'AVISO',
-        detail: present ? `${label} presente.` : `${label} não foi observado na resposta pública; confirmar configuração no Cloudflare antes de considerar seguro.`,
-        evidence: [`${SITE}/`, root.headers[header] || 'ausente'],
+        severity: ok ? 'info' : 'warning',
+        status: ok ? 'APROVADO' : 'AVISO',
+        detail: ok ? successDetail : `${header} ausente ou fraco na resposta pública; confirmar deploy dos headers endurecidos.`,
+        evidence: [`${SITE}/`, value || 'ausente'],
       });
     }
     const mixed = [...root.body.matchAll(/(?:src|href|action)=["']http:\/\/([^"']+)["']/gi)];
@@ -257,6 +281,8 @@ function writeReports(summary) {
   checkLocalFiles();
   run('quality-audit', process.execPath, ['scripts/quality-audit.js', '--fail']);
   run('dependency-audit', process.execPath, ['scripts/dependency-audit.js']);
+  run('security-regression', process.execPath, ['tests/security-regression-audit.mjs']);
+  run('hardening-config', process.execPath, ['tests/hardening-config-audit.mjs']);
   run('catalogo-mestre-gate', process.execPath, ['scripts/catalogo-mestre-gate.js']);
   run('auditoria-duplicacoes', process.execPath, ['scripts/auditoria-duplicacoes.js', '--ci']);
   if (fs.existsSync(path.join(ROOT, 'scripts', 'auto-corrigir-regras.js'))) {

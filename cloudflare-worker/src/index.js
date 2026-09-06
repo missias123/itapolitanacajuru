@@ -71,6 +71,8 @@ const RATE_LIMITS = {
   'post-cliente':     { max: 10, windowMs: 3_600_000 },
   'login':            { max: 20, windowMs: 3_600_000 },
   'admin-login':      { max: 10, windowMs: 3_600_000 },
+  'admin-read':       { max: 120, windowMs: 3_600_000 },
+  'admin-write':      { max: 30, windowMs: 3_600_000 },
   'post-enc':         { max: 10, windowMs: 3_600_000 },
   'resgatar':         { max: 10, windowMs: 3_600_000 },
   'post-sorteio':     { max: 3,  windowMs: 1_800_000 },
@@ -246,7 +248,11 @@ function applySecurityHeaders(resp) {
   resp.headers.set('X-Content-Type-Options', 'nosniff');
   resp.headers.set('X-Frame-Options', 'DENY');
   resp.headers.set('Referrer-Policy', 'no-referrer');
-  resp.headers.set('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'; base-uri 'none';");
+  resp.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  resp.headers.set('X-Permitted-Cross-Domain-Policies', 'none');
+  resp.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+  resp.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  resp.headers.set('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none';");
   resp.headers.set('Cache-Control', 'no-store');
   resp.headers.set('Pragma', 'no-cache');
   resp.headers.set('Expires', '0');
@@ -423,6 +429,29 @@ async function checkRateLimit(env, ip, key) {
   return { allowed: true, remaining: cfg.max - raw.count };
 }
 
+function getClientIp(request) {
+  return request.headers.get('CF-Connecting-IP') || 'unknown';
+}
+
+async function enforceAdminRateLimit(request, env) {
+  const path = new URL(request.url).pathname;
+  if (!path.startsWith('/api/admin/')) return null;
+  if (
+    path === '/api/admin/session'
+    || path === '/api/admin/auth'
+    || path === '/api/admin/pbkdf2-selftest'
+    || path === '/api/admin/generate-hash'
+  ) {
+    return null;
+  }
+  const method = request.method;
+  const rateKey = method === 'GET' ? 'admin-read' : ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) ? 'admin-write' : null;
+  if (!rateKey) return null;
+  const rl = await checkRateLimit(env, getClientIp(request), rateKey);
+  if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas requisições administrativas. Aguarde.' }, 429);
+  return null;
+}
+
 // ─── Input sanitization ───────────────────────────────────────────────────────
 function sanitizeString(v, maxLen = 200) {
   return String(v ?? '').replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, maxLen);
@@ -498,6 +527,8 @@ async function router(request, env) {
   const url    = new URL(request.url);
   const path   = url.pathname;
   const method = request.method;
+  const adminRateLimitBlock = await enforceAdminRateLimit(request, env);
+  if (adminRateLimitBlock) return adminRateLimitBlock;
   let adminSession = null;
   const getSession = async () => {
     if (!adminSession) adminSession = await getAdminSession(request, env);
@@ -627,7 +658,7 @@ async function router(request, env) {
 
 // ─── Handlers ─────────────────────────────────────────────────────────────────
 async function handleAdminSession(request, env) {
-  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const ip = getClientIp(request);
   const rl = await checkRateLimit(env, ip, 'admin-login');
   if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas de login.' }, 429);
   let body;
@@ -755,10 +786,13 @@ async function handleAdminGitHubFilePut(request, env) {
       providedRevision: ifMatch,
     }, 409);
   }
+  const normalizedContent = typeof body.content === 'string'
+    ? (body.content.endsWith('\n') ? body.content : `${body.content}\n`)
+    : `${JSON.stringify(body.content, null, 2)}\n`;
   const putResp = await fetch(GH_API + filePath, {
     method: 'PUT',
     headers: { 'Authorization': `token ${env.GITHUB_TOKEN}`, 'Content-Type': 'application/json', 'User-Agent': 'Itapolitana-Worker' },
-    body: JSON.stringify({ message: `Admin: alteração em ${filePath}`, content: encodeBase64(JSON.stringify(body.content, null, 2)), sha: getJson.sha })
+    body: JSON.stringify({ message: `Admin: alteração em ${filePath}`, content: encodeBase64(normalizedContent), sha: getJson.sha })
   });
   if (putResp.status === 409) return jsonResp({ ok: false, error: 'Conflito de versão', code: 'VERSION_CONFLICT' }, 409);
   if (!putResp.ok) return jsonResp({ ok: false, error: 'Falha ao gravar arquivo' }, 500);
@@ -803,6 +837,8 @@ async function handleAdminSyncDomains(env) {
 }
 
 async function handlePostCliente(request, env) {
+  const rl = await checkRateLimit(env, getClientIp(request), 'post-cliente');
+  if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas. Aguarde.' }, 429);
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
   const cel = String(body.cel || '').replace(/\D/g, '');
@@ -816,12 +852,19 @@ async function handlePostCliente(request, env) {
 }
 
 async function handleLoginCliente(request, env) {
+  const rl = await checkRateLimit(env, getClientIp(request), 'login');
+  if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas. Aguarde.' }, 429);
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
   const cel = String(body.cel || '').replace(/\D/g, '');
-  const cliente = await env.CLIENTES_KV.get(`cli:${cel}`, 'json');
-  if (!cliente) return jsonResp({ ok: false, error: 'Cliente não encontrado' }, 404);
-  return jsonResp({ ok: true, cliente });
+  if (!/^169\d{8}$/.test(cel)) return jsonResp({ ok: false, error: 'Celular inválido (DDD 16 + 9 dígitos)' }, 400);
+  const exists = await env.CLIENTES_KV.get(`cli:${cel}`);
+  if (!exists) return jsonResp({ ok: false, error: 'Cliente não encontrado' }, 404);
+  return jsonResp({
+    ok: false,
+    error: 'Login do cliente exige verificação adicional e não retorna dados sensíveis sem OTP.',
+    code: 'ADDITIONAL_VERIFICATION_REQUIRED',
+  }, 403);
 }
 
 async function handleGetClientes(env) {
@@ -886,6 +929,8 @@ function maskPhone(phone) {
 }
 
 async function handlePostEncomenda(request, env) {
+  const rl = await checkRateLimit(env, getClientIp(request), 'post-enc');
+  if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas. Aguarde.' }, 429);
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 422); }
   const idempotencyHeader = request.headers.get('X-Idempotency-Key') || '';
@@ -978,8 +1023,29 @@ function normalizarNomeSorteio(nome) {
 function sorteioNascKey(nome, birthdate, loteMes) {
   return `sorteio:idx:nasc:${loteMes}:${normalizarNomeSorteio(nome)}__${birthdate}`;
 }
+function sorteioNascGlobalKey(nome, birthdate) {
+  return `sorteio:idx:nasc-global:${normalizarNomeSorteio(nome)}__${birthdate}`;
+}
 function sorteioCelKey(phone, loteMes) {
   return `sorteio:idx:cel:${loteMes}:${phone}`;
+}
+async function syncSorteioGlobalIndex(env, nome, birthdate, preferredId = '') {
+  const globalKey = sorteioNascGlobalKey(nome, birthdate);
+  if (preferredId) {
+    await env.CLIENTES_KV.put(globalKey, preferredId);
+    return;
+  }
+  const nomeNormalizado = normalizarNomeSorteio(nome);
+  const lista = await env.CLIENTES_KV.list({ prefix: 'sorteio:inscrito:' });
+  for (const entry of lista.keys) {
+    const inscricao = await env.CLIENTES_KV.get(entry.name, 'json');
+    if (!inscricao) continue;
+    if (normalizarNomeSorteio(inscricao.nome) === nomeNormalizado && String(inscricao.birthdate || '') === birthdate) {
+      await env.CLIENTES_KV.put(globalKey, inscricao.id || entry.name.replace('sorteio:inscrito:', ''));
+      return;
+    }
+  }
+  await env.CLIENTES_KV.delete(globalKey);
 }
 async function obterLoteMensalSorteio(isoDatePrefix, env) {
   const loteMes = String(isoDatePrefix || '').slice(0, 7);
@@ -991,7 +1057,7 @@ async function obterLoteMensalSorteio(isoDatePrefix, env) {
 }
 
 async function handlePostSorteioCadastro(request, env) {
-  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const ip = getClientIp(request);
   const rl = await checkRateLimit(env, ip, 'post-sorteio');
   if (!rl.allowed) return jsonResp({ success: false, error: 'Muitas tentativas. Aguarde.' }, 429);
   let body;
@@ -1020,6 +1086,7 @@ async function handlePostSorteioCadastro(request, env) {
 
   await env.CLIENTES_KV.put(`sorteio:inscrito:${registrationId}`, JSON.stringify(inscricao));
   await env.CLIENTES_KV.put(nascKey, registrationId);
+  await env.CLIENTES_KV.put(sorteioNascGlobalKey(nome, birthdate), registrationId);
   await env.CLIENTES_KV.put(celKey, registrationId);
   await env.CLIENTES_KV.put('meta:sorteio_contador', String(contador));
 
@@ -1027,13 +1094,17 @@ async function handlePostSorteioCadastro(request, env) {
 }
 
 async function handleGetSorteioBuscar(request, env, url) {
+  const rl = await checkRateLimit(env, getClientIp(request), 'buscar-sorteio');
+  if (!rl.allowed) return jsonResp({ found: false, error: 'Muitas tentativas. Aguarde.' }, 429);
   const nome = sanitizeString(url.searchParams.get('nome'), 200);
   const dataNasc = sanitizeString(url.searchParams.get('dataNasc'), 20);
   const loteMes = new Date().toISOString().slice(0, 7);
-  const id = await env.CLIENTES_KV.get(sorteioNascKey(nome, dataNasc, loteMes));
+  const id = await env.CLIENTES_KV.get(sorteioNascKey(nome, dataNasc, loteMes))
+    || await env.CLIENTES_KV.get(sorteioNascGlobalKey(nome, dataNasc));
   if (!id) return jsonResp({ found: false });
   const insc = await env.CLIENTES_KV.get(`sorteio:inscrito:${id}`, 'json');
-  return jsonResp({ found: true, registration: { id, phone: insc.phone, created_at: insc.created_at } });
+  if (!insc) return jsonResp({ found: false });
+  return jsonResp({ found: true });
 }
 
 async function handleGetSorteioInscritos(env) {
@@ -1055,11 +1126,13 @@ async function handlePatchSorteioInscrito(id, request, env) {
   const loteMes = insc.lote_mes;
   await env.CLIENTES_KV.delete(sorteioNascKey(insc.nome, insc.birthdate, loteMes));
   await env.CLIENTES_KV.delete(sorteioCelKey(insc.phone, loteMes));
+  await syncSorteioGlobalIndex(env, insc.nome, insc.birthdate);
   if (body.nome) insc.nome = sanitizeString(body.nome, 200);
   if (body.birthdate) insc.birthdate = sanitizeString(body.birthdate, 20);
   if (body.phone) insc.phone = String(body.phone).replace(/\D/g, '');
   await env.CLIENTES_KV.put(`sorteio:inscrito:${id}`, JSON.stringify(insc));
   await env.CLIENTES_KV.put(sorteioNascKey(insc.nome, insc.birthdate, loteMes), id);
+  await env.CLIENTES_KV.put(sorteioNascGlobalKey(insc.nome, insc.birthdate), id);
   await env.CLIENTES_KV.put(sorteioCelKey(insc.phone, loteMes), id);
   return jsonResp({ ok: true, inscrito: insc });
 }
@@ -1071,6 +1144,7 @@ async function handleDeleteSorteioInscrito(id, env) {
   await env.CLIENTES_KV.delete(`sorteio:inscrito:${id}`);
   await env.CLIENTES_KV.delete(sorteioNascKey(insc.nome, insc.birthdate, loteMes));
   await env.CLIENTES_KV.delete(sorteioCelKey(insc.phone, loteMes));
+  await syncSorteioGlobalIndex(env, insc.nome, insc.birthdate);
   return jsonResp({ ok: true });
 }
 
