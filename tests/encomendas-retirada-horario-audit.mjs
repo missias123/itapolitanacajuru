@@ -96,8 +96,18 @@ try {
     };
   });
   assert.equal(invalidResult.value, '', '21:00 deve ser descartado do campo.');
-  assert.equal(invalidResult.valid, true, 'Com o campo limpo, a validade nativa pode voltar ao normal.');
-  assert.equal(invalidResult.message, '', 'Após limpar o campo, o aviso visual não deve ficar preso.');
+  assert.equal(invalidResult.valid, false, '21:00 deve manter o campo inválido até o usuário corrigir.');
+  assert.match(invalidResult.message, /11h e antes de 21h/i, '21:00 deve exibir a orientação correta.');
+
+  const clearedOnFocus = await page.$eval('#pedido-hora-retirada', (input) => {
+    input.dispatchEvent(new Event('focus', { bubbles: true }));
+    return {
+      valid: input.checkValidity(),
+      message: document.getElementById('pedido-agendamento-erro')?.textContent?.trim() || '',
+    };
+  });
+  assert.equal(clearedOnFocus.valid, true, 'Ao voltar para corrigir, o campo deve limpar o estado inválido anterior.');
+  assert.equal(clearedOnFocus.message, '', 'Ao focar para corrigir, o aviso visual deve ser limpo.');
 
   buttonState = await page.$eval('#btn-finalizar-pedido', (button) => ({
     opacity: button.style.opacity,
