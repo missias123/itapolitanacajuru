@@ -2164,13 +2164,15 @@
     var inputCienciaEncomenda = document.getElementById('pedido-ciencia');
     var inputNomeEncomenda = document.getElementById('pedido-nome');
     var inputWhatsappEncomenda = document.getElementById('pedido-whatsapp');
-    inputNomeEncomenda.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
-    inputWhatsappEncomenda.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
-    inputDataRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
-    inputHoraRetirada.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
-    inputHoraRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
-    inputRetiradaConfirmada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
-    inputCienciaEncomenda.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
+    if (inputNomeEncomenda && inputWhatsappEncomenda && inputDataRetirada && inputHoraRetirada && inputRetiradaConfirmada && inputCienciaEncomenda) {
+        inputNomeEncomenda.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
+        inputWhatsappEncomenda.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
+        inputDataRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
+        inputHoraRetirada.addEventListener('input', atualizarEstadoAgendamentoEncomenda);
+        inputHoraRetirada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
+        inputRetiradaConfirmada.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
+        inputCienciaEncomenda.addEventListener('change', atualizarEstadoAgendamentoEncomenda);
+    }
     window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); window.validarWhatsapp(); });
 
     // Inicialização única: renderiza uma prévia e, em seguida, substitui pelos dados oficiais do estoque.
