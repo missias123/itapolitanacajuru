@@ -2932,7 +2932,7 @@ function getWorkerAuthHeaders(extra={}){
   return {'Content-Type':'application/json',...(sessionToken?{'X-Itap-Session-Token':sessionToken}:{}),...extra};
 }
 async function iniciarSessaoWorkerComSenha(senha){
-  if(!senha)return{ok:false,error:'Senha ausente'};
+  if(!senha)return{ok:false,error:'Senha ausente',kind:'validation'};
   try{
     const r=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/session',{
       method:'POST',
@@ -2940,13 +2940,20 @@ async function iniciarSessaoWorkerComSenha(senha){
       body:JSON.stringify({password:senha})
     },12000);
     const ct=r.headers.get('content-type')||'';
-    if(!ct.includes('application/json'))return{ok:false,error:'Resposta inesperada de autenticação do Worker.'};
+    if(!ct.includes('application/json'))return{ok:false,error:'Resposta inesperada de autenticação do Worker.',kind:'server'};
     const dados=await r.json();
-    if(!r.ok||!dados.ok||!dados.token)return{ok:false,error:dados.error||'Falha na autenticação do Worker.'};
+    if(!r.ok||!dados.ok||!dados.token){
+      return{
+        ok:false,
+        error:dados.error||'Falha na autenticação do Worker.',
+        status:r.status,
+        kind:r.status===401?'invalid_credentials':'server'
+      };
+    }
     setWorkerSessionToken(dados.token);
     return{ok:true};
   }catch(e){
-    return{ok:false,error:e&&e.message?e.message:'Falha de rede no Worker.'};
+    return{ok:false,error:e&&e.message?e.message:'Falha de rede no Worker.',kind:'network'};
   }
 }
 function invalidarTokenGitHub(msg='⚠️ Token GitHub expirado. Informe um novo token para continuar editando.'){
@@ -3212,9 +3219,11 @@ async function entrar(){
   const workerAuth=await iniciarSessaoWorkerComSenha(senha);
   if(!workerAuth.ok){
     ocultarLoading();
-    loginErro.innerHTML='&#x274C; A autenticação segura falhou. Confira a senha do administrador e tente novamente.';
-    loginErro.style.display='block';
     clearWorkerSessionToken();
+    loginErro.innerHTML=workerAuth.kind==='invalid_credentials'
+      ? '&#x274C; Senha incorreta.'
+      : '⚠️ Não foi possível validar o acesso no Worker seguro agora. Verifique a conexão/configuração e tente novamente.';
+    loginErro.style.display='block';
     return;
   }
   // --- GitHub Token: validar token e habilitar escrita ---
