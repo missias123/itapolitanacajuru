@@ -52,8 +52,12 @@ const VIEWPORTS = [
 async function listHtmlPages() {
   const pages = [];
   for (const page of ACTIVE_ROOT_PAGES) {
-    await fs.access(path.join(root, page));
-    pages.push(page);
+    try {
+      await fs.access(path.join(root, page));
+      pages.push(page);
+    } catch (error) {
+      if (error && error.code !== 'ENOENT') throw error;
+    }
   }
 
   const adminIndex = path.join(root, 'admin', 'index.html');
