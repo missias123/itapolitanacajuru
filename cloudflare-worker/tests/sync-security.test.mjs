@@ -47,7 +47,7 @@ async function request(env, path, { method = 'GET', headers = {}, body } = {}) {
   });
   const res = await workerModule.fetch(req, env);
   const json = await res.json();
-  return { status: res.status, json };
+  return { status: res.status, json, headers: Object.fromEntries(res.headers.entries()) };
 }
 
 test('bloqueia leitura de sync domains sem audit:read', async () => {
@@ -202,6 +202,53 @@ test('busca pública do sorteio não expõe telefone nem metadata da inscrição
   assert.equal(response.json.found, true);
   assert.equal('registration' in response.json, false);
   assert.equal(JSON.stringify(response.json).includes('16912345678'), false);
+});
+
+test('worker aplica headers rígidos de hardening nas respostas da API', async () => {
+  const env = createEnv();
+  const response = await request(env, '/api/health');
+  assert.equal(response.status, 200);
+  assert.equal(response.headers['x-content-type-options'], 'nosniff');
+  assert.equal(response.headers['x-frame-options'], 'DENY');
+  assert.equal(response.headers['referrer-policy'], 'no-referrer');
+  assert.equal(response.headers['x-permitted-cross-domain-policies'], 'none');
+  assert.equal(response.headers['x-robots-tag'], 'noindex, nofollow, noarchive, nosnippet');
+  assert.match(response.headers['strict-transport-security'] || '', /includeSubDomains; preload/);
+  assert.match(response.headers['content-security-policy'] || '', /form-action 'none'; object-src 'none'/);
+  assert.match(response.headers['cache-control'] || '', /no-store/);
+});
+
+test('bloqueia busca pública do sorteio após limite por IP', async () => {
+  const env = createEnv();
+  const rlKey = 'rl:unknown:buscar-sorteio';
+  await env.RATE_KV.put(rlKey, JSON.stringify({ count: 5, window: Date.now() }));
+  const response = await request(env, '/api/sorteio/buscar?nome=Maria&dataNasc=2000-01-02');
+  assert.equal(response.status, 429);
+  assert.equal(response.json.found, false);
+});
+
+test('bloqueia escrita administrativa após limite por IP', async () => {
+  const env = createEnv();
+  await env.RATE_KV.put('session:t4', JSON.stringify({ permissions: ['catalog:write'], expiresAt: Date.now() + 60000 }));
+  await env.RATE_KV.put('rl:unknown:admin-write', JSON.stringify({ count: 30, window: Date.now() }));
+  const response = await request(env, '/api/admin/github-file', {
+    method: 'PUT',
+    headers: { 'X-Itap-Session-Token': 't4' },
+    body: { path: 'dados/produtos.json', content: { ok: true } },
+  });
+  assert.equal(response.status, 429);
+  assert.equal(response.json.ok, false);
+});
+
+test('bloqueia cadastro de clientes após limite por IP', async () => {
+  const env = createEnv();
+  await env.RATE_KV.put('rl:unknown:post-cliente', JSON.stringify({ count: 10, window: Date.now() }));
+  const response = await request(env, '/api/clientes', {
+    method: 'POST',
+    body: { cel: '16912345678' },
+  });
+  assert.equal(response.status, 429);
+  assert.equal(response.json.ok, false);
 });
 
 

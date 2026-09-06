@@ -71,6 +71,8 @@ const RATE_LIMITS = {
   'post-cliente':     { max: 10, windowMs: 3_600_000 },
   'login':            { max: 20, windowMs: 3_600_000 },
   'admin-login':      { max: 10, windowMs: 3_600_000 },
+  'admin-read':       { max: 120, windowMs: 3_600_000 },
+  'admin-write':      { max: 30, windowMs: 3_600_000 },
   'post-enc':         { max: 10, windowMs: 3_600_000 },
   'resgatar':         { max: 10, windowMs: 3_600_000 },
   'post-sorteio':     { max: 3,  windowMs: 1_800_000 },
@@ -246,7 +248,11 @@ function applySecurityHeaders(resp) {
   resp.headers.set('X-Content-Type-Options', 'nosniff');
   resp.headers.set('X-Frame-Options', 'DENY');
   resp.headers.set('Referrer-Policy', 'no-referrer');
-  resp.headers.set('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'; base-uri 'none';");
+  resp.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  resp.headers.set('X-Permitted-Cross-Domain-Policies', 'none');
+  resp.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+  resp.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  resp.headers.set('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none';");
   resp.headers.set('Cache-Control', 'no-store');
   resp.headers.set('Pragma', 'no-cache');
   resp.headers.set('Expires', '0');
@@ -423,6 +429,29 @@ async function checkRateLimit(env, ip, key) {
   return { allowed: true, remaining: cfg.max - raw.count };
 }
 
+function getClientIp(request) {
+  return request.headers.get('CF-Connecting-IP') || 'unknown';
+}
+
+async function enforceAdminRateLimit(request, env) {
+  const path = new URL(request.url).pathname;
+  if (!path.startsWith('/api/admin/')) return null;
+  if (
+    path === '/api/admin/session'
+    || path === '/api/admin/auth'
+    || path === '/api/admin/pbkdf2-selftest'
+    || path === '/api/admin/generate-hash'
+  ) {
+    return null;
+  }
+  const method = request.method;
+  const rateKey = method === 'GET' ? 'admin-read' : ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) ? 'admin-write' : null;
+  if (!rateKey) return null;
+  const rl = await checkRateLimit(env, getClientIp(request), rateKey);
+  if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas requisições administrativas. Aguarde.' }, 429);
+  return null;
+}
+
 // ─── Input sanitization ───────────────────────────────────────────────────────
 function sanitizeString(v, maxLen = 200) {
   return String(v ?? '').replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, maxLen);
@@ -498,6 +527,8 @@ async function router(request, env) {
   const url    = new URL(request.url);
   const path   = url.pathname;
   const method = request.method;
+  const adminRateLimitBlock = await enforceAdminRateLimit(request, env);
+  if (adminRateLimitBlock) return adminRateLimitBlock;
   let adminSession = null;
   const getSession = async () => {
     if (!adminSession) adminSession = await getAdminSession(request, env);
@@ -627,7 +658,7 @@ async function router(request, env) {
 
 // ─── Handlers ─────────────────────────────────────────────────────────────────
 async function handleAdminSession(request, env) {
-  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const ip = getClientIp(request);
   const rl = await checkRateLimit(env, ip, 'admin-login');
   if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas de login.' }, 429);
   let body;
@@ -806,6 +837,8 @@ async function handleAdminSyncDomains(env) {
 }
 
 async function handlePostCliente(request, env) {
+  const rl = await checkRateLimit(env, getClientIp(request), 'post-cliente');
+  if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas. Aguarde.' }, 429);
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
   const cel = String(body.cel || '').replace(/\D/g, '');
@@ -819,6 +852,8 @@ async function handlePostCliente(request, env) {
 }
 
 async function handleLoginCliente(request, env) {
+  const rl = await checkRateLimit(env, getClientIp(request), 'login');
+  if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas. Aguarde.' }, 429);
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
   const cel = String(body.cel || '').replace(/\D/g, '');
@@ -894,6 +929,8 @@ function maskPhone(phone) {
 }
 
 async function handlePostEncomenda(request, env) {
+  const rl = await checkRateLimit(env, getClientIp(request), 'post-enc');
+  if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas. Aguarde.' }, 429);
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 422); }
   const idempotencyHeader = request.headers.get('X-Idempotency-Key') || '';
@@ -999,7 +1036,7 @@ async function obterLoteMensalSorteio(isoDatePrefix, env) {
 }
 
 async function handlePostSorteioCadastro(request, env) {
-  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const ip = getClientIp(request);
   const rl = await checkRateLimit(env, ip, 'post-sorteio');
   if (!rl.allowed) return jsonResp({ success: false, error: 'Muitas tentativas. Aguarde.' }, 429);
   let body;
@@ -1035,6 +1072,8 @@ async function handlePostSorteioCadastro(request, env) {
 }
 
 async function handleGetSorteioBuscar(request, env, url) {
+  const rl = await checkRateLimit(env, getClientIp(request), 'buscar-sorteio');
+  if (!rl.allowed) return jsonResp({ found: false, error: 'Muitas tentativas. Aguarde.' }, 429);
   const nome = sanitizeString(url.searchParams.get('nome'), 200);
   const dataNasc = sanitizeString(url.searchParams.get('dataNasc'), 20);
   const loteMes = new Date().toISOString().slice(0, 7);
