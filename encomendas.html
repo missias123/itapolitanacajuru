@@ -2098,7 +2098,10 @@
             return;
         }
         if (!sincronizarCampoHoraRetiradaEncomenda() || !inputHoraRetirada.checkValidity()) {
-            alert("Escolha um horário para retirada entre 11h e antes de 21h.");
+            var erroHorarioRetirada = document.getElementById('pedido-agendamento-erro');
+            if (erroHorarioRetirada && !erroHorarioRetirada.textContent.trim()) {
+                erroHorarioRetirada.textContent = 'Escolha um horário entre 11h e antes de 21h.';
+            }
             inputHoraRetirada.focus();
             return;
         }
