@@ -1116,16 +1116,16 @@
         });
         if (caixasElegiveis.length === 0) return false;
         var idsElegiveis = new Set(caixasElegiveis.map(function (produto) { return produto.id; }));
-        var totalCaixasSelecionadas = carrinho.reduce(function (total, item) {
+        var idsSelecionados = new Set();
+        carrinho.forEach(function (item) {
             var elegivel = !item.isPicole &&
                 !item.isAcrescimo &&
                 idsElegiveis.has(item.id) &&
                 Array.isArray(item.sabores) &&
                 item.sabores.length > 0;
-            if (!elegivel) return total;
-            return total + Math.max(1, Number(item.quantidade || 1));
-        }, 0);
-        return totalCaixasSelecionadas >= caixasElegiveis.length;
+            if (elegivel) idsSelecionados.add(item.id);
+        });
+        return idsSelecionados.size >= caixasElegiveis.length;
     }
 
     function abrirAcrescimosComScroll() {
