@@ -1814,8 +1814,10 @@
     function horarioRetiradaEncomendaValido(valorHora) {
         if (!/^\d{2}:\d{2}$/.test(valorHora || '')) return false;
         var partes = valorHora.split(':');
-        var totalMinutos = (Number(partes[0]) * 60) + Number(partes[1]);
-        return totalMinutos >= (11 * 60) && totalMinutos < (21 * 60);
+        var hora = Number(partes[0]);
+        var minuto = Number(partes[1]);
+        var totalMinutos = (hora * 60) + minuto;
+        return totalMinutos >= (11 * 60) && totalMinutos < (21 * 60) && (minuto % 5 === 0);
     }
 
     function sincronizarCampoHoraRetiradaEncomenda() {
