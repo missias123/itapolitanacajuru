@@ -107,7 +107,6 @@ try {
   assert.equal(buttonState.pointerEvents, 'none', '21:00 não pode liberar a finalização.');
 
   const clearedOnValidInput = await page.$eval('#pedido-hora-retirada', (input) => {
-    input.dispatchEvent(new InputEvent('beforeinput', { bubbles: true, inputType: 'insertText', data: '1' }));
     input.value = '11:00';
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.dispatchEvent(new Event('change', { bubbles: true }));

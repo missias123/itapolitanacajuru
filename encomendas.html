@@ -1873,6 +1873,10 @@
     }
 
     function atualizarEstadoAgendamentoEncomenda() {
+        var inputHora = document.getElementById('pedido-hora-retirada');
+        if (inputHora && inputHora.value && inputHora.dataset.invalidAutoclear === '1') {
+            limparErroHorarioRetiradaEncomenda();
+        }
         sincronizarCampoHoraRetiradaEncomenda();
         setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda());
     }
@@ -2145,9 +2149,6 @@
     // Permite trocar de gaveta por link/hash sem recarregar a página e sem criar outro renderizador.
     window.addEventListener('hashchange', abrirSecaoPorRota);
     document.getElementById('pedido-data-retirada').addEventListener('change', function() { setBtnFinalizarState(!window.__encomendaEnviando && document.getElementById('pedido-ciencia').checked && validarAgendamentoEncomenda()); });
-    document.getElementById('pedido-hora-retirada').addEventListener('beforeinput', function() {
-        if (this.dataset.invalidAutoclear === '1') limparErroHorarioRetiradaEncomenda();
-    });
     document.getElementById('pedido-hora-retirada').addEventListener('input', atualizarEstadoAgendamentoEncomenda);
     document.getElementById('pedido-hora-retirada').addEventListener('change', atualizarEstadoAgendamentoEncomenda);
     window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); window.validarWhatsapp(); });
