@@ -1969,6 +1969,7 @@
             inputRetirada.checked = false;
             window.validarRetirada();
         }
+        atualizarEstadoAgendamentoEncomenda();
     };
 
     window.validarRetirada = function() {
@@ -1987,6 +1988,7 @@
             inputWp.value = '';
             window.validarWhatsapp();
         }
+        atualizarEstadoAgendamentoEncomenda();
     };
 
     window.validarWhatsapp = function() {
@@ -2009,7 +2011,6 @@
                 inputData.disabled = false;
                 inputHora.disabled = false;
                 prepararAgendamentoEncomenda();
-                setBtnFinalizarState(podeFinalizarEncomenda());
             } else {
                 blocoAgendamento.style.opacity = '0.4';
                 blocoAgendamento.style.pointerEvents = 'none';
@@ -2018,7 +2019,6 @@
                 inputData.value = '';
                 inputHora.value = '';
                 resetarErroHorarioRetiradaEncomenda();
-                setBtnFinalizarState(false);
             }
         } else {
             blocoCiencia.style.opacity = '0.4';
@@ -2032,8 +2032,8 @@
             inputData.value = '';
             inputHora.value = '';
             resetarErroHorarioRetiradaEncomenda();
-            setBtnFinalizarState(false);
         }
+        atualizarEstadoAgendamentoEncomenda();
     };
 
     window.editarItem = function(i) {
