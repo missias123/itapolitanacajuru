@@ -398,7 +398,7 @@
   function productSizeBadge(product) { const balls = productBallCount(product); if (balls) return { type: 'balls', label: `${balls} ${balls === 1 ? 'BOLA' : 'BOLAS'}`, detail: 'Tamanho do pedido' }; const value = String(product.size || '').trim(); if (!value) return null; return { type: 'volume', label: value.toUpperCase(), detail: 'Tamanho do produto' }; }
   function buildProductList(products) {
     const list = document.createElement('div'); list.className = 'product-list'; products.forEach((product, index) => {
-      const row = document.createElement('article'); row.className = 'product'; row.dataset.catalogSku = product.sku; const hasFlavor = needsMassFlavors(product) || product.category === 'Milkshake'; const hasAcaiDouble = isAcaiCup(product) && acaiDoubleOptions(product).length > 0;
+      const row = document.createElement('article'); row.className = `product${product.available ? '' : ' is-unavailable'}`; row.dataset.catalogSku = product.sku; const hasFlavor = needsMassFlavors(product) || product.category === 'Milkshake'; const hasAcaiDouble = isAcaiCup(product) && acaiDoubleOptions(product).length > 0;
       const meta = isIceCreamCake(product) ? `Escolha 3 sabores · Retirada com antecedência mínima de 48 horas.` : isFondue(product) ? 'Escolha 2 frutas, 2 cremes e 1 guloseima · Tudo incluído no preço.' : isBoloCopo(product) ? `${flavorRule(product).label} · depois escolha o creme (Leite Ninho ou Nutela).` : hasFlavor ? flavorRule(product).label : hasAcaiDouble ? 'Escolha quais complementos do copo podem ser pedidos em dobro.' : 'Produto pronto para retirada';
       const extras = product.includedExtras?.length ? ` · Inclui ${product.includedExtras.join(' e ')}.` : '';
       const fixedIngredients = product.fixedIngredients?.length ? `<p class="product__ingredients"><strong>Ingredientes fixos:</strong><br>${product.fixedIngredients.filter((item) => !/sabores? de sorvete/i.test(item)).map((i) => `• ${escape(i)}`).join('<br>')}</p>` : '';
@@ -437,22 +437,27 @@
   }
   function renderPopsicles(products, section) {
     const list = document.createElement('div');
+    const allFlavors = products.filter((product) => product.picole);
     const available = products.filter((product) => product.picole && product.available && !product.picole.unavailable && product.picole.stock > 0);
     const totalStock = available.reduce((sum, product) => sum + Number(product.picole?.stock || 0), 0);
+    const unavailableCount = Math.max(0, allFlavors.length - available.length);
     list.className = 'product-list';
     const row = document.createElement('article');
     row.className = 'product';
-    row.dataset.catalogSku = available[0]?.sku || products[0]?.sku || '';
-    row.innerHTML = `<div><p class="product__name">Picolés por sabor${available.length ? '' : ' <span class="stock-tag">Esgotado</span>'}</p><p class="product__meta">${available.length ? `${available.length} sabor${available.length !== 1 ? 'es' : ''} disponíveis na lista única.` : 'Nenhum sabor disponível no momento.'} Ajuste tudo na mesma tela, sem abrir e fechar para cada sabor.</p><p class="product__price">${available.length ? `Varejo/atacado por quantidade total · estoque somado ${pad2(totalStock)} unidades` : 'Sem estoque para retirada agora'}</p></div>`;
+    row.dataset.catalogSku = allFlavors[0]?.sku || products[0]?.sku || '';
+    row.innerHTML = `<div><p class="product__name">Picolés por sabor${available.length ? '' : ' <span class="stock-tag">Esgotado</span>'}</p><p class="product__meta">${allFlavors.length ? `${allFlavors.length} sabor${allFlavors.length !== 1 ? 'es' : ''} na lista única${unavailableCount ? ` · ${unavailableCount} esgotado${unavailableCount !== 1 ? 's' : ''}` : ''}.` : 'Nenhum sabor cadastrado no momento.'} Ajuste tudo na mesma tela, sem abrir e fechar para cada sabor.</p><p class="product__price">${available.length ? `Varejo/atacado por quantidade total · estoque somado ${pad2(totalStock)} unidades` : 'Sem estoque para retirada agora'}</p></div>`;
     const button = document.createElement('button');
     button.className = 'add-btn'; button.type = 'button';
-    applyOrderButtonState(button, 'Abrir lista única', Boolean(available.length));
-    button.addEventListener('click', () => runWhenRetiradaOpen(() => { const focusSku = available[0]?.sku || products[0]?.sku || ''; state.lastCatalogSku = focusSku; captureCatalogViewport(focusSku); beginPopsicleGroup(products); }));
+    applyOrderButtonState(button, 'Abrir lista única', Boolean(allFlavors.length));
+    button.addEventListener('click', () => runWhenRetiradaOpen(() => { const focusSku = allFlavors[0]?.sku || products[0]?.sku || ''; state.lastCatalogSku = focusSku; captureCatalogViewport(focusSku); beginPopsicleGroup(products); }));
     row.append(button); list.append(row);
     section.append(list);
   }
   function beginPopsicleGroup(products) {
-    state.popsicleGroup = products.filter((product) => product.available && !product.picole?.unavailable && product.picole?.stock > 0).sort((left, right) => {
+    state.popsicleGroup = products.filter((product) => product.picole).sort((left, right) => {
+      const leftUnavailable = Number(left.picole?.stock || 0) <= 0 || !left.available || left.picole?.unavailable;
+      const rightUnavailable = Number(right.picole?.stock || 0) <= 0 || !right.available || right.picole?.unavailable;
+      if (leftUnavailable !== rightUnavailable) return leftUnavailable ? 1 : -1;
       const group = String(left.picole?.groupName || '').localeCompare(String(right.picole?.groupName || ''), 'pt-BR');
       if (group) return group;
       return String(left.name || '').localeCompare(String(right.name || ''), 'pt-BR');
@@ -464,10 +469,19 @@
     $('#popsicle-subtitle').textContent = 'Lista única: ajuste quantidades sem sair desta tela, como no Encomendas.';
     renderPopsicleDialog(); openDialog('popsicle-dialog');
   }
+  function popsicleGroupTone(groupName) {
+    const label = normalize(groupName);
+    if (label.includes('premium') || label.includes('eskimo')) return 'premium';
+    if (label.includes('rechead')) return 'recheado';
+    if (label.includes('sem recheio') || label.includes('s/ recheio')) return 'sem-recheio';
+    if (label.includes('fruta') || label.includes('agua')) return 'fruta';
+    if (label.includes('especial') || label.includes('ninho') || label.includes('ovomaltine')) return 'especial';
+    return 'padrao';
+  }
   function renderPopsicleDialog() {
     const root = $('#popsicle-list'); const products = state.popsicleGroup || []; const quantityBox = $('#popsicle-quantity');
     root.innerHTML = '';
-    let activeGroup = '';
+    let activeGroup = ''; let groupItems = null;
     const totalSelected = products.reduce((sum, product) => sum + Number(state.popsicleSelections?.[product.sku] || 0), 0);
     const wholesale = totalSelected >= 100;
     const totalValue = products.reduce((sum, product) => {
@@ -479,25 +493,31 @@
       const groupName = String(product.picole?.groupName || 'Picolés');
       if (groupName !== activeGroup) {
         activeGroup = groupName;
+        const groupCard = document.createElement('section');
+        groupCard.className = `popsicle-type-card popsicle-type-card--${popsicleGroupTone(groupName)}`;
         const head = document.createElement('div');
-        head.className = 'base-row';
-        head.innerHTML = `<strong>${escape(groupName)}</strong> · Varejo ${money(product.picole?.varejo)} · Atacado ${money(product.picole?.atacado)}`;
-        root.append(head);
+        head.className = 'base-row popsicle-type-head';
+        head.innerHTML = `<p class="popsicle-type-title">${escape(groupName)}</p><p class="popsicle-type-prices"><strong>Varejo ${money(product.picole?.varejo)}</strong> · <strong>Atacado ${money(product.picole?.atacado)}</strong></p>`;
+        groupItems = document.createElement('div');
+        groupItems.className = 'popsicle-type-items';
+        groupCard.append(head, groupItems);
+        root.append(groupCard);
       }
       const quantity = Number(state.popsicleSelections?.[product.sku] || 0);
       const stock = Math.max(0, Number(product.picole?.stock || 0));
       const unavailable = stock <= 0 || !product.available || product.picole?.unavailable;
       const unitPrice = wholesale ? Number(product.picole?.atacado || product.price || 0) : Number(product.picole?.varejo || product.price || 0);
+      const availabilityText = unavailable ? 'Indisponível para retirada agora.' : `Estoque: ${pad2(stock)} unidades · ${wholesale ? 'Atacado' : 'Varejo'} ${money(unitPrice)} por unidade`;
       const row = document.createElement('div'); row.className = `popsicle-row${quantity > 0 ? ' is-selected' : ''}${unavailable ? ' is-unavailable' : ''}`;
       const info = document.createElement('div');
-      info.innerHTML = `<p class="product__name">${escape(product.name)}${unavailable ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">Estoque: ${pad2(stock)} unidades · ${wholesale ? 'Atacado' : 'Varejo'} ${money(unitPrice)} por unidade</p><p class="product__price">Subtotal: ${money(quantity * unitPrice)}</p>`;
+      info.innerHTML = `<p class="product__name">${escape(product.name)}${unavailable ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${availabilityText}</p><p class="product__price">Subtotal: ${money(quantity * unitPrice)}</p>`;
       const control = document.createElement('div'); control.className = 'qty';
       const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Remover ${product.name}`); minus.disabled = quantity <= 0; minus.addEventListener('click', () => { const next = Math.max(0, quantity - 1); if (next <= 0) delete state.popsicleSelections[product.sku]; else state.popsicleSelections[product.sku] = next; renderPopsicleDialog(); });
       const count = document.createElement('span'); count.textContent = pad2(quantity);
       const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar ${product.name}`); plus.disabled = unavailable || quantity >= stock; plus.addEventListener('click', () => { state.popsicleSelections[product.sku] = Math.min(stock, quantity + 1); renderPopsicleDialog(); });
       control.append(minus, count, plus);
       row.append(info, control);
-      root.append(row);
+      (groupItems || root).append(row);
     });
     quantityBox.hidden = false;
     quantityBox.innerHTML = `<span>Total selecionado</span><strong class="popsicle-quantity__total">${pad2(totalSelected)} unidade${totalSelected !== 1 ? 's' : ''} · ${wholesale ? 'Atacado aplicado' : 'Varejo (atacado a partir de 100)'} · ${money(totalValue)}</strong>`;
@@ -991,7 +1011,43 @@
   }
   function submitOrder(event) { event.preventDefault(); if (state.sendingOrder) return; clearFormError(); normalizePickupTimeField(); syncGuidedForm(); if (!formFlow.ready) return showFormError('Complete as etapas na ordem indicada antes de enviar.'); if (!retiradaAberta()) { window.ItapHorarioPedidos?.aviso('retirada'); return showFormError(window.ItapHorarioPedidos?.textoAviso('retirada') || RETIRADA_SITE_WINDOW_MESSAGE); } const form = Object.fromEntries(new FormData(event.currentTarget).entries()); form.horario = normalizePickupTimeValue(form.horario); if (!state.cart.length) return showFormError('Escolha pelo menos um produto antes de enviar.'); if (!form.nome?.trim()) return showFormError('Informe o nome de quem vai retirar.'); if (!validatePhone(form.telefone || '')) return showFormError('Digite somente o número do celular após o DDD 16.'); if (!validPickupTime(form.horario)) return showFormError(`Escolha um horário de retirada entre ${RETIRADA_MIN_TIME.replace(':', 'h')} e ${RETIRADA_MAX_TIME.replace(':', 'h')} (Brasília).`); if (hasCakeProductionLead()) { if (!form.data_retirada) return showFormError('Para encomenda de torta ou caixa grande, escolha a data desejada para retirar.'); if (!validCakeLeadTime(form.data_retirada, form.horario)) return showFormError('Encomendas de torta e caixa grande precisam de pelo menos 48 horas de antecedência pelo horário de Brasília.'); } else if (!validCommonLeadTime(form.horario)) { syncPickupTimeValidation(); $('#pickup-time')?.focus(); return showFormError(pickupTimeMessage()); } if (!form.aceite) return showFormError('Leia e marque o aceite das regras antes de enviar.'); setOrderStage(3); const text = buildMessage(form); state.sendingOrder = true; const submit = $('#final-submit'); if (submit) { submit.disabled = true; submit.setAttribute('aria-disabled', 'true'); submit.textContent = 'Abrindo WhatsApp...'; } announce('Abrindo WhatsApp para confirmar o envio da solicitação de retirada.'); window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener'); window.setTimeout(() => { state.sendingOrder = false; syncGuidedForm(); announce('Envio liberado novamente para ajustes, se necessário.'); }, 2500); }
   function showFormError(message) { const error = $('#form-error'); error.textContent = message; error.classList.add('is-visible'); error.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-  async function init() { try { const response = await fetch('dados/produtos.json?v=20260822-textos-skus'); if (!response.ok) throw new Error('Não foi possível carregar o catálogo.'); state.data = await response.json(); state.catalog = buildCatalog(state.data); $('#loading').remove(); renderCatalog(); renderCartSummary(); setOrderStage(state.cart.length ? 2 : 1); syncPickupDateConstraint(); syncGuidedForm(); const sku = new URLSearchParams(location.search).get('sku'); if (sku) { const product = state.catalog.find((item) => item.sku === sku); if (product) { activateCatalogSection(`sec-${slug(product.category)}`, { scroll: true, announceMessage: `${product.name} está destacado na seção correspondente.` }); } } } catch (error) { $('#loading').textContent = 'Não foi possível carregar os produtos agora. Volte ao cardápio e tente novamente.'; console.error(error); } }
+  let syncingCatalog = false;
+  let lastCatalogSyncAt = 0;
+  async function syncCatalog(options = {}) {
+    const force = Boolean(options.force);
+    const now = Date.now();
+    if (!force && now - lastCatalogSyncAt < 12000) return false;
+    if (syncingCatalog) return false;
+    syncingCatalog = true;
+    try {
+      const response = await fetch(`dados/produtos.json?v=${now}`, { cache: 'no-store' });
+      if (!response.ok) throw new Error('Não foi possível carregar o catálogo.');
+      state.data = await response.json();
+      state.catalog = buildCatalog(state.data);
+      $('#loading')?.remove();
+      renderCatalog();
+      renderCartSummary();
+      setOrderStage(state.cart.length ? 2 : 1);
+      syncPickupDateConstraint();
+      syncGuidedForm();
+      lastCatalogSyncAt = now;
+      return true;
+    } catch (error) {
+      if (!state.catalog.length && $('#loading')) $('#loading').textContent = 'Não foi possível carregar os produtos agora. Volte ao cardápio e tente novamente.';
+      console.error(error);
+      return false;
+    } finally {
+      syncingCatalog = false;
+    }
+  }
+  async function init() {
+    const synced = await syncCatalog({ force: true });
+    if (!synced) return;
+    const sku = new URLSearchParams(location.search).get('sku');
+    if (!sku) return;
+    const product = state.catalog.find((item) => item.sku === sku);
+    if (product) activateCatalogSection(`sec-${slug(product.category)}`, { scroll: true, announceMessage: `${product.name} está destacado na seção correspondente.` });
+  }
   $('#search').addEventListener('input', (event) => { state.query = event.target.value; renderCatalog(); });
   $('#summary-bar').addEventListener('click', () => { captureCatalogViewport(); renderCart(); openDialog('cart-dialog'); });
   $('#confirm-flavors').addEventListener('click', confirmFlavors);
@@ -1022,6 +1078,8 @@
   $('#continue-notes').addEventListener('click', () => { formFlow.notesContinued = true; syncGuidedForm({ scroll: true }); });
   $('#accept-rules').addEventListener('change', () => syncGuidedForm({ scroll: true }));
   window.addEventListener('itap:horario-pedidos-atualizado', () => { if (state.catalog.length) renderCatalog(); syncPickupDateConstraint(); syncGuidedForm(); });
+  window.addEventListener('pageshow', (event) => { if (event.persisted) syncCatalog({ force: true }); });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') syncCatalog(); });
   $$('[data-close]').forEach((button) => button.addEventListener('click', () => { if (button.dataset.close === 'popsicle-dialog') { state.popsicleGroup = null; state.popsicleSelections = {}; } closeDialog(button.dataset.close); }));
   init();
 }());

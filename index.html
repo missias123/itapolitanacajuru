@@ -664,6 +664,7 @@ img{max-width:100%;display:block}
 .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .prod-card{background:#FFFDF9;border:1px solid #F0E8D8;border-radius:14px;overflow:hidden;text-align:center;box-shadow:0 0 0 2px #FF6B35,0 4px 12px rgba(255,107,53,.12);isolation:isolate;display:flex;flex-direction:column;height:100%}
 .prod-card.is-esgotado{box-shadow:0 0 0 2px #B42318,0 4px 14px rgba(180,35,24,.2);background:#fff5f5;opacity:.86}
+.prod-card.is-esgotado .prod-nome{color:#7f1d1d;text-decoration:line-through}
 .prod-card-img{width:100%;height:110px;object-fit:cover;display:block}
 .prod-card-sem-foto{width:100%;height:70px;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(135deg,#FFF3E0,#FCE4EC)}
 /* HIERARQUIA: nome (maior/negrito) → descrição (menor/roxo) → preço (vermelho/destaque) */
@@ -1750,6 +1751,25 @@ html.chat-open,body.chat-open{position:fixed;width:100%;height:100dvh;overflow:h
 .chip-inline.is-esgotado::before { background: #9CA3AF !important; }
 .chip-inline.is-esgotado:hover,
 .chip-inline.is-esgotado:focus-visible { transform: none; box-shadow: none; }
+.chip-inline .sabor-esgotado-badge{
+ position:absolute;
+ right:7px;
+ bottom:5px;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ min-width:58px;
+ height:18px;
+ padding:0 6px;
+ border-radius:999px;
+ font-size:.54rem;
+ font-weight:950;
+ letter-spacing:.05em;
+ color:#fff;
+ background:linear-gradient(135deg,#6B7280,#374151);
+ box-shadow:0 0 0 2px #fff,0 0 8px rgba(55,65,81,.32);
+ text-decoration:none;
+}
 /* ── SABOR ESGOTADO — chip-sabor (modal milkshake etc.) ── */
 .chip-sabor.is-esgotado {
  background: linear-gradient(135deg, #F3F4F6, #E5E7EB) !important;
@@ -5107,6 +5127,25 @@ function renderTudo() {
  const tp=document.getElementById('torta-preço');
  if(tp&&produtos&&produtos.sobremesas)tp.textContent='R$ '+produtos.sobremesas['Torta de Sorvete'].toFixed(2).replace('.',',');
 }
+let _syncProdutosEmAndamento=false;
+let _ultimaSyncProdutos=0;
+async function sincronizarProdutosAoRetorno(force){
+ const agora=Date.now();
+ if(!force&&agora-_ultimaSyncProdutos<12000)return false;
+ if(_syncProdutosEmAndamento)return false;
+ _syncProdutosEmAndamento=true;
+ try{
+  await carregarPreçosNuvemCardápio();
+  renderTudo();sincronizarCardapioMap();
+  _ultimaSyncProdutos=agora;
+  return true;
+ }catch(e){
+  if(window.PRODUTOS_DATA&&Object.keys(window.PRODUTOS_DATA).length){renderTudo();sincronizarCardapioMap();}
+  return false;
+ }finally{
+  _syncProdutosEmAndamento=false;
+ }
+}
 /* ============================================================
   SINCRONISMO TOTAL — SINGLE SOURCE OF TRUTH
   Padrão: iFood / Nubank / Shopify
@@ -5471,7 +5510,9 @@ document.addEventListener('DOMContentLoaded', () => {
  if (window._animObserver) {
   document.querySelectorAll('.animar-entrada').forEach(el => window._animObserver.observe(el));
  }
-
+ window.addEventListener('pageshow', (event) => { if (event.persisted) sincronizarProdutosAoRetorno(true); });
+ document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') sincronizarProdutosAoRetorno(false); });
+ 
 });
 
 </script>
@@ -5995,7 +6036,8 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
   var extraClass = (isMassa ? 'sabor-massa-premium ' : '') + (isSaborNovo ? 'sabor-novo' : '') + (esgotado ? ' is-esgotado' : '');
   var paletteStyle = (isMassa && !esgotado) ? getSaborMassaStyle(nome) : '';
   var novoBadge = isSaborNovo ? '<span class="sabor-novo-badge" aria-label="Novo sabor">NOVO</span>' : '';
-  return '<span class="chip-inline ' + extraClass.trim() + '" style="' + paletteStyle + '">' + novoBadge + nome + '</span>';
+  var esgotadoBadge = esgotado ? '<span class="sabor-esgotado-badge" aria-label="Sabor esgotado">ESGOTADO</span>' : '';
+  return '<span class="chip-inline ' + extraClass.trim() + '" style="' + paletteStyle + '">' + novoBadge + esgotadoBadge + nome + '</span>';
  }).join('') : '<div style="font-size:12px;color:#888;padding:10px">Sabores indisponíveis no momento.</div>';
 
  _semPulo(function() {
@@ -6145,7 +6187,8 @@ function mostrarDuasSecoes(accBodyEl, titulo1, sub1, chips1, titulo2, sub2, chip
   var esgotado = typeof s === 'object' && !!s.esgotado;
   var extraClass = getSaborMassaClass(nome) + (esgotado ? ' is-esgotado' : '');
   var paletteStyle = (!esgotado) ? getSaborMassaStyle(nome) : '';
-  return '<span class="chip-inline ' + extraClass + '" style="' + paletteStyle + '">' + nome + '</span>';
+  var esgotadoBadge = esgotado ? '<span class="sabor-esgotado-badge" aria-label="Sabor esgotado">ESGOTADO</span>' : '';
+  return '<span class="chip-inline ' + extraClass + '" style="' + paletteStyle + '">' + esgotadoBadge + nome + '</span>';
  }).join('');
 
  _semPulo(function() {
