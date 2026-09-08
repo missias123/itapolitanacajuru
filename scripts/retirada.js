@@ -20,7 +20,7 @@
   const FONDUE_CREMES = ['Nutella', 'Creme de Ninho'];
   const FONDUE_GULOSEIMAS = ['Marshmallow', 'Canudinho Wafer'];
   const emptyFondueChoices = () => ({ frutas: {}, cremes: {}, guloseimas: {} });
-  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, selectedFlavors: [], flavorCounts: {}, flavorPreferences: [], activeFlavorPreference: 0, popsiclePreferences: [], activePopsiclePreference: 0, popsicleQuantity: 1, boxAddOnCounts: {}, acaiDoubleChoices: {}, includedCustomizationChoices: {}, serviceMode: '', containerType: '', cakeChoice: '', creamChoice: '', fondueChoices: emptyFondueChoices(), query: '', lastCatalogSku: null, lastCatalogViewport: null, lastFlavorGuideKey: '', sendingOrder: false };
+  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, popsicleSelections: {}, selectedFlavors: [], flavorCounts: {}, flavorPreferences: [], activeFlavorPreference: 0, boxAddOnCounts: {}, acaiDoubleChoices: {}, includedCustomizationChoices: {}, serviceMode: '', containerType: '', cakeChoice: '', creamChoice: '', fondueChoices: emptyFondueChoices(), query: '', lastCatalogSku: null, lastCatalogViewport: null, lastFlavorGuideKey: '', sendingOrder: false };
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const money = (value) => `R$ ${Number(value || 0).toFixed(2).replace('.', ',')}`;
@@ -155,7 +155,6 @@
     return { source: 'massa', min: required, max: required, label: `Escolha ${required} sabor${required > 1 ? 'es' : ''} de sorvete (${required} bola${required > 1 ? 's' : ''})` };
   }
   function needsFlavorPreferences() { return false; }
-  function preferenceCountForPopsicle() { return 1; }
   function preferenceReady(set, rule) { return Array.isArray(set) && set.length >= rule.min && set.length <= rule.max; }
   function preferenceText(preferences = []) { return preferences.map((set, index) => { const flavors = (set || []).map((item) => item.name || item); return flavors.length ? `Opção ${pad2(index + 1)}:\n${flavors.map((f) => `  • ${f}`).join('\n')}` : null; }).filter(Boolean).join('\n'); }
   function productType(category) { return category === 'Picolés' ? 'picole' : 'produto'; }
@@ -411,51 +410,90 @@
   }
   function renderPopsicles(products, section) {
     const list = document.createElement('div');
-    const byGroup = new Map();
-    const groupOrder = ['frutas_agua', 'leite_sem_recheio', 'leite_com_recheio', 'especiais', 'esquimós', 'esquimos'];
+    const available = products.filter((product) => product.picole && product.available && !product.picole.unavailable && product.picole.stock > 0);
+    const totalStock = available.reduce((sum, product) => sum + Number(product.picole?.stock || 0), 0);
     list.className = 'product-list';
-    products.filter((product) => product.picole).forEach((product) => {
-      const id = product.picole.groupId;
-      if (!byGroup.has(id)) byGroup.set(id, []);
-      byGroup.get(id).push(product);
-    });
-    [...byGroup.entries()].sort(([left], [right]) => {
-      const leftIndex = groupOrder.indexOf(left); const rightIndex = groupOrder.indexOf(right);
-      return (leftIndex < 0 ? Number.MAX_SAFE_INTEGER : leftIndex) - (rightIndex < 0 ? Number.MAX_SAFE_INTEGER : rightIndex);
-    }).forEach(([, groupProducts]) => {
-      const group = groupProducts[0].picole;
-      const availableFlavors = groupProducts.filter((product) => !product.picole.unavailable && product.picole.stock > 0).length;
-      const availabilityText = availableFlavors === 1 ? '1 sabor disponível.' : `${availableFlavors} sabores disponíveis.`;
-      const row = document.createElement('article');
-      row.className = 'product'; row.dataset.catalogSku = groupProducts[0].sku;
-      row.innerHTML = `<div><p class="product__name">${escape(group.groupName)}${availableFlavors ? '' : ' <span class="stock-tag">Esgotado</span>'}</p><p class="product__meta">${availabilityText} Escolha os sabores dentro do botão.</p><p class="product__price">Varejo ${money(group.varejo)} · Atacado ${money(group.atacado)} a partir de 100 unidades</p></div>`;
-      const button = document.createElement('button');
-      button.className = 'add-btn'; button.type = 'button';
-      applyOrderButtonState(button, 'Escolher sabores', Boolean(availableFlavors));
-      button.addEventListener('click', () => runWhenRetiradaOpen(() => { state.lastCatalogSku = groupProducts[0].sku; captureCatalogViewport(groupProducts[0].sku); beginPopsicleGroup(groupProducts); }));
-      row.append(button); list.append(row);
-    });
+    const row = document.createElement('article');
+    row.className = 'product';
+    row.dataset.catalogSku = available[0]?.sku || products[0]?.sku || '';
+    row.innerHTML = `<div><p class="product__name">Picolés por sabor${available.length ? '' : ' <span class="stock-tag">Esgotado</span>'}</p><p class="product__meta">${available.length ? `${available.length} sabor${available.length !== 1 ? 'es' : ''} disponíveis na lista única.` : 'Nenhum sabor disponível no momento.'} Ajuste tudo na mesma tela, sem abrir e fechar para cada sabor.</p><p class="product__price">${available.length ? `Varejo/atacado por quantidade total · estoque somado ${pad2(totalStock)} unidades` : 'Sem estoque para retirada agora'}</p></div>`;
+    const button = document.createElement('button');
+    button.className = 'add-btn'; button.type = 'button';
+    applyOrderButtonState(button, 'Abrir lista única', Boolean(available.length));
+    button.addEventListener('click', () => runWhenRetiradaOpen(() => { const focusSku = available[0]?.sku || products[0]?.sku || ''; state.lastCatalogSku = focusSku; captureCatalogViewport(focusSku); beginPopsicleGroup(products); }));
+    row.append(button); list.append(row);
     section.append(list);
   }
   function beginPopsicleGroup(products) {
-    state.popsicleGroup = products.filter((product) => product.available && !product.picole?.unavailable && product.picole?.stock > 0);
-    const group = state.popsicleGroup[0]?.picole; const preferenceCount = preferenceCountForPopsicle(state.popsicleGroup);
-    state.popsiclePreferences = Array.from({ length: preferenceCount }, () => []); state.activePopsiclePreference = 0; state.popsicleQuantity = 1;
-    $('#popsicle-title').textContent = group ? group.groupName : 'Escolha os sabores do picolé';
-    $('#popsicle-subtitle').textContent = preferenceCount === 1 ? 'Escolha o sabor do picolé.' : 'Escolha o sabor principal e duas alternativas diferentes. O preço não muda.';
+    state.popsicleGroup = products.filter((product) => product.available && !product.picole?.unavailable && product.picole?.stock > 0).sort((left, right) => {
+      const group = String(left.picole?.groupName || '').localeCompare(String(right.picole?.groupName || ''), 'pt-BR');
+      if (group) return group;
+      return String(left.name || '').localeCompare(String(right.name || ''), 'pt-BR');
+    });
+    const allowedSkus = new Set(state.popsicleGroup.map((product) => product.sku));
+    state.popsicleSelections = {};
+    state.cart.filter((item) => item.type === 'picole' && allowedSkus.has(item.sku)).forEach((item) => { state.popsicleSelections[item.sku] = Math.max(0, Math.floor(Number(item.quantity) || 0)); });
+    $('#popsicle-title').textContent = 'Picolés por sabor';
+    $('#popsicle-subtitle').textContent = 'Lista única: ajuste quantidades sem sair desta tela, como no Encomendas.';
     renderPopsicleDialog(); openDialog('popsicle-dialog');
   }
   function renderPopsicleDialog() {
-    const root = $('#popsicle-list'); const products = state.popsicleGroup || []; const preferenceCount = preferenceCountForPopsicle(products); const preferences = state.popsiclePreferences; const tabsBox = $('#popsicle-preferences'); const tabs = $('#popsicle-preferences-tabs'); const quantityBox = $('#popsicle-quantity'); const active = preferences[state.activePopsiclePreference] || []; const usedElsewhere = new Set(preferences.filter((_, index) => index !== state.activePopsiclePreference).flat().map((item) => item.code));
-    root.innerHTML = ''; tabs.innerHTML = ''; tabsBox.hidden = preferenceCount === 1;
-    if (preferenceCount > 1) preferences.forEach((set, index) => { const tab = document.createElement('button'); tab.type = 'button'; tab.className = `flavor-preference-tab${index === state.activePopsiclePreference ? ' is-active' : ''}${set.length ? ' is-complete' : ''}`; tab.textContent = `Opção ${index + 1}`; tab.setAttribute('aria-selected', String(index === state.activePopsiclePreference)); tab.addEventListener('click', () => { state.activePopsiclePreference = index; renderPopsicleDialog(); }); tabs.append(tab); });
-    products.forEach((product) => { const selected = active.some((item) => item.code === product.sku); const unavailable = product.picole.unavailable || product.picole.stock <= 0 || !product.available; const button = document.createElement('button'); button.className = `flavor-chip sabor-item${unavailable ? ' is-esgotado' : ''}`; button.type = 'button'; button.textContent = product.name; button.disabled = unavailable || (!selected && (active.length >= 1 || usedElsewhere.has(product.sku))); button.setAttribute('aria-pressed', String(selected)); button.addEventListener('click', () => { const found = active.findIndex((item) => item.code === product.sku); if (found >= 0) active.splice(found, 1); else if (!usedElsewhere.has(product.sku) && active.length < 1) active.push({ code: product.sku, name: product.name }); state.popsiclePreferences[state.activePopsiclePreference] = active; renderPopsicleDialog(); }); root.append(button); });
-    const complete = preferences.every((set) => set.length === 1); const primary = preferences[0]?.[0]; const primaryProduct = products.find((product) => product.sku === primary?.code); const maxQuantity = primaryProduct?.picole?.stock || 0; quantityBox.hidden = !complete; quantityBox.innerHTML = '';
-    if (complete) { const label = document.createElement('span'); label.textContent = 'Quantidade desejada'; const control = document.createElement('div'); control.className = 'qty'; const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.disabled = state.popsicleQuantity <= 1; minus.addEventListener('click', () => { state.popsicleQuantity = Math.max(1, state.popsicleQuantity - 1); renderPopsicleDialog(); }); const count = document.createElement('span'); count.textContent = state.popsicleQuantity; const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.disabled = state.popsicleQuantity >= maxQuantity; plus.addEventListener('click', () => { state.popsicleQuantity = Math.min(maxQuantity, state.popsicleQuantity + 1); renderPopsicleDialog(); }); control.append(minus, count, plus); const summary = popsicleSummary(primaryProduct, state.popsicleQuantity); const total = document.createElement('strong'); total.className = 'popsicle-quantity__total'; total.textContent = `Total de picolés: ${summary.quantity} · ${money(summary.value)}${summary.wholesale ? ' · preço de atacado aplicado' : ' · atacado a partir de 100'}`; quantityBox.append(label, control, total); }
-    $('#popsicle-status').textContent = complete ? (preferenceCount === 1 ? 'Sabor escolhido. Informe a quantidade para adicionar.' : 'Preferências completas. As Opções 2 e 3 só serão usadas se a primeira não estiver disponível.') : `Escolha ${preferenceCount === 1 ? 'o sabor' : `a Opção ${state.activePopsiclePreference + 1}`}. ${preferences.filter((set) => set.length).length} de ${preferenceCount} opção${preferenceCount > 1 ? 'ões' : ''} preenchida${preferenceCount > 1 ? 's' : ''}.`;
-    $('#confirm-popsicle-preferences').disabled = !complete || !primaryProduct || !state.popsicleQuantity;
+    const root = $('#popsicle-list'); const products = state.popsicleGroup || []; const quantityBox = $('#popsicle-quantity');
+    root.innerHTML = '';
+    let activeGroup = '';
+    const totalSelected = products.reduce((sum, product) => sum + Number(state.popsicleSelections?.[product.sku] || 0), 0);
+    const wholesale = totalSelected >= 100;
+    const totalValue = products.reduce((sum, product) => {
+      const quantity = Number(state.popsicleSelections?.[product.sku] || 0);
+      const unit = wholesale ? Number(product.picole?.atacado || product.price || 0) : Number(product.picole?.varejo || product.price || 0);
+      return sum + quantity * unit;
+    }, 0);
+    products.forEach((product) => {
+      const groupName = String(product.picole?.groupName || 'Picolés');
+      if (groupName !== activeGroup) {
+        activeGroup = groupName;
+        const head = document.createElement('div');
+        head.className = 'base-row';
+        head.innerHTML = `<strong>${escape(groupName)}</strong> · Varejo ${money(product.picole?.varejo)} · Atacado ${money(product.picole?.atacado)}`;
+        root.append(head);
+      }
+      const quantity = Number(state.popsicleSelections?.[product.sku] || 0);
+      const stock = Math.max(0, Number(product.picole?.stock || 0));
+      const unavailable = stock <= 0 || !product.available || product.picole?.unavailable;
+      const unitPrice = wholesale ? Number(product.picole?.atacado || product.price || 0) : Number(product.picole?.varejo || product.price || 0);
+      const row = document.createElement('div'); row.className = `popsicle-row${quantity > 0 ? ' is-selected' : ''}${unavailable ? ' is-unavailable' : ''}`;
+      const info = document.createElement('div');
+      info.innerHTML = `<p class="product__name">${escape(product.name)}${unavailable ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">Estoque: ${pad2(stock)} unidades · ${wholesale ? 'Atacado' : 'Varejo'} ${money(unitPrice)} por unidade</p><p class="product__price">Subtotal: ${money(quantity * unitPrice)}</p>`;
+      const control = document.createElement('div'); control.className = 'qty';
+      const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Remover ${product.name}`); minus.disabled = quantity <= 0; minus.addEventListener('click', () => { const next = Math.max(0, quantity - 1); if (next <= 0) delete state.popsicleSelections[product.sku]; else state.popsicleSelections[product.sku] = next; renderPopsicleDialog(); });
+      const count = document.createElement('span'); count.textContent = pad2(quantity);
+      const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar ${product.name}`); plus.disabled = unavailable || quantity >= stock; plus.addEventListener('click', () => { state.popsicleSelections[product.sku] = Math.min(stock, quantity + 1); renderPopsicleDialog(); });
+      control.append(minus, count, plus);
+      row.append(info, control);
+      root.append(row);
+    });
+    quantityBox.hidden = false;
+    quantityBox.innerHTML = `<span>Total selecionado</span><strong class="popsicle-quantity__total">${pad2(totalSelected)} unidade${totalSelected !== 1 ? 's' : ''} · ${wholesale ? 'Atacado aplicado' : 'Varejo (atacado a partir de 100)'} · ${money(totalValue)}</strong>`;
+    $('#popsicle-status').textContent = totalSelected ? `${pad2(totalSelected)} picolé${totalSelected !== 1 ? 's' : ''} selecionado${totalSelected !== 1 ? 's' : ''}. Ajuste os sabores na mesma lista e confirme quando terminar.` : 'Escolha os sabores e ajuste a quantidade de cada um na lista única.';
+    $('#popsicle-status').classList.toggle('ready', totalSelected > 0);
+    $('#confirm-popsicle-preferences').disabled = totalSelected <= 0;
   }
-  function confirmPopsiclePreferences() { const products = state.popsicleGroup || []; const primary = state.popsiclePreferences?.[0]?.[0]; const product = products.find((entry) => entry.sku === primary?.code); if (!product || !state.popsiclePreferences.every((set) => set.length === 1)) return; const item = addProduct(product, [], '', false, '', '', '', [], []); if (state.popsicleQuantity > 1) updateQuantity(item.key, state.popsicleQuantity - 1); closeDialog('popsicle-dialog'); state.popsicleGroup = null; state.popsiclePreferences = []; state.activePopsiclePreference = 0; state.popsicleQuantity = 1; renderCart(); openDialog('cart-dialog'); }
+  function confirmPopsiclePreferences() {
+    const products = state.popsicleGroup || [];
+    const selected = products.map((product) => ({ product, quantity: Math.max(0, Math.floor(Number(state.popsicleSelections?.[product.sku] || 0)) ) })).filter((entry) => entry.quantity > 0);
+    if (!selected.length) return;
+    state.cart = state.cart.filter((item) => item.type !== 'picole');
+    refreshCartUi();
+    selected.forEach(({ product, quantity }) => {
+      const item = addProduct(product, [], '', false, '', '', '', [], []);
+      if (quantity > 1) updateQuantity(item.key, quantity - 1);
+    });
+    closeDialog('popsicle-dialog');
+    state.popsicleGroup = null;
+    state.popsicleSelections = {};
+    renderCart();
+    openDialog('cart-dialog');
+  }
   function flavorDistributionTotal(value) { return (String(value || '').match(/\d+/g) || []).reduce((sum, number) => sum + Number(number), 0); }
   function massFlavorOptions() {
     const acaiBaseUnavailable = isAcaiBaseUnavailable();
@@ -957,6 +995,6 @@
   $('#continue-notes').addEventListener('click', () => { formFlow.notesContinued = true; syncGuidedForm({ scroll: true }); });
   $('#accept-rules').addEventListener('change', () => syncGuidedForm({ scroll: true }));
   window.addEventListener('itap:horario-pedidos-atualizado', () => { if (state.catalog.length) renderCatalog(); syncPickupDateConstraint(); syncGuidedForm(); });
-  $$('[data-close]').forEach((button) => button.addEventListener('click', () => { if (button.dataset.close === 'popsicle-dialog') { state.popsicleGroup = null; state.popsiclePreferences = []; state.activePopsiclePreference = 0; state.popsicleQuantity = 1; } closeDialog(button.dataset.close); }));
+  $$('[data-close]').forEach((button) => button.addEventListener('click', () => { if (button.dataset.close === 'popsicle-dialog') { state.popsicleGroup = null; state.popsicleSelections = {}; } closeDialog(button.dataset.close); }));
   init();
 }());
