@@ -149,6 +149,7 @@ background:#fff;border-bottom:2px solid #f0f2f5;display:flex;flex-wrap:wrap;over
 .sabores-grid{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
 .sabor-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border:2px solid #e0e0e0;border-radius:10px;gap:10px}
 .sabor-item.esgotado{border-color:#FECACA;background:#fff5f5;opacity:.7}
+.sabor-item.esgotado .sabor-nome,.sabor-item.esgotado .sabor-status,.estoque-card.esgotado .estoque-nome{text-decoration:line-through;color:#B42318}
 .sabor-nome{flex:1;font-weight:600;font-size:.88rem;color:#1a1a1a}
 .sabor-status{font-size:.75rem;font-weight:700;color:#2e7d32;min-width:70px;text-align:right}
 .sabor-status.esgotado{color:#c62828}
@@ -7274,7 +7275,7 @@ function ocultarLoading(){document.getElementById('loading-overlay').style.displ
 // =====================================================================
 // SABORES — gestão de sabores de sorvete e picolés
 // =====================================================================
-const PICOLES_PADRAO = {"frutas_agua": {"id": "pic_frutas_agua", "nome": "Picolé de Fruta/Água", "preço_varejo": 2.5, "preço_atacado": 1.8, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Abacaxi", "esgotado": false}, {"nome": "Caju", "esgotado": false}, {"nome": "Goiaba", "esgotado": false}, {"nome": "Groselha", "esgotado": false}, {"nome": "Limão", "esgotado": false}, {"nome": "Melância", "esgotado": false}, {"nome": "Uva", "esgotado": false}, {"nome": "Tamarindo", "esgotado": false}]}, "leite_sem_recheio": {"id": "pic_leite_sem_recheio", "nome": "Picolé de Leite sem Recheio", "preço_varejo": 2.5, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Coco Queimado", "esgotado": false}, {"nome": "Milho Verde", "esgotado": false}, {"nome": "Amendoim", "esgotado": false}, {"nome": "Pistache", "esgotado": false}]}, "leite_com_recheio": {"id": "pic_leite_com_recheio", "nome": "Picolé de Leite com Recheio", "preço_varejo": 3.0, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Açaí", "esgotado": false}, {"nome": "Blue Ice", "esgotado": false}, {"nome": "Caraxi", "esgotado": false}, {"nome": "Coco Branco", "esgotado": false}, {"nome": "Chocolate", "esgotado": false}, {"nome": "Amarena", "esgotado": false}, {"nome": "Leite Condensado", "esgotado": false}, {"nome": "Mamão Papaia", "esgotado": false}, {"nome": "Maracujá", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Menta com Chocolate", "esgotado": false}, {"nome": "Nata com Goiaba", "esgotado": false}]}, "leite_ninho": {"id": "pic_leite_ninho", "nome": "Picolé Leite Ninho", "preço_varejo": 4.0, "preço_atacado": 3.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Leite Ninho", "esgotado": false}]}, "ovomaltine": {"id": "pic_ovomaltine", "nome": "Picolé de Ovomaltine", "preço_varejo": 4.0, "preço_atacado": 3.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Ovomaltine", "esgotado": false}]}, "esquimós": {"id": "pic_esquimós", "nome": "Picolés AO LEITE Premium Eskimós", "preço_varejo": 8.0, "preço_atacado": 6.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Bombom", "esgotado": false}, {"nome": "Nutella", "esgotado": false}, {"nome": "Ovomaltine", "esgotado": false}, {"nome": "Leite Ninho", "esgotado": false}, {"nome": "Nata", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Brigadeiro", "esgotado": false}, {"nome": "Prestígio", "esgotado": false}]}};
+const PICOLES_PADRAO = {"frutas_agua": {"id": "pic_frutas_agua", "nome": "Picolé de Fruta/Água", "preço_varejo": 2.5, "preço_atacado": 1.8, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Abacaxi", "esgotado": false}, {"nome": "Caju", "esgotado": false}, {"nome": "Goiaba", "esgotado": false}, {"nome": "Groselha", "esgotado": false}, {"nome": "Limão", "esgotado": true}, {"nome": "Melância", "esgotado": false}, {"nome": "Uva", "esgotado": false}, {"nome": "Tamarindo", "esgotado": false}]}, "leite_sem_recheio": {"id": "pic_leite_sem_recheio", "nome": "Picolé de Leite sem Recheio", "preço_varejo": 2.5, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Coco Queimado", "esgotado": false}, {"nome": "Milho Verde", "esgotado": false}, {"nome": "Amendoim", "esgotado": false}, {"nome": "Pistache", "esgotado": false}]}, "leite_com_recheio": {"id": "pic_leite_com_recheio", "nome": "Picolé de Leite com Recheio", "preço_varejo": 3.0, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Açaí", "esgotado": false}, {"nome": "Blue Ice", "esgotado": false}, {"nome": "Caraxi", "esgotado": false}, {"nome": "Coco Branco", "esgotado": false}, {"nome": "Chocolate", "esgotado": false}, {"nome": "Amarena", "esgotado": false}, {"nome": "Leite Condensado", "esgotado": false}, {"nome": "Maracujá", "esgotado": false}, {"nome": "Mamão Papaia", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Menta com Chocolate", "esgotado": false}, {"nome": "Nata com Goiaba", "esgotado": false}]}, "leite_ninho": {"id": "pic_leite_ninho", "nome": "Picolé Leite Ninho", "preço_varejo": 4.0, "preço_atacado": 3.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Leite Ninho", "esgotado": false}]}, "ovomaltine": {"id": "pic_ovomaltine", "nome": "Picolé de Ovomaltine", "preço_varejo": 4.0, "preço_atacado": 3.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Ovomaltine", "esgotado": false}]}, "esquimós": {"id": "pic_esquimós", "nome": "Picolés AO LEITE Premium Eskimós", "preço_varejo": 8.0, "preço_atacado": 6.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Bombom", "esgotado": false}, {"nome": "Nutella", "esgotado": false}, {"nome": "Ovomaltine", "esgotado": false}, {"nome": "Leite Ninho", "esgotado": false}, {"nome": "Nata", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Brigadeiro", "esgotado": false}, {"nome": "Prestígio", "esgotado": false}]}};
 
 // =====================================================================
 // SABORES — renderização dinâmica a partir do produtos.json (Single Source of Truth)
@@ -7353,7 +7354,9 @@ function toggleSaborPicolé(cat, sabor, ativo) {
   const norm = s => s.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   const sid = 'pic_' + norm(cat) + '_' + norm(sabor);
   const st = document.getElementById('status_' + sid);
+  const wrap = document.getElementById('wrap_' + sid);
   if (st) { st.textContent = ativo ? 'Disponível' : 'Esgotado'; st.className = 'sabor-status' + (ativo ? '' : ' esgotado'); }
+  if (wrap) wrap.className = 'sabor-item' + (ativo ? '' : ' esgotado');
 }
 
 function adicionarSaborPicolé(cat) {
@@ -7378,6 +7381,7 @@ function adicionarSaborPicolé(cat) {
     const sid = 'pic_' + norm(cat) + '_' + norm(nome);
     const div = document.createElement('div');
     div.className = 'sabor-item';
+    div.id = 'wrap_' + sid;
     const spanNome = document.createElement('span');
     spanNome.className = 'sabor-nome';
     spanNome.textContent = nome;
@@ -7449,7 +7453,7 @@ function renderizarPicolésAdmin() {
       const sesgotado = typeof s === 'object' && s ? (s.esgotado || false) : false;
       if (!snome) return '';
       const sid = 'pic_' + norm(cat) + '_' + norm(snome);
-      return '<div class="sabor-item ' + (sesgotado ? 'esgotado' : '') + '"><span class="sabor-nome">' + snome + '</span><label class="toggle"><input type="checkbox" id="' + sid + '" ' + (sesgotado ? '' : 'checked') + ' onchange="toggleSaborPicolé(\'' + cat + '\',\'' + snome + '\',this.checked)"/><span class="toggle-slider"></span></label><span class="sabor-status ' + (sesgotado ? 'esgotado' : '') + '" id="status_' + sid + '">' + (sesgotado ? 'Esgotado' : 'Disponível') + '</span></div>';
+      return '<div class="sabor-item ' + (sesgotado ? 'esgotado' : '') + '" id="wrap_' + sid + '"><span class="sabor-nome">' + snome + '</span><label class="toggle"><input type="checkbox" id="' + sid + '" ' + (sesgotado ? '' : 'checked') + ' onchange="toggleSaborPicolé(\'' + cat + '\',\'' + snome + '\',this.checked)"/><span class="toggle-slider"></span></label><span class="sabor-status ' + (sesgotado ? 'esgotado' : '') + '" id="status_' + sid + '">' + (sesgotado ? 'Esgotado' : 'Disponível') + '</span></div>';
     }).join('');
     html += '<div class="estoque-card ' + (esgotado ? 'esgotado' : '') + '"><div class="estoque-header"><span class="estoque-nome">🍭 ' + nome + '</span><span class="estoque-preço-badge">Varejo R$ ' + pVarejo.toFixed(2).replace('.',',') + ' | Atacado R$ ' + pAtacado.toFixed(2).replace('.',',') + '</span></div><div class="estoque-campos"><div class="campo-edit"><label>Preço Varejo (Cardápio)</label><div class="preço-inp"><span>R$</span><input type="number" id="pic_' + cat + '_varejo" value="' + pVarejo + '" min="0" step="0.1"/></div><div class="hint">Preço unitário no cardápio da loja.</div></div><div class="campo-edit"><label>Preço Atacado (Encomendas)</label><div class="preço-inp"><span>R$</span><input type="number" id="pic_' + cat + '_atacado" value="' + pAtacado + '" min="0" step="0.1"/></div><div class="hint">Preço por unidade em encomendas (mín. 100 un.).</div></div><div class="campo-edit"><label>Estoque total (0 a 200)</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoquePicolé(\'' + cat + '\',-1)">-</button><input type="number" id="pic_' + cat + '_estoque" value="' + estoque + '" min="0" max="200" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoquePicolé(\'' + cat + '\',1)">+</button></div><div class="hint">0 = Esgotado. Max. 200.</div></div></div><div class="seção-título" style="font-size:.78rem;margin:12px 0 8px">Sabores desta categoria</div><div class="sabores-grid">' + saboresHtml + '</div></div>';
   }
@@ -7505,7 +7509,7 @@ async function salvarSabores() {
 
     // Coletar picolés diretamente do STATE.produtos
     const norm = s => s.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-    const picoles = prod.picoles || {};
+    const picoles = prod.picoles || prod.picolés || {};
     for (const cat of Object.keys(picoles)) {
       const varejo = parseFloat(document.getElementById('pic_' + cat + '_varejo')?.value) || picoles[cat].preco_varejo || picoles[cat].preço_varejo || 0;
       const atacado = parseFloat(document.getElementById('pic_' + cat + '_atacado')?.value) || picoles[cat].preco_atacado || picoles[cat].preço_atacado || 0;
@@ -7530,6 +7534,7 @@ async function salvarSabores() {
       if (masterSkus[keyGrupo]) masterSkus[keyGrupo].ativo = picoles[cat].esgotado !== true;
     }
     prod.picoles = picoles;
+    prod.picolés = picoles;
     STATE.produtos = prod;
 
     // Salvar no GitHub (produtos.json)
