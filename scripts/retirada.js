@@ -452,7 +452,10 @@
     section.append(list);
   }
   function beginPopsicleGroup(products) {
-    state.popsicleGroup = products.filter((product) => product.available && !product.picole?.unavailable && product.picole?.stock > 0).sort((left, right) => {
+    state.popsicleGroup = products.filter((product) => product.picole).sort((left, right) => {
+      const leftUnavailable = Number(left.picole?.stock || 0) <= 0 || !left.available || left.picole?.unavailable;
+      const rightUnavailable = Number(right.picole?.stock || 0) <= 0 || !right.available || right.picole?.unavailable;
+      if (leftUnavailable !== rightUnavailable) return leftUnavailable ? 1 : -1;
       const group = String(left.picole?.groupName || '').localeCompare(String(right.picole?.groupName || ''), 'pt-BR');
       if (group) return group;
       return String(left.name || '').localeCompare(String(right.name || ''), 'pt-BR');
@@ -502,9 +505,10 @@
       const stock = Math.max(0, Number(product.picole?.stock || 0));
       const unavailable = stock <= 0 || !product.available || product.picole?.unavailable;
       const unitPrice = wholesale ? Number(product.picole?.atacado || product.price || 0) : Number(product.picole?.varejo || product.price || 0);
+      const availabilityText = unavailable ? 'Indisponível para retirada agora.' : `Estoque: ${pad2(stock)} unidades · ${wholesale ? 'Atacado' : 'Varejo'} ${money(unitPrice)} por unidade`;
       const row = document.createElement('div'); row.className = `popsicle-row${quantity > 0 ? ' is-selected' : ''}${unavailable ? ' is-unavailable' : ''}`;
       const info = document.createElement('div');
-      info.innerHTML = `<p class="product__name">${escape(product.name)}${unavailable ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">Estoque: ${pad2(stock)} unidades · ${wholesale ? 'Atacado' : 'Varejo'} ${money(unitPrice)} por unidade</p><p class="product__price">Subtotal: ${money(quantity * unitPrice)}</p>`;
+      info.innerHTML = `<p class="product__name">${escape(product.name)}${unavailable ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${availabilityText}</p><p class="product__price">Subtotal: ${money(quantity * unitPrice)}</p>`;
       const control = document.createElement('div'); control.className = 'qty';
       const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Remover ${product.name}`); minus.disabled = quantity <= 0; minus.addEventListener('click', () => { const next = Math.max(0, quantity - 1); if (next <= 0) delete state.popsicleSelections[product.sku]; else state.popsicleSelections[product.sku] = next; renderPopsicleDialog(); });
       const count = document.createElement('span'); count.textContent = pad2(quantity);
