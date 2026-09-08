@@ -711,6 +711,25 @@
   function pickupStepValid() { const time = $('#pickup-time')?.value || ''; if (!validPickupTime(time)) return false; if (hasCakeProductionLead()) return Boolean($('#pickup-date')?.value) && validCakeLeadTime($('#pickup-date').value, time); return validCommonLeadTime(time); }
   function scrollToFormStep(step) { const target = document.querySelector(`[data-form-step="${step}"]`) || $('#final-submit'); requestAnimationFrame(() => { target?.scrollIntoView({ behavior: 'smooth', block: 'center' }); const input = target?.querySelector('input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), button:not([disabled])'); input?.focus({ preventScroll: true }); }); }
   function setFormStepState(step, enabled, complete) { const block = document.querySelector(`[data-form-step="${step}"]`); if (!block) return; block.classList.toggle('is-locked', !enabled); block.classList.toggle('is-current', enabled && !complete); block.classList.toggle('is-complete', complete); block.setAttribute('aria-disabled', enabled ? 'false' : 'true'); $$('input, textarea, button', block).forEach((control) => { if (control.type === 'hidden') return; control.disabled = !enabled; }); }
+  function nextFieldByStep(step) {
+    if (step === 1) return !$('#client-name')?.value.trim() ? $('#client-name') : $('#client-phone');
+    if (step === 2) {
+      if (hasCakeProductionLead() && !$('#pickup-date')?.value) return $('#pickup-date');
+      return $('#pickup-time');
+    }
+    if (step === 3) return $('#confirm-payment');
+    if (step === 4) return $('#continue-notes');
+    if (step === 5) return !$('#accept-rules')?.checked ? $('#accept-rules') : $('#final-submit');
+    return $('#final-submit');
+  }
+  function syncCascadeFocus(step) {
+    $$('.form-next-focus').forEach((element) => element.classList.remove('form-next-focus'));
+    $('#accept-wrap')?.classList.remove('form-next-focus-wrap');
+    const target = nextFieldByStep(step);
+    if (!target || target.disabled) return;
+    target.classList.add('form-next-focus');
+    if (target.id === 'accept-rules') $('#accept-wrap')?.classList.add('form-next-focus-wrap');
+  }
   function markPickupTimeConfirmed() { if (!$('#pickup-time')?.disabled) formFlow.pickupTimeConfirmed = true; }
   function syncGuidedForm({ scroll = false } = {}) {
     const nameValid = Boolean($('#client-name')?.value.trim()); const phoneValid = validatePhone($('#client-phone')?.value); const identityValid = nameValid && phoneValid;
@@ -729,6 +748,7 @@
     submit.disabled = !formReady; submit.setAttribute('aria-disabled', formReady ? 'false' : 'true'); submit.classList.toggle('is-ready', formReady); submit.textContent = formReady ? 'Enviar solicitação para confirmação no WhatsApp' : visibleStep === 5 ? 'Marque o aceite para liberar o envio' : 'Preencha as etapas para liberar o envio'; hint.textContent = formReady ? 'Pronto: revise o pedido e envie a solicitação.' : progressText; hint.classList.toggle('is-ready', formReady);
     const accept = $('#accept-wrap'); accept.classList.toggle('is-attention', notesValid && !accepted); accept.classList.toggle('is-checked', accepted);
     const previous = formFlow.visibleStep; formFlow.visibleStep = visibleStep; formFlow.ready = formReady;
+    syncCascadeFocus(visibleStep);
     if (formReady || visibleStep > previous) clearFormError();
     if (scroll && visibleStep > previous) scrollToFormStep(visibleStep);
   }
