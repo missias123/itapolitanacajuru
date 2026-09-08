@@ -5127,6 +5127,25 @@ function renderTudo() {
  const tp=document.getElementById('torta-preço');
  if(tp&&produtos&&produtos.sobremesas)tp.textContent='R$ '+produtos.sobremesas['Torta de Sorvete'].toFixed(2).replace('.',',');
 }
+let _syncProdutosEmAndamento=false;
+let _ultimaSyncProdutos=0;
+async function sincronizarProdutosAoRetorno(force){
+ const agora=Date.now();
+ if(!force&&agora-_ultimaSyncProdutos<12000)return false;
+ if(_syncProdutosEmAndamento)return false;
+ _syncProdutosEmAndamento=true;
+ try{
+  await carregarPreçosNuvemCardápio();
+  renderTudo();sincronizarCardapioMap();
+  _ultimaSyncProdutos=agora;
+  return true;
+ }catch(e){
+  if(window.PRODUTOS_DATA&&Object.keys(window.PRODUTOS_DATA).length){renderTudo();sincronizarCardapioMap();}
+  return false;
+ }finally{
+  _syncProdutosEmAndamento=false;
+ }
+}
 /* ============================================================
   SINCRONISMO TOTAL — SINGLE SOURCE OF TRUTH
   Padrão: iFood / Nubank / Shopify
@@ -5491,7 +5510,9 @@ document.addEventListener('DOMContentLoaded', () => {
  if (window._animObserver) {
   document.querySelectorAll('.animar-entrada').forEach(el => window._animObserver.observe(el));
  }
-
+ window.addEventListener('pageshow', (event) => { if (event.persisted) sincronizarProdutosAoRetorno(true); });
+ document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') sincronizarProdutosAoRetorno(false); });
+ 
 });
 
 </script>

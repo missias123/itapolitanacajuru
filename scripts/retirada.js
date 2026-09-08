@@ -1011,7 +1011,43 @@
   }
   function submitOrder(event) { event.preventDefault(); if (state.sendingOrder) return; clearFormError(); normalizePickupTimeField(); syncGuidedForm(); if (!formFlow.ready) return showFormError('Complete as etapas na ordem indicada antes de enviar.'); if (!retiradaAberta()) { window.ItapHorarioPedidos?.aviso('retirada'); return showFormError(window.ItapHorarioPedidos?.textoAviso('retirada') || RETIRADA_SITE_WINDOW_MESSAGE); } const form = Object.fromEntries(new FormData(event.currentTarget).entries()); form.horario = normalizePickupTimeValue(form.horario); if (!state.cart.length) return showFormError('Escolha pelo menos um produto antes de enviar.'); if (!form.nome?.trim()) return showFormError('Informe o nome de quem vai retirar.'); if (!validatePhone(form.telefone || '')) return showFormError('Digite somente o número do celular após o DDD 16.'); if (!validPickupTime(form.horario)) return showFormError(`Escolha um horário de retirada entre ${RETIRADA_MIN_TIME.replace(':', 'h')} e ${RETIRADA_MAX_TIME.replace(':', 'h')} (Brasília).`); if (hasCakeProductionLead()) { if (!form.data_retirada) return showFormError('Para encomenda de torta ou caixa grande, escolha a data desejada para retirar.'); if (!validCakeLeadTime(form.data_retirada, form.horario)) return showFormError('Encomendas de torta e caixa grande precisam de pelo menos 48 horas de antecedência pelo horário de Brasília.'); } else if (!validCommonLeadTime(form.horario)) { syncPickupTimeValidation(); $('#pickup-time')?.focus(); return showFormError(pickupTimeMessage()); } if (!form.aceite) return showFormError('Leia e marque o aceite das regras antes de enviar.'); setOrderStage(3); const text = buildMessage(form); state.sendingOrder = true; const submit = $('#final-submit'); if (submit) { submit.disabled = true; submit.setAttribute('aria-disabled', 'true'); submit.textContent = 'Abrindo WhatsApp...'; } announce('Abrindo WhatsApp para confirmar o envio da solicitação de retirada.'); window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener'); window.setTimeout(() => { state.sendingOrder = false; syncGuidedForm(); announce('Envio liberado novamente para ajustes, se necessário.'); }, 2500); }
   function showFormError(message) { const error = $('#form-error'); error.textContent = message; error.classList.add('is-visible'); error.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-  async function init() { try { const response = await fetch('dados/produtos.json?v=20260822-textos-skus'); if (!response.ok) throw new Error('Não foi possível carregar o catálogo.'); state.data = await response.json(); state.catalog = buildCatalog(state.data); $('#loading').remove(); renderCatalog(); renderCartSummary(); setOrderStage(state.cart.length ? 2 : 1); syncPickupDateConstraint(); syncGuidedForm(); const sku = new URLSearchParams(location.search).get('sku'); if (sku) { const product = state.catalog.find((item) => item.sku === sku); if (product) { activateCatalogSection(`sec-${slug(product.category)}`, { scroll: true, announceMessage: `${product.name} está destacado na seção correspondente.` }); } } } catch (error) { $('#loading').textContent = 'Não foi possível carregar os produtos agora. Volte ao cardápio e tente novamente.'; console.error(error); } }
+  let syncingCatalog = false;
+  let lastCatalogSyncAt = 0;
+  async function syncCatalog(options = {}) {
+    const force = Boolean(options.force);
+    const now = Date.now();
+    if (!force && now - lastCatalogSyncAt < 12000) return false;
+    if (syncingCatalog) return false;
+    syncingCatalog = true;
+    try {
+      const response = await fetch(`dados/produtos.json?v=${now}`, { cache: 'no-store' });
+      if (!response.ok) throw new Error('Não foi possível carregar o catálogo.');
+      state.data = await response.json();
+      state.catalog = buildCatalog(state.data);
+      $('#loading')?.remove();
+      renderCatalog();
+      renderCartSummary();
+      setOrderStage(state.cart.length ? 2 : 1);
+      syncPickupDateConstraint();
+      syncGuidedForm();
+      lastCatalogSyncAt = now;
+      return true;
+    } catch (error) {
+      if (!state.catalog.length && $('#loading')) $('#loading').textContent = 'Não foi possível carregar os produtos agora. Volte ao cardápio e tente novamente.';
+      console.error(error);
+      return false;
+    } finally {
+      syncingCatalog = false;
+    }
+  }
+  async function init() {
+    const synced = await syncCatalog({ force: true });
+    if (!synced) return;
+    const sku = new URLSearchParams(location.search).get('sku');
+    if (!sku) return;
+    const product = state.catalog.find((item) => item.sku === sku);
+    if (product) activateCatalogSection(`sec-${slug(product.category)}`, { scroll: true, announceMessage: `${product.name} está destacado na seção correspondente.` });
+  }
   $('#search').addEventListener('input', (event) => { state.query = event.target.value; renderCatalog(); });
   $('#summary-bar').addEventListener('click', () => { captureCatalogViewport(); renderCart(); openDialog('cart-dialog'); });
   $('#confirm-flavors').addEventListener('click', confirmFlavors);
@@ -1042,6 +1078,8 @@
   $('#continue-notes').addEventListener('click', () => { formFlow.notesContinued = true; syncGuidedForm({ scroll: true }); });
   $('#accept-rules').addEventListener('change', () => syncGuidedForm({ scroll: true }));
   window.addEventListener('itap:horario-pedidos-atualizado', () => { if (state.catalog.length) renderCatalog(); syncPickupDateConstraint(); syncGuidedForm(); });
+  window.addEventListener('pageshow', (event) => { if (event.persisted) syncCatalog({ force: true }); });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') syncCatalog(); });
   $$('[data-close]').forEach((button) => button.addEventListener('click', () => { if (button.dataset.close === 'popsicle-dialog') { state.popsicleGroup = null; state.popsicleSelections = {}; } closeDialog(button.dataset.close); }));
   init();
 }());

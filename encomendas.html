@@ -915,6 +915,8 @@
     var ESTOQUE_URL = "dados/produtos.json";
     var MAPA_PICOLES_ESTOQUE = {};
     var ESTOQUE_PICOLES = {};
+    var ESTOQUE_EM_SINCRONIZACAO = false;
+    var ULTIMA_SINCRONIZACAO_ESTOQUE = 0;
 
     function normalizarTexto(valor) {
         return String(valor == null ? '' : valor).normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
@@ -1029,8 +1031,12 @@
     }
 
     async function carregarEstoqueEncomendas() {
+        var agora = Date.now();
+        if (ESTOQUE_EM_SINCRONIZACAO) return;
+        if (agora - ULTIMA_SINCRONIZACAO_ESTOQUE < 12000) return;
+        ESTOQUE_EM_SINCRONIZACAO = true;
         try {
-            var resposta = await fetch(ESTOQUE_URL + '?v=' + Date.now(), { cache: 'no-store' });
+            var resposta = await fetch(ESTOQUE_URL + '?v=' + agora, { cache: 'no-store' });
             if (!resposta.ok) throw new Error('Não foi possível ler o estoque oficial.');
             var dadosBrutos = await resposta.json();
             var dados = window.ITAP_CATALOGO_MESTRE && typeof window.ITAP_CATALOGO_MESTRE.aplicar === 'function'
@@ -1096,12 +1102,16 @@
                 grupo.estoquePorSabor = porSabor;
             });
             ESTOQUE_CARREGADO = true;
+            ULTIMA_SINCRONIZACAO_ESTOQUE = agora;
         } catch (erro) {
             console.warn('[Encomendas] estoque não carregado:', erro.message);
+            ESTOQUE_CARREGADO = false;
             Object.keys(PICOLES_CATALOGO).forEach(function (tipo) {
                 PICOLES_CATALOGO[tipo].estoquePorSabor = {};
                 PICOLES_CATALOGO[tipo].sabores.forEach(function (sabor) { PICOLES_CATALOGO[tipo].estoquePorSabor[sabor] = { estoque: 0, esgotado: true, chaveEstoque: null }; });
             });
+        } finally {
+            ESTOQUE_EM_SINCRONIZACAO = false;
         }
         renderizarCatalogoEncomendas();
     }
@@ -2388,6 +2398,8 @@
         });
     }
     window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); sincronizarFormularioEncomenda(); });
+    window.addEventListener('pageshow', function(event) { if (event.persisted) carregarEstoqueEncomendas(); });
+    document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'visible') carregarEstoqueEncomendas(); });
 
     // Inicialização única: renderiza uma prévia e, em seguida, substitui pelos dados oficiais do estoque.
     renderizarCatalogoEncomendas();
