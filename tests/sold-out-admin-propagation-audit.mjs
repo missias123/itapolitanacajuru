@@ -45,17 +45,24 @@ try {
   await gotoPage(home, '/index.html?sold-out-admin-propagation-audit=home');
   await home.waitForFunction(() => typeof window.abrirSaboresInline === 'function' && typeof window.abrirPicoléInline === 'function', { timeout: 15000 });
   report.index = await home.evaluate(() => {
+    const soldOutTexts = (root) => [...(root?.querySelectorAll('.chip-inline.is-esgotado') || [])].map((el) => el.textContent.replace(/ESGOTADO/g, '').trim()).filter(Boolean);
     const massButton = document.querySelector('button[onclick*="abrirSaboresInline(\'sorvetes\'"]');
+    const massRoot = massButton?.closest('.acc-body') || document.getElementById('sorvetes-body');
     window.abrirSaboresInline('sorvetes', '39 Sabores de Sorvete', massButton);
-    const massSoldOut = [...document.querySelectorAll('.chip-inline.is-esgotado')].map((el) => el.textContent.replace(/ESGOTADO/g, '').trim()).filter(Boolean);
+    const massSoldOut = soldOutTexts(massRoot);
+    const waterButton = document.querySelector('button[onclick*="abrirPicoléInline(\'frutas_agua\'"]');
+    const popsicleRoot = waterButton?.closest('.acc-body') || document.getElementById('picolés-body');
+    window.abrirPicoléInline('frutas_agua', 'Picolés Base Água & Frutas', waterButton);
+    const waterPopsicleSoldOut = soldOutTexts(popsicleRoot);
     const popsicleButton = document.querySelector('button[onclick*="abrirPicoléInline(\'leite_com_recheio\'"]');
     window.abrirPicoléInline('leite_com_recheio', 'Picolés AO LEITE Cremosos Recheados', popsicleButton);
-    const popsicleSoldOut = [...document.querySelectorAll('.chip-inline.is-esgotado')].map((el) => el.textContent.replace(/ESGOTADO/g, '').trim()).filter(Boolean);
-    return { massSoldOut, popsicleSoldOut };
+    const stuffedPopsicleSoldOut = soldOutTexts(popsicleRoot);
+    return { massSoldOut, waterPopsicleSoldOut, stuffedPopsicleSoldOut };
   });
   assert(report.index.massSoldOut.includes('Abacaxi ao Vinho'), 'Home: Abacaxi ao Vinho não apareceu riscado');
-  assert(report.index.massSoldOut.includes('Limão'), 'Home: Limão não apareceu riscado');
-  assert(report.index.popsicleSoldOut.includes('Mamão Papaia'), 'Home: Mamão Papaia não apareceu riscado');
+  assert(report.index.massSoldOut.includes('Limão'), 'Home: Limão de massa não apareceu riscado');
+  assert(!report.index.waterPopsicleSoldOut.includes('Limão'), 'Home: picolé de Limão apareceu esgotado sem estar esgotado');
+  assert(report.index.stuffedPopsicleSoldOut.includes('Mamão Papaia'), 'Home: Mamão Papaia não apareceu riscado');
   await home.close();
 
   const encomendas = await browser.newPage();
@@ -69,7 +76,7 @@ try {
   await encomendas.waitForSelector('#grid-sabores .sabor-item', { timeout: 15000 });
   report.encomendasMassas = await encomendas.evaluate(() => [...document.querySelectorAll('#grid-sabores .sabor-item.is-esgotado span:last-child')].map((el) => el.textContent.trim()));
   assert(report.encomendasMassas.includes('Abacaxi ao Vinho'), 'Encomendas: Abacaxi ao Vinho não apareceu riscado');
-  assert(report.encomendasMassas.includes('Limão'), 'Encomendas: Limão não apareceu riscado');
+  assert(report.encomendasMassas.includes('Limão'), 'Encomendas: Limão de massa não apareceu riscado');
   await encomendas.evaluate(() => {
     window.fecharModal('modal-sabores');
     window.toggleSecao('sec-picoles');
@@ -105,7 +112,7 @@ try {
     disabled: Boolean(el.disabled) || Boolean(el.querySelector('.qty button:last-child')?.disabled),
   })));
   assert(report.retiradaMassas.some((item) => item.text.includes('Abacaxi ao Vinho') && item.soldOut && item.disabled), 'Retirada: Abacaxi ao Vinho não apareceu bloqueado');
-  assert(report.retiradaMassas.some((item) => item.text.includes('Limão') && item.soldOut && item.disabled), 'Retirada: Limão não apareceu bloqueado');
+  assert(report.retiradaMassas.some((item) => item.text.includes('Limão') && !item.text.includes('Limão Suíço') && item.soldOut && item.disabled), 'Retirada: Limão de massa não apareceu bloqueado');
   await retirada.evaluate(() => {
     document.querySelector('[data-close="flavor-dialog"]')?.click();
     const button = [...document.querySelectorAll('.product .add-btn')].find((entry) => entry.textContent.includes('Abrir lista única'));
@@ -120,13 +127,22 @@ try {
       plusDisabled: Boolean(row.querySelector('.qty button:last-child')?.disabled),
     }));
     return {
+      limao: rows.find((row) => row.text.includes('Limão')),
+      groselha: rows.find((row) => row.text.includes('Groselha')),
+      melancia: rows.find((row) => row.text.includes('Melância')),
       mamao: rows.find((row) => row.text.includes('Mamão Papaia')),
       maracuja: rows.find((row) => row.text.includes('Maracujá')),
+      morango: rows.find((row) => row.text.includes('Morango')),
     };
   });
+  assert(!report.retiradaPicoles.limao?.soldOut, 'Retirada: picolé de Limão apareceu esgotado sem estar esgotado');
+  assert(!report.retiradaPicoles.limao?.plusDisabled, 'Retirada: picolé de Limão não voltou ao carrinho');
+  assert.equal(report.retiradaPicoles.limao.index, report.retiradaPicoles.groselha.index + 1, 'Retirada: Limão saiu da posição oficial depois de Groselha');
+  assert.equal(report.retiradaPicoles.melancia.index, report.retiradaPicoles.limao.index + 1, 'Retirada: Melância não ficou logo após Limão');
   assert(report.retiradaPicoles.mamao?.soldOut, 'Retirada: Mamão Papaia não apareceu como esgotado');
   assert(report.retiradaPicoles.mamao?.plusDisabled, 'Retirada: Mamão Papaia continuou podendo entrar no carrinho');
-  assert(report.retiradaPicoles.mamao.index > report.retiradaPicoles.maracuja.index, 'Retirada: Mamão Papaia não ficou abaixo de Maracujá');
+  assert.equal(report.retiradaPicoles.mamao.index, report.retiradaPicoles.maracuja.index + 1, 'Retirada: Mamão Papaia saiu da posição oficial depois de Maracujá');
+  assert.equal(report.retiradaPicoles.morango.index, report.retiradaPicoles.mamao.index + 1, 'Retirada: Morango não ficou logo após Mamão Papaia');
   await retirada.close();
 
   console.log(JSON.stringify({ pass: true, report }, null, 2));

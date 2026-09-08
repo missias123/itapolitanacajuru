@@ -456,9 +456,6 @@
   }
   function beginPopsicleGroup(products) {
     state.popsicleGroup = products.filter((product) => product.picole).sort((left, right) => {
-      const leftUnavailable = Number(left.picole?.stock || 0) <= 0 || !left.available || left.picole?.unavailable;
-      const rightUnavailable = Number(right.picole?.stock || 0) <= 0 || !right.available || right.picole?.unavailable;
-      if (leftUnavailable !== rightUnavailable) return leftUnavailable ? 1 : -1;
       const groupOrder = Number(left.picole?.groupOrder ?? Number.MAX_SAFE_INTEGER) - Number(right.picole?.groupOrder ?? Number.MAX_SAFE_INTEGER);
       if (groupOrder) return groupOrder;
       const flavorOrder = Number(left.picole?.flavorOrder ?? Number.MAX_SAFE_INTEGER) - Number(right.picole?.flavorOrder ?? Number.MAX_SAFE_INTEGER);
@@ -515,7 +512,7 @@
       const availabilityText = unavailable ? 'Indisponível para retirada agora.' : `Estoque: ${pad2(stock)} unidades · ${wholesale ? 'Atacado' : 'Varejo'} ${money(unitPrice)} por unidade`;
       const row = document.createElement('div'); row.className = `popsicle-row${quantity > 0 ? ' is-selected' : ''}${unavailable ? ' is-unavailable' : ''}`;
       const info = document.createElement('div');
-      info.innerHTML = `<p class="product__name">${escape(product.name)}${unavailable ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${availabilityText}</p><p class="product__price">Subtotal: ${money(quantity * unitPrice)}</p>`;
+      info.innerHTML = `<p class="product__name"><span class="product__name-text">${escape(product.name)}</span>${unavailable ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${availabilityText}</p><p class="product__price">Subtotal: ${money(quantity * unitPrice)}</p>`;
       const control = document.createElement('div'); control.className = 'qty';
       const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Remover ${product.name}`); minus.disabled = quantity <= 0; minus.addEventListener('click', () => { const next = Math.max(0, quantity - 1); if (next <= 0) delete state.popsicleSelections[product.sku]; else state.popsicleSelections[product.sku] = next; renderPopsicleDialog(); });
       const count = document.createElement('span'); count.textContent = pad2(quantity);
