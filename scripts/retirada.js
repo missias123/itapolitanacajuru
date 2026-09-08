@@ -196,7 +196,8 @@
     const travelPackagingAvailability = data?.disponibilidade?.embalagens?.['EMB-VIAGEM'];
     const travelPackaging = { sku: 'EMB-VIAGEM', name: travelPackagingEntry?.nome || 'Embalagem para viagem', price: Number(travelPackagingEntry?.preco || 1), available: travelPackagingEntry?.ativo !== false && travelPackagingAvailability?.ativo !== false };
     const picoMeta = new Map();
-    Object.entries(data.picolés || {}).forEach(([groupId, group]) => (group.sabores || []).forEach((flavor) => picoMeta.set(flavor.codigo, { groupId, groupName: group.nome, varejo: Number(group.preço_varejo), atacado: Number(group.preço_atacado), stock: Number(flavor.estoque ?? group.estoque ?? 0), unavailable: Boolean(flavor.esgotado || group.esgotado) })));
+    const popsicleSource = data['picolés'] || data.picoles || {};
+    Object.entries(popsicleSource).forEach(([groupId, group], groupIndex) => (group.sabores || []).forEach((flavor, flavorIndex) => picoMeta.set(flavor.codigo, { groupId, groupName: group.nome, groupOrder: groupIndex, flavorOrder: flavorIndex, varejo: Number(group.preço_varejo ?? group.preco_varejo), atacado: Number(group.preço_atacado ?? group.preco_atacado), stock: Number(flavor.estoque ?? group.estoque ?? 0), unavailable: Boolean(flavor.esgotado || group.esgotado) })));
     return entriesByKey.filter(([, item]) => !RETIRADA_SKUS_OCULTOS.has(item.sku)).map(([key, item]) => {
       const meta = picoMeta.get(item.sku);
       const blockedByAcaiBase = acaiBaseEsgotado && dependsOnAcaiBase(data, key, item);
@@ -458,6 +459,10 @@
       const leftUnavailable = Number(left.picole?.stock || 0) <= 0 || !left.available || left.picole?.unavailable;
       const rightUnavailable = Number(right.picole?.stock || 0) <= 0 || !right.available || right.picole?.unavailable;
       if (leftUnavailable !== rightUnavailable) return leftUnavailable ? 1 : -1;
+      const groupOrder = Number(left.picole?.groupOrder ?? Number.MAX_SAFE_INTEGER) - Number(right.picole?.groupOrder ?? Number.MAX_SAFE_INTEGER);
+      if (groupOrder) return groupOrder;
+      const flavorOrder = Number(left.picole?.flavorOrder ?? Number.MAX_SAFE_INTEGER) - Number(right.picole?.flavorOrder ?? Number.MAX_SAFE_INTEGER);
+      if (flavorOrder) return flavorOrder;
       const group = String(left.picole?.groupName || '').localeCompare(String(right.picole?.groupName || ''), 'pt-BR');
       if (group) return group;
       return String(left.name || '').localeCompare(String(right.name || ''), 'pt-BR');
