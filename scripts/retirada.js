@@ -734,8 +734,8 @@
       distributionList.classList.toggle('limite-atingido', distributed >= rule.ballCount);
       massFlavorOptions().forEach((flavor) => {
         const quantity = Number(state.flavorCounts?.[flavor.code] || 0); const normalized = normalize(flavor.name); const colors = PALETA_SABORES_MASSA[normalized] || ['#94A3B8','#F8FAFC','rgba(148,163,184,.30)'];
-        const row = document.createElement('div'); row.className = `flavor-distribution__row${quantity > 0 ? ' is-selected' : ''}`; row.style.cssText = `--sabor-accent:${colors[0]};--sabor-tint:${colors[1]};`;
-        const name = document.createElement('span'); name.className = 'flavor-distribution__name'; name.textContent = flavor.name;
+        const row = document.createElement('div'); row.className = `flavor-distribution__row${quantity > 0 ? ' is-selected' : ''}${flavor.unavailable ? ' is-unavailable' : ''}`; row.style.cssText = `--sabor-accent:${colors[0]};--sabor-tint:${colors[1]};`;
+        const name = document.createElement('span'); name.className = 'flavor-distribution__name'; name.innerHTML = `${escape(flavor.name)}${flavor.unavailable ? '<span class="flavor-distribution__soldout">ESGOTADO</span>' : ''}`;
         const control = document.createElement('div'); control.className = 'qty';
         const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${flavor.name}`); minus.disabled = !quantity || flavor.unavailable; minus.addEventListener('click', () => { if (quantity <= 1) delete state.flavorCounts[flavor.code]; else state.flavorCounts[flavor.code] = quantity - 1; renderFlavorGrid(); });
         const count = document.createElement('span'); count.textContent = pad2(quantity); count.setAttribute('aria-label', `${pad2(quantity)} bolas de ${flavor.name}`);
