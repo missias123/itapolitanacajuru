@@ -20,7 +20,7 @@
   const FONDUE_CREMES = ['Nutella', 'Creme de Ninho'];
   const FONDUE_GULOSEIMAS = ['Marshmallow', 'Canudinho Wafer'];
   const emptyFondueChoices = () => ({ frutas: {}, cremes: {}, guloseimas: {} });
-  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, popsicleSelections: {}, selectedFlavors: [], flavorCounts: {}, flavorPreferences: [], activeFlavorPreference: 0, boxAddOnCounts: {}, acaiDoubleChoices: {}, includedCustomizationChoices: {}, serviceMode: '', containerType: '', cakeChoice: '', creamChoice: '', fondueChoices: emptyFondueChoices(), query: '', lastCatalogSku: null, lastCatalogViewport: null, lastFlavorGuideKey: '', sendingOrder: false };
+  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, popsicleSelections: {}, selectedFlavors: [], flavorCounts: {}, flavorPreferences: [], activeFlavorPreference: 0, boxAddOnCounts: {}, acaiDoubleChoices: {}, includedCustomizationChoices: {}, serviceMode: '', containerType: '', cakeChoice: '', creamChoice: '', fondueChoices: emptyFondueChoices(), query: '', activeSectionId: '', lastCatalogSku: null, lastCatalogViewport: null, lastFlavorGuideKey: '', sendingOrder: false };
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const money = (value) => `R$ ${Number(value || 0).toFixed(2).replace('.', ',')}`;
@@ -96,6 +96,8 @@
   }
   function restoreCatalogViewport() {
     const snapshot = state.lastCatalogViewport; const target = snapshot?.sku ? document.querySelector(`[data-catalog-sku="${snapshot.sku}"]`) : null;
+    const section = target?.closest?.('.catalog-section');
+    if (section?.id) activateCatalogSection(section.id, { scroll: false });
     const fallback = snapshot?.scrollY ?? window.scrollY;
     window.setTimeout(() => requestAnimationFrame(() => {
       const restoredTarget = snapshot?.sku ? document.querySelector(`[data-catalog-sku="${snapshot.sku}"]`) : null;
@@ -334,15 +336,40 @@
     const root = $('#catalog'); const query = normalize(state.query); const grouped = new Map(); const renderedSections = new Map();
     state.catalog.filter(isPublicOrderProduct).filter((product) => !query || productSearchText(product).includes(query)).forEach((product) => { const category = displayCategory(product); if (!grouped.has(category)) grouped.set(category, []); grouped.get(category).push(product); });
     root.innerHTML = ''; $('#section-nav').innerHTML = ''; $('#section-chooser-list').innerHTML = '';
-    if (!grouped.size) { root.innerHTML = '<div class="empty-state">Não encontramos produto com esse nome ou código. Tente buscar outro termo.</div>'; return; }
+    if (!grouped.size) { state.activeSectionId = ''; root.innerHTML = '<div class="empty-state">Não encontramos produto com esse nome ou código. Tente buscar outro termo.</div>'; return; }
     categoryOrder(grouped.keys()).forEach((category) => {
       const products = grouped.get(category); const presentation = sectionPresentation(category); const title = presentation.title; const section = document.createElement('section'); section.className = 'catalog-section'; section.dataset.sectionTone = presentation.tone; section.id = `sec-${slug(category)}`; renderedSections.set(category, section);
       const head = document.createElement('div'); head.className = 'catalog-section__head'; head.innerHTML = `<div class="catalog-section__bar"><h2>${escape(title)}</h2></div><p class="catalog-section__summary"><strong>${escape(presentation.point)}</strong><span>${products.length} produto${products.length !== 1 ? 's' : ''} para pedir</span></p>`; section.append(head);
-      const nav = document.createElement('button'); nav.type = 'button'; nav.textContent = title; nav.addEventListener('click', () => section.scrollIntoView({ behavior: 'smooth', block: 'start' })); $('#section-nav').append(nav);
+      const nav = document.createElement('button'); nav.type = 'button'; nav.textContent = title; nav.dataset.sectionTarget = section.id; nav.addEventListener('click', () => activateCatalogSection(section.id, { scroll: true, announceMessage: `${title}: ${products.length} produtos disponíveis.` })); $('#section-nav').append(nav);
       if (category === 'Picolés') renderPopsicles(products, section); else renderProducts(products, section);
       root.append(section);
     });
     renderSectionChooser(grouped, renderedSections);
+    const sectionIds = [...renderedSections.values()].map((section) => section.id);
+    const fallbackSectionId = sectionIds.includes(state.activeSectionId) ? state.activeSectionId : sectionIds[0];
+    if (fallbackSectionId) activateCatalogSection(fallbackSectionId, { scroll: false });
+  }
+  function activateCatalogSection(sectionId, { scroll = true, announceMessage = '' } = {}) {
+    if (!sectionId) return;
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    state.activeSectionId = sectionId;
+    $$('#catalog .catalog-section').forEach((item) => {
+      const active = item.id === sectionId;
+      item.hidden = !active;
+      item.classList.toggle('is-active', active);
+    });
+    $$('#section-nav button[data-section-target]').forEach((button) => {
+      const active = button.dataset.sectionTarget === sectionId;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-current', active ? 'true' : 'false');
+      button.disabled = active;
+    });
+    $$('#section-chooser-list .section-choice[data-section-target]').forEach((button) => {
+      button.classList.toggle('is-active', button.dataset.sectionTarget === sectionId);
+    });
+    if (scroll) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (announceMessage) announce(announceMessage);
   }
   function renderSectionChooser(grouped, renderedSections) {
     const root = $('#section-chooser-list'); if (!root) return;
@@ -353,18 +380,18 @@
       categories.forEach((category) => used.add(category));
       const productCount = categories.reduce((sum, category) => sum + (grouped.get(category)?.length || 0), 0);
       const button = document.createElement('button'); button.type = 'button'; button.className = 'section-choice'; button.dataset.sectionGuide = guide.id;
+      const targetSectionId = renderedSections.get(categories[0])?.id || '';
+      button.dataset.sectionTarget = targetSectionId;
       button.innerHTML = `<span><span class="section-choice__title">${escape(guide.title)}</span><span class="section-choice__hint">${escape(guide.hint)}</span></span><span class="section-choice__count">${productCount}</span>`;
       button.addEventListener('click', () => {
-        $$('.section-choice', root).forEach((item) => item.classList.toggle('is-active', item === button));
-        renderedSections.get(categories[0])?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        announce(`${guide.title}: ${productCount} produtos disponíveis.`);
+        activateCatalogSection(targetSectionId, { scroll: true, announceMessage: `${guide.title}: ${productCount} produtos disponíveis.` });
       });
       root.append(button);
     });
     categoryOrder([...grouped.keys()].filter((category) => !used.has(category))).forEach((category) => {
-      const products = grouped.get(category) || []; const button = document.createElement('button'); button.type = 'button'; button.className = 'section-choice';
+      const products = grouped.get(category) || []; const button = document.createElement('button'); button.type = 'button'; button.className = 'section-choice'; button.dataset.sectionTarget = renderedSections.get(category)?.id || '';
       button.innerHTML = `<span><span class="section-choice__title">${escape(category)}</span><span class="section-choice__hint">Ver produtos desta seção</span></span><span class="section-choice__count">${products.length}</span>`;
-      button.addEventListener('click', () => renderedSections.get(category)?.scrollIntoView({ behavior: 'smooth', block: 'start' })); root.append(button);
+      button.addEventListener('click', () => activateCatalogSection(button.dataset.sectionTarget, { scroll: true, announceMessage: `${category}: ${products.length} produtos disponíveis.` })); root.append(button);
     });
   }
   function slug(value) { return normalize(value).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
@@ -964,7 +991,7 @@
   }
   function submitOrder(event) { event.preventDefault(); if (state.sendingOrder) return; clearFormError(); normalizePickupTimeField(); syncGuidedForm(); if (!formFlow.ready) return showFormError('Complete as etapas na ordem indicada antes de enviar.'); if (!retiradaAberta()) { window.ItapHorarioPedidos?.aviso('retirada'); return showFormError(window.ItapHorarioPedidos?.textoAviso('retirada') || RETIRADA_SITE_WINDOW_MESSAGE); } const form = Object.fromEntries(new FormData(event.currentTarget).entries()); form.horario = normalizePickupTimeValue(form.horario); if (!state.cart.length) return showFormError('Escolha pelo menos um produto antes de enviar.'); if (!form.nome?.trim()) return showFormError('Informe o nome de quem vai retirar.'); if (!validatePhone(form.telefone || '')) return showFormError('Digite somente o número do celular após o DDD 16.'); if (!validPickupTime(form.horario)) return showFormError(`Escolha um horário de retirada entre ${RETIRADA_MIN_TIME.replace(':', 'h')} e ${RETIRADA_MAX_TIME.replace(':', 'h')} (Brasília).`); if (hasCakeProductionLead()) { if (!form.data_retirada) return showFormError('Para encomenda de torta ou caixa grande, escolha a data desejada para retirar.'); if (!validCakeLeadTime(form.data_retirada, form.horario)) return showFormError('Encomendas de torta e caixa grande precisam de pelo menos 48 horas de antecedência pelo horário de Brasília.'); } else if (!validCommonLeadTime(form.horario)) { syncPickupTimeValidation(); $('#pickup-time')?.focus(); return showFormError(pickupTimeMessage()); } if (!form.aceite) return showFormError('Leia e marque o aceite das regras antes de enviar.'); setOrderStage(3); const text = buildMessage(form); state.sendingOrder = true; const submit = $('#final-submit'); if (submit) { submit.disabled = true; submit.setAttribute('aria-disabled', 'true'); submit.textContent = 'Abrindo WhatsApp...'; } announce('Abrindo WhatsApp para confirmar o envio da solicitação de retirada.'); window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener'); window.setTimeout(() => { state.sendingOrder = false; syncGuidedForm(); announce('Envio liberado novamente para ajustes, se necessário.'); }, 2500); }
   function showFormError(message) { const error = $('#form-error'); error.textContent = message; error.classList.add('is-visible'); error.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-  async function init() { try { const response = await fetch('dados/produtos.json?v=20260822-textos-skus'); if (!response.ok) throw new Error('Não foi possível carregar o catálogo.'); state.data = await response.json(); state.catalog = buildCatalog(state.data); $('#loading').remove(); renderCatalog(); renderCartSummary(); setOrderStage(state.cart.length ? 2 : 1); syncPickupDateConstraint(); syncGuidedForm(); const sku = new URLSearchParams(location.search).get('sku'); if (sku) { const product = state.catalog.find((item) => item.sku === sku); if (product) { document.getElementById(`sec-${slug(product.category)}`)?.scrollIntoView({ block: 'start' }); announce(`${product.name} está destacado na seção correspondente.`); } } } catch (error) { $('#loading').textContent = 'Não foi possível carregar os produtos agora. Volte ao cardápio e tente novamente.'; console.error(error); } }
+  async function init() { try { const response = await fetch('dados/produtos.json?v=20260822-textos-skus'); if (!response.ok) throw new Error('Não foi possível carregar o catálogo.'); state.data = await response.json(); state.catalog = buildCatalog(state.data); $('#loading').remove(); renderCatalog(); renderCartSummary(); setOrderStage(state.cart.length ? 2 : 1); syncPickupDateConstraint(); syncGuidedForm(); const sku = new URLSearchParams(location.search).get('sku'); if (sku) { const product = state.catalog.find((item) => item.sku === sku); if (product) { activateCatalogSection(`sec-${slug(product.category)}`, { scroll: true, announceMessage: `${product.name} está destacado na seção correspondente.` }); } } } catch (error) { $('#loading').textContent = 'Não foi possível carregar os produtos agora. Volte ao cardápio e tente novamente.'; console.error(error); } }
   $('#search').addEventListener('input', (event) => { state.query = event.target.value; renderCatalog(); });
   $('#summary-bar').addEventListener('click', () => { captureCatalogViewport(); renderCart(); openDialog('cart-dialog'); });
   $('#confirm-flavors').addEventListener('click', confirmFlavors);
