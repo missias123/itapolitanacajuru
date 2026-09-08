@@ -619,6 +619,15 @@
 @media(min-width:481px) and (max-width:767px){.carimbo-enc{width:100px;height:100px}.carimbo-enc__percent{font-size:21px}.carimbo-enc__off{font-size:10px}.carimbo-enc__led{font-size:9px}}
 @media(min-width:768px) and (max-width:1024px){.carimbo-enc{width:110px;height:110px}.carimbo-enc__percent{font-size:23px}.carimbo-enc__off{font-size:10px}.carimbo-enc__led{font-size:9px}}
 @media(min-width:1025px){.carimbo-enc{width:118px;height:118px}.carimbo-enc__percent{font-size:25px}.carimbo-enc__off{font-size:11px}.carimbo-enc__led{font-size:10px}}
+.itap-cascade-progress{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:#eef7ff;border:1px solid #c6def8;color:#11427a;font-size:.88rem;font-weight:800;line-height:1.45}
+.itap-cascade-progress__dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;background:#FFD100;box-shadow:0 0 0 4px rgba(255,209,0,.16)}
+.itap-cascade-step{position:relative;display:grid;gap:10px;padding:14px;border:1.5px solid #e2e8f0;border-radius:14px;background:#fff;transition:opacity .2s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease}
+.itap-cascade-step.is-locked{opacity:.45;filter:saturate(.86)}
+.itap-cascade-step.is-current{border-color:#2e7d32;background:#fbfff9;box-shadow:0 0 0 4px rgba(46,125,50,.08)}
+.itap-cascade-step.is-complete{border-color:#43a047;background:#f4fff6}
+.itap-cascade-step__status{font-size:.8rem;font-weight:900;letter-spacing:.02em;color:#1a237e;text-transform:uppercase}
+.itap-cascade-step__tip{font-size:.76rem;color:#54606d;line-height:1.45}
+.itap-cascade-step--submit{padding-top:12px}
 </style>
 <div class="carimbo-enc-wrap">
   <span class="carimbo-enc__kicker">Picolés no Atacado</span>
@@ -787,32 +796,43 @@
           <small id="detalhe-desconto-picoles" class="resumo-economia-picoles__detalhe">O atacado é ativado automaticamente a partir de 100 unidades.</small>
         </div>
 
+        <div class="itap-cascade-progress" id="encomenda-form-progress" role="status" aria-live="polite"><span class="itap-cascade-progress__dot" aria-hidden="true"></span><span>Etapa 1 de 6 · informe o nome completo para liberar a retirada.</span></div>
         <div style="display: flex; flex-direction: column; gap: 14px;">
-          <div>
+          <div id="bloco-nome" class="itap-cascade-step is-current" data-encomenda-step="1">
+            <div class="itap-cascade-step__status">Etapa 1 de 6 · Identificação</div>
+            <div class="itap-cascade-step__tip">Preencha o nome completo para acender a confirmação de retirada.</div>
             <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">1. Nome completo para identificação *</label>
             <input id="pedido-nome" type="text" oninput="window.validarNome()" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="Digite seu nome completo" />
           </div>
 
-          <div id="bloco-retirada" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; padding: 14px; background: #FFF8E1; border: 2px solid #FFE082; border-radius: 12px;">
+          <div id="bloco-retirada" class="itap-cascade-step is-locked" data-encomenda-step="2" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; background: #FFF8E1; border: 2px solid #FFE082; border-radius: 12px;">
+            <div class="itap-cascade-step__status">Etapa 2 de 6 · Retirada na loja</div>
+            <div class="itap-cascade-step__tip">Ao confirmar a retirada, o campo de WhatsApp é liberado automaticamente.</div>
             <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.92rem; font-weight: 800; color: #5D4037; line-height: 1.4;">
               <input id="pedido-retirada" type="checkbox" onchange="window.validarRetirada()" style="width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto;" disabled />
               <span><strong>2. Retirada na loja *</strong><br><small style="font-weight: 600;">Confirmo que vou retirar a encomenda na loja da Itapolitana Cajuru. Não realizamos delivery.</small></span>
             </label>
           </div>
 
-          <div id="bloco-whatsapp" style="opacity: 0.4; pointer-events: none; transition: all 0.3s;">
+          <div id="bloco-whatsapp" class="itap-cascade-step is-locked" data-encomenda-step="3" style="opacity: 0.4; pointer-events: none; transition: all 0.3s;">
+            <div class="itap-cascade-step__status">Etapa 3 de 6 · WhatsApp</div>
+            <div class="itap-cascade-step__tip">Use somente DDD 16 para liberar a confirmação de ciência.</div>
             <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">3. WhatsApp para confirmação (somente DDD 16) *</label>
             <input id="pedido-whatsapp" type="tel" oninput="window.validarWhatsapp()" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="(16) 99999-9999" disabled />
             <small style="color: #666; display: block; margin-top: 4px;">Digite o número com DDD 16. Exemplo: (16) 99999-9999.</small>
           </div>
 
-          <div id="bloco-ciencia" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; margin-top: 10px; padding: 12px; background: #F8F9FA; border-radius: 10px; border: 1px solid #DEE2E6;">
+          <div id="bloco-ciencia" class="itap-cascade-step is-locked" data-encomenda-step="4" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; margin-top: 10px; background: #F8F9FA; border-radius: 10px; border: 1px solid #DEE2E6;">
+            <div class="itap-cascade-step__status">Etapa 4 de 6 · Ciência das regras</div>
+            <div class="itap-cascade-step__tip">Depois do WhatsApp válido, confirme as regras para acender o agendamento.</div>
             <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #333; line-height: 1.4;">
               <input id="pedido-ciencia" type="checkbox" onchange="window.validarWhatsapp()" style="width: 20px; height: 20px; margin-top: 2px;" disabled />
               <span>4. Estou ciente do prazo de 5 dias corridos para elaboração após o pagamento e da retirada obrigatória na loja. Se precisar antes, devo consultar pronta entrega no WhatsApp. O pedido só segue após confirmação humana.</span>
             </label>
           </div>
-          <div id="bloco-agendamento" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; margin-top: 10px; padding: 12px; background: #F8F9FA; border-radius: 10px; border: 1px solid #DEE2E6;">
+          <div id="bloco-agendamento" class="itap-cascade-step is-locked" data-encomenda-step="5" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; margin-top: 10px; background: #F8F9FA; border-radius: 10px; border: 1px solid #DEE2E6;">
+            <div class="itap-cascade-step__status">Etapa 5 de 6 · Agendamento</div>
+            <div class="itap-cascade-step__tip">Preencha data e horário válidos para liberar o envio final do pedido.</div>
             <label for="pedido-data-retirada" style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">5. Data para retirada da encomenda *</label>
             <input id="pedido-data-retirada" type="date" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" disabled />
             <label for="pedido-hora-retirada" style="display: block; font-weight: 800; font-size: 0.9rem; margin: 10px 0 6px; color: #333;">6. Horário para retirada da encomenda *</label>
@@ -843,8 +863,12 @@
           <button onclick="window.voltarParaRevisao()" style="width: 44px; height: 44px; border-radius: 50%; border: none; background: #EA1D2C; color: #FFF; font-weight: 900; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(234,29,44,0.4);" title="Voltar">←</button>
           <span style="display: flex; align-items: center; font-weight: 800; color: #666; font-size: 0.9rem;">Voltar ao Carrinho</span>
         </div>
-        <button id="btn-finalizar-pedido" data-order-window="encomendas" onclick="window.finalizarPedido()" style="width: 100%; padding: 18px; border-radius: 14px; border: none; background: #25D366; color: white; font-weight: 900; font-size: 1.2rem; cursor: pointer; box-shadow: 0 6px 20px rgba(37,211,102,0.35); opacity: 0.5; pointer-events: none;">Enviar Pedido via WhatsApp ➔</button>
-        <span id="status-envio-encomenda" role="status" aria-live="polite" style="font-size:0.85rem;color:#666;min-height:1.2em;"></span>
+        <div id="bloco-envio" class="itap-cascade-step itap-cascade-step--submit is-locked" data-encomenda-step="6" style="opacity: 0.5; pointer-events: none;">
+          <div class="itap-cascade-step__status">Etapa 6 de 6 · Envio do pedido</div>
+          <div class="itap-cascade-step__tip">O botão final só é liberado quando todas as etapas anteriores estiverem corretas.</div>
+          <button id="btn-finalizar-pedido" data-order-window="encomendas" onclick="window.finalizarPedido()" style="width: 100%; padding: 18px; border-radius: 14px; border: none; background: #25D366; color: white; font-weight: 900; font-size: 1.2rem; cursor: pointer; box-shadow: 0 6px 20px rgba(37,211,102,0.35); opacity: 0.5; pointer-events: none;">Enviar Pedido via WhatsApp ➔</button>
+          <span id="status-envio-encomenda" role="status" aria-live="polite" style="font-size:0.85rem;color:#666;min-height:1.2em;"></span>
+        </div>
       </div>
     </div>
   </div>
@@ -2036,8 +2060,101 @@
             validarAgendamentoEncomenda();
     }
 
+    function obterEtapaEncomenda(numero) {
+        return document.querySelector('[data-encomenda-step="' + numero + '"]');
+    }
+
+    function nomeValidoEncomenda() {
+        return document.getElementById('pedido-nome').value.trim().length >= 3;
+    }
+
+    function retiradaValidaEncomenda() {
+        return nomeValidoEncomenda() && document.getElementById('pedido-retirada').checked;
+    }
+
+    function whatsappValidoEncomenda() {
+        return retiradaValidaEncomenda() && /^16\d{8,9}$/.test(document.getElementById('pedido-whatsapp').value.trim().replace(/\D/g, ''));
+    }
+
+    function cienciaValidaEncomenda() {
+        return whatsappValidoEncomenda() && document.getElementById('pedido-ciencia').checked;
+    }
+
+    function setEstadoEtapaEncomenda(numero, enabled, complete) {
+        var bloco = obterEtapaEncomenda(numero);
+        if (!bloco) return;
+        bloco.classList.toggle('is-locked', !enabled);
+        bloco.classList.toggle('is-current', enabled && !complete);
+        bloco.classList.toggle('is-complete', complete);
+        bloco.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+        if (numero !== 1) {
+            bloco.style.opacity = enabled ? '1' : (numero === 6 ? '0.5' : '0.4');
+            bloco.style.pointerEvents = enabled ? 'auto' : 'none';
+        }
+        Array.prototype.forEach.call(bloco.querySelectorAll('input, select, textarea, button'), function(campo) {
+            if (numero === 6 && campo.id === 'btn-finalizar-pedido') return;
+            campo.disabled = !enabled;
+        });
+    }
+
+    function focarEtapaEncomenda(numero) {
+        var bloco = obterEtapaEncomenda(numero);
+        if (!bloco) return;
+        requestAnimationFrame(function() {
+            bloco.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            var campo = bloco.querySelector('input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])');
+            if (campo) campo.focus({ preventScroll: true });
+        });
+    }
+
+    function sincronizarFormularioEncomenda(options) {
+        var cfg = options || {};
+        var nomeValido = nomeValidoEncomenda();
+        var retiradaValida = retiradaValidaEncomenda();
+        var whatsappValido = whatsappValidoEncomenda();
+        var cienciaValida = cienciaValidaEncomenda();
+        var agendamentoValido = cienciaValida && validarAgendamentoEncomenda();
+        setEstadoEtapaEncomenda(1, true, nomeValido);
+        setEstadoEtapaEncomenda(2, nomeValido, retiradaValida);
+        setEstadoEtapaEncomenda(3, retiradaValida, whatsappValido);
+        setEstadoEtapaEncomenda(4, whatsappValido, cienciaValida);
+        setEstadoEtapaEncomenda(5, cienciaValida, agendamentoValido);
+        setEstadoEtapaEncomenda(6, agendamentoValido, false);
+        var btnEnviar = document.getElementById('btn-finalizar-pedido');
+        var blocoEnvio = document.getElementById('bloco-envio');
+        if (blocoEnvio) {
+            blocoEnvio.classList.toggle('is-current', agendamentoValido && !window.__encomendaEnviando);
+            blocoEnvio.classList.toggle('is-complete', false);
+        }
+        setBtnFinalizarState(agendamentoValido && !window.__encomendaEnviando, { busy: window.__encomendaEnviando });
+        if (btnEnviar) {
+            btnEnviar.textContent = window.__encomendaEnviando
+                ? 'Abrindo WhatsApp...'
+                : (agendamentoValido ? 'Enviar Pedido via WhatsApp ➔' : 'Preencha as etapas para liberar o envio');
+        }
+        var visibleStep = !nomeValido ? 1 : !retiradaValida ? 2 : !whatsappValido ? 3 : !cienciaValida ? 4 : !agendamentoValido ? 5 : 6;
+        var progresso = document.getElementById('encomenda-form-progress');
+        if (progresso && progresso.lastElementChild) {
+            progresso.lastElementChild.textContent = !nomeValido
+                ? 'Etapa 1 de 6 · informe o nome completo para liberar a retirada.'
+                : !retiradaValida
+                    ? 'Etapa 2 de 6 · confirme a retirada na loja para continuar.'
+                    : !whatsappValido
+                        ? 'Etapa 3 de 6 · informe um WhatsApp com DDD 16.'
+                        : !cienciaValida
+                            ? 'Etapa 4 de 6 · confirme a ciência das regras do pedido.'
+                            : !agendamentoValido
+                                ? 'Etapa 5 de 6 · escolha data e horário válidos para retirada.'
+                                : 'Etapa 6 de 6 · tudo certo, envie o pedido pelo WhatsApp.';
+        }
+        var etapaAnterior = window.__encomendaEtapaVisivel || 1;
+        window.__encomendaEtapaVisivel = visibleStep;
+        if (cfg.scroll && visibleStep > etapaAnterior) focarEtapaEncomenda(visibleStep);
+        return agendamentoValido;
+    }
+
     function atualizarEstadoAgendamentoEncomenda() {
-        setBtnFinalizarState(podeFinalizarEncomenda());
+        sincronizarFormularioEncomenda();
     }
 
     // FUNÇÕES DO FLUXO DE 3 ETAPAS
@@ -2056,25 +2173,11 @@
             document.getElementById('pedido-data-retirada').value = '';
             document.getElementById('pedido-hora-retirada').value = '';
             resetarErroHorarioRetiradaEncomenda();
-            document.getElementById('bloco-retirada').style.opacity = '0.4';
-            document.getElementById('bloco-retirada').style.pointerEvents = 'none';
-            document.getElementById('pedido-retirada').disabled = true;
-            document.getElementById('bloco-whatsapp').style.opacity = '0.4';
-            document.getElementById('bloco-whatsapp').style.pointerEvents = 'none';
-            document.getElementById('pedido-whatsapp').disabled = true;
-            document.getElementById('bloco-ciencia').style.opacity = '0.4';
-            document.getElementById('bloco-ciencia').style.pointerEvents = 'none';
-            document.getElementById('pedido-ciencia').disabled = true;
-            document.getElementById('bloco-agendamento').style.opacity = '0.4';
-            document.getElementById('bloco-agendamento').style.pointerEvents = 'none';
-            document.getElementById('pedido-data-retirada').disabled = true;
-            document.getElementById('pedido-hora-retirada').disabled = true;
         }
         window.__encomendaManterFormulario = false;
         atualizarResumoEconomiaPicoles();
         prepararAgendamentoEncomenda();
-        window.validarNome();
-        setBtnFinalizarState(podeFinalizarEncomenda());
+        window.validarNome(true);
     };
 
     window.voltarParaRevisao = function() {
@@ -2086,87 +2189,17 @@
         document.getElementById('botoes-etapa-2').style.display = 'none';
     };
 
-    window.validarNome = function() {
-        var nome = document.getElementById('pedido-nome').value.trim();
-        var blocoRetirada = document.getElementById('bloco-retirada');
-        var inputRetirada = document.getElementById('pedido-retirada');
-
-        if (nome.length >= 3) {
-            blocoRetirada.style.opacity = '1';
-            blocoRetirada.style.pointerEvents = 'auto';
-            inputRetirada.disabled = false;
-        } else {
-            blocoRetirada.style.opacity = '0.4';
-            blocoRetirada.style.pointerEvents = 'none';
-            inputRetirada.disabled = true;
-            inputRetirada.checked = false;
-            window.validarRetirada();
-        }
-        atualizarEstadoAgendamentoEncomenda();
+    window.validarNome = function(scroll) {
+        sincronizarFormularioEncomenda({ scroll: Boolean(scroll) });
     };
 
-    window.validarRetirada = function() {
-        var retiradaConfirmada = document.getElementById('pedido-retirada').checked;
-        var blocoWp = document.getElementById('bloco-whatsapp');
-        var inputWp = document.getElementById('pedido-whatsapp');
-
-        if (retiradaConfirmada) {
-            blocoWp.style.opacity = '1';
-            blocoWp.style.pointerEvents = 'auto';
-            inputWp.disabled = false;
-        } else {
-            blocoWp.style.opacity = '0.4';
-            blocoWp.style.pointerEvents = 'none';
-            inputWp.disabled = true;
-            inputWp.value = '';
-            window.validarWhatsapp();
-        }
-        atualizarEstadoAgendamentoEncomenda();
+    window.validarRetirada = function(scroll) {
+        sincronizarFormularioEncomenda({ scroll: Boolean(scroll) });
     };
 
-    window.validarWhatsapp = function() {
-        var zap = document.getElementById('pedido-whatsapp').value.trim();
-        var tel = zap.replace(/\D/g, '');
-        var ciencia = document.getElementById('pedido-ciencia').checked;
-        var blocoCiencia = document.getElementById('bloco-ciencia');
-        var inputCiencia = document.getElementById('pedido-ciencia');
-        var blocoAgendamento = document.getElementById('bloco-agendamento');
-        var inputData = document.getElementById('pedido-data-retirada');
-        var inputHora = document.getElementById('pedido-hora-retirada');
-        if (/^16\d{8,9}$/.test(tel)) {
-            blocoCiencia.style.opacity = '1';
-            blocoCiencia.style.pointerEvents = 'auto';
-            inputCiencia.disabled = false;
-
-            if (ciencia) {
-                blocoAgendamento.style.opacity = '1';
-                blocoAgendamento.style.pointerEvents = 'auto';
-                inputData.disabled = false;
-                inputHora.disabled = false;
-                prepararAgendamentoEncomenda();
-            } else {
-                blocoAgendamento.style.opacity = '0.4';
-                blocoAgendamento.style.pointerEvents = 'none';
-                inputData.disabled = true;
-                inputHora.disabled = true;
-                inputData.value = '';
-                inputHora.value = '';
-                resetarErroHorarioRetiradaEncomenda();
-            }
-        } else {
-            blocoCiencia.style.opacity = '0.4';
-            blocoCiencia.style.pointerEvents = 'none';
-            inputCiencia.disabled = true;
-            inputCiencia.checked = false;
-            blocoAgendamento.style.opacity = '0.4';
-            blocoAgendamento.style.pointerEvents = 'none';
-            inputData.disabled = true;
-            inputHora.disabled = true;
-            inputData.value = '';
-            inputHora.value = '';
-            resetarErroHorarioRetiradaEncomenda();
-        }
-        atualizarEstadoAgendamentoEncomenda();
+    window.validarWhatsapp = function(scroll) {
+        if (cienciaValidaEncomenda()) prepararAgendamentoEncomenda();
+        sincronizarFormularioEncomenda({ scroll: Boolean(scroll) });
     };
 
     window.editarItem = function(i) {
@@ -2299,14 +2332,13 @@
             `\n\n━━━━━━━━━━━━━━━━━━━━━\n📦 Total de unidades no pedido: ${totalUnidadesPedido}\n💸 Varejo (referência): R$ ${resumoEconomia.varejo.toFixed(2).replace('.',',')}\n🎉 Desconto atacado (picolés): R$ ${economiaTotal.toFixed(2).replace('.',',')}\n🧾 *TOTAL A PAGAR: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}*\n━━━━━━━━━━━━━━━━━━━━━\n\n⚠️ _Pedido sujeito à confirmação da loja._\n_Sem retorno em 15 min, ligue/chame no WhatsApp: (16) 99606-2046_`;
         window.__encomendaEnviando = true;
         setBtnFinalizarState(false, { busy: true });
-        document.getElementById('btn-finalizar-pedido').textContent = 'Abrindo WhatsApp...';
+        sincronizarFormularioEncomenda();
         document.getElementById('status-envio-encomenda').textContent = 'Abrindo WhatsApp para confirmar o envio do pedido.';
         window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
         window.setTimeout(function() {
             window.__encomendaEnviando = false;
-            document.getElementById('btn-finalizar-pedido').textContent = 'Enviar Pedido via WhatsApp ➔';
             document.getElementById('status-envio-encomenda').textContent = '';
-            window.validarWhatsapp();
+            sincronizarFormularioEncomenda();
         }, 2500);
     };
 
@@ -2345,19 +2377,20 @@
     if (inputNomeEncomenda && inputWhatsappEncomenda && inputDataRetirada && inputHoraRetirada && inputRetiradaConfirmada && inputCienciaEncomenda) {
         registrarListenerEncomenda(document, 'input', function(event) {
             if (!campoDelegadoEncomenda(event.target)) return;
-            atualizarEstadoAgendamentoEncomenda();
+            sincronizarFormularioEncomenda({ scroll: true });
         });
         registrarListenerEncomenda(document, 'change', function(event) {
             if (!campoDelegadoEncomenda(event.target)) return;
-            atualizarEstadoAgendamentoEncomenda();
+            sincronizarFormularioEncomenda({ scroll: true });
         });
     }
-    window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); window.validarWhatsapp(); });
+    window.addEventListener('itap:horario-pedidos-atualizado', function() { prepararAgendamentoEncomenda(); sincronizarFormularioEncomenda(); });
 
     // Inicialização única: renderiza uma prévia e, em seguida, substitui pelos dados oficiais do estoque.
     renderizarCatalogoEncomendas();
     carregarEstoqueEncomendas();
     abrirSecaoPorRota();
+    sincronizarFormularioEncomenda();
 
 // Fim do script
 </script>

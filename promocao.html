@@ -161,7 +161,80 @@
       flex-direction: column;
       gap: 14px;
     }
+    .form-progress {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #f5f9ff;
+      border: 1px solid #cfe0ff;
+      color: #1f3f79;
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+    .form-progress__dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex: 0 0 12px;
+      background: #ffd600;
+      box-shadow: 0 0 0 4px rgba(255,214,0,.16);
+    }
     .form-row { display: grid; gap: 6px; }
+    .promo-cascade-step {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border: 1.5px solid #e7ebf0;
+      border-radius: 16px;
+      background: #fff;
+      transition: opacity .2s ease, transform .2s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .promo-cascade-step.is-locked {
+      opacity: .45;
+      filter: saturate(.85);
+    }
+    .promo-cascade-step.is-current {
+      border-color: #2e7d32;
+      background: #fbfff9;
+      box-shadow: 0 0 0 4px rgba(46,125,50,.10);
+    }
+    .promo-cascade-step.is-complete {
+      border-color: #43a047;
+      background: #f4fff6;
+    }
+    .promo-cascade-step__head {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .promo-cascade-step__number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 28px;
+      background: #1a237e;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 900;
+    }
+    .promo-cascade-step__head strong {
+      display: block;
+      color: #1a237e;
+      font-size: .92rem;
+      line-height: 1.2;
+    }
+    .promo-cascade-step__head small {
+      display: block;
+      color: #4b5563;
+      font-size: .76rem;
+      line-height: 1.45;
+      margin-top: 2px;
+    }
     .form-row label { font-weight: 700; font-size: 0.92rem; color: #333; }
     .form-row input, .form-row select {
       width: 100%;
@@ -197,7 +270,19 @@
       color: #fff;
       box-shadow: 0 8px 20px rgba(37,211,102,0.3);
     }
+    .btn[disabled] {
+      opacity: .55;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
     .btn-block { width: 100%; }
+    .promo-step-feedback {
+      min-height: 1.1em;
+      font-size: .79rem;
+      font-weight: 700;
+      color: #c62828;
+    }
+    .promo-step-feedback.is-ok { color: #2e7d32; }
 
     /* TICKET DA SORTE (FEEDBACK VISUAL) */
     .ticket-sorte {
@@ -377,13 +462,19 @@
       </div>
 
       <form id="form-promocao-cliente">
-        <div class="form-row">
+        <p class="form-progress" id="promo-form-progress" role="status" aria-live="polite"><span class="form-progress__dot" aria-hidden="true"></span><span>Etapa 1 de 4 · informe seu nome completo.</span></p>
+        <div class="promo-cascade-step" data-promo-step="1">
+          <div class="promo-cascade-step__head"><span class="promo-cascade-step__number">1</span><div><strong>Nome completo</strong><small>Comece pelo nome usado no documento para retirada.</small></div></div>
+          <div class="form-row">
           <label for="promo-nome-cliente">👤 Nome Completo (Conforme RG/CNH)</label>
           <input id="promo-nome-cliente" type="text" maxlength="100" placeholder="Seu nome completo" required autocomplete="name">
           <small class="hint-vermelho">⚠️ Nome idêntico ao documento para retirada.</small>
         </div>
+        </div>
 
-        <div class="form-row" style="margin-top:12px;">
+        <div class="promo-cascade-step" data-promo-step="2">
+          <div class="promo-cascade-step__head"><span class="promo-cascade-step__number">2</span><div><strong>Data de nascimento</strong><small>Ao concluir esta etapa, o WhatsApp será liberado automaticamente.</small></div></div>
+          <div class="form-row">
           <label>🎂 Data de Nascimento</label>
           <div class="data-nasc-grid">
             <select id="promo-dia-nasc" required aria-label="Dia">
@@ -407,18 +498,28 @@
             </select>
           </div>
           <small class="hint-vermelho">⚠️ Necessário ter 18 anos ou mais.</small>
+          <small id="promo-birth-feedback" class="promo-step-feedback" aria-live="polite"></small>
+        </div>
         </div>
 
-        <div class="form-row" style="margin-top:12px;">
+        <div class="promo-cascade-step" data-promo-step="3">
+          <div class="promo-cascade-step__head"><span class="promo-cascade-step__number">3</span><div><strong>WhatsApp para contato</strong><small>Use apenas celular com DDD 16 para liberar a etapa final.</small></div></div>
+          <div class="form-row">
           <label for="promo-celular-cliente">📱 WhatsApp (Apenas DDD 16)</label>
           <input id="promo-celular-cliente" type="tel" inputmode="numeric" maxlength="15" placeholder="(16) 99999-0000" required autocomplete="tel">
           <small class="hint-vermelho">⚠️ Exemplo: (16) 99999-0000</small>
+          <small id="promo-phone-feedback" class="promo-step-feedback" aria-live="polite"></small>
         </div>
-
-        <div style="margin-top:16px;">
-          <button type="submit" id="promo-enviar-cadastro" class="btn btn-success btn-block">🎁 Cadastrar para concorrer à Torta 2027</button>
         </div>
-
+        <div class="promo-cascade-step" data-promo-step="4">
+          <div class="promo-cascade-step__head"><span class="promo-cascade-step__number">4</span><div><strong>Confirmação final</strong><small>Revise os dados e envie somente quando todas as etapas estiverem concluídas.</small></div></div>
+          <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:12px;padding:12px;color:#1b5e20;font-size:.84rem;font-weight:700;line-height:1.45;">
+            ✅ O cadastro só será liberado quando nome, data de nascimento válida e WhatsApp com DDD 16 estiverem corretos.
+          </div>
+          <div>
+            <button type="submit" id="promo-enviar-cadastro" class="btn btn-success btn-block" disabled aria-disabled="true">Preencha as etapas para liberar o cadastro</button>
+          </div>
+        </div>
         <div id="promo-feedback-message" style="display:none; margin-top:15px;"></div>
       </form>
     </div>

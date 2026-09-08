@@ -62,7 +62,131 @@
   var inputPromoCelular = document.getElementById('promo-celular-cliente');
   var btnEnviarPromo = document.getElementById('promo-enviar-cadastro');
   var feedbackPromo = document.getElementById('promo-feedback-message');
+  var feedbackBirthPromo = document.getElementById('promo-birth-feedback');
+  var feedbackPhonePromo = document.getElementById('promo-phone-feedback');
+  var progressPromo = document.getElementById('promo-form-progress');
   var _promoSubmitting = false;
+  var promoFlow = { visibleStep: 1, ready: false };
+
+  function promoDigits(value) {
+    return String(value || '').replace(/\D/g, '');
+  }
+
+  function promoBirthdateValue() {
+    var dia = inputPromoDia ? inputPromoDia.value : '';
+    var mes = inputPromoMes ? inputPromoMes.value : '';
+    var ano = inputPromoAno ? inputPromoAno.value : '';
+    return dia && mes && ano ? (ano + '-' + mes + '-' + dia) : '';
+  }
+
+  function isAdultBirthdate(value) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return false;
+    var partes = value.split('-').map(Number);
+    var date = new Date(partes[0], partes[1] - 1, partes[2]);
+    if (
+      date.getFullYear() !== partes[0] ||
+      date.getMonth() !== (partes[1] - 1) ||
+      date.getDate() !== partes[2]
+    ) return false;
+    var limite = new Date();
+    limite.setFullYear(limite.getFullYear() - 18);
+    limite.setHours(23, 59, 59, 999);
+    return date <= limite;
+  }
+
+  function setPromoStepFeedback(element, message, ok) {
+    if (!element) return;
+    element.textContent = message || '';
+    element.classList.toggle('is-ok', Boolean(ok) && Boolean(message));
+  }
+
+  function setPromoStepState(step, enabled, complete) {
+    var block = document.querySelector('[data-promo-step="' + step + '"]');
+    if (!block) return;
+    block.classList.toggle('is-locked', !enabled);
+    block.classList.toggle('is-current', enabled && !complete);
+    block.classList.toggle('is-complete', complete);
+    block.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+    Array.prototype.forEach.call(block.querySelectorAll('input, select, button'), function(control) {
+      if (step === 4 && control === btnEnviarPromo) {
+        control.disabled = !enabled || _promoSubmitting;
+        control.setAttribute('aria-disabled', control.disabled ? 'true' : 'false');
+        return;
+      }
+      control.disabled = !enabled;
+    });
+  }
+
+  function scrollToPromoStep(step) {
+    var block = document.querySelector('[data-promo-step="' + step + '"]');
+    if (!block) return;
+    requestAnimationFrame(function() {
+      block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      var field = block.querySelector('input:not([disabled]), select:not([disabled]), button:not([disabled])');
+      if (field) field.focus({ preventScroll: true });
+    });
+  }
+
+  function getPromoFormState() {
+    var nome = inputPromoNome ? inputPromoNome.value.trim() : '';
+    var birthdate = promoBirthdateValue();
+    var phone = promoDigits(inputPromoCelular ? inputPromoCelular.value : '');
+    var nameValid = nome.length >= 3;
+    var birthComplete = Boolean(birthdate);
+    var birthValid = birthComplete && isAdultBirthdate(birthdate);
+    var phoneValid = PROMO_MOBILE_REGEX.test(phone);
+    return {
+      nome: nome,
+      birthdate: birthdate,
+      phone: phone,
+      nameValid: nameValid,
+      birthComplete: birthComplete,
+      birthValid: birthValid,
+      phoneValid: phoneValid,
+      ready: nameValid && birthValid && phoneValid
+    };
+  }
+
+  function syncPromoCascade(options) {
+    var cfg = options || {};
+    var state = getPromoFormState();
+    if (inputPromoNome) inputPromoNome.setAttribute('aria-invalid', state.nameValid || !state.nome ? 'false' : 'true');
+    [inputPromoDia, inputPromoMes, inputPromoAno].forEach(function(select) {
+      if (!select) return;
+      select.setAttribute('aria-invalid', !state.birthComplete ? 'false' : (state.birthValid ? 'false' : 'true'));
+    });
+    if (inputPromoCelular) inputPromoCelular.setAttribute('aria-invalid', state.phoneValid || !state.phone ? 'false' : 'true');
+
+    setPromoStepFeedback(feedbackBirthPromo, !state.birthComplete ? '' : (state.birthValid ? '✅ Data válida. Próxima etapa liberada.' : '⚠️ Informe uma data válida para maior de 18 anos.'), state.birthValid);
+    setPromoStepFeedback(feedbackPhonePromo, !state.phone ? '' : (state.phoneValid ? '✅ WhatsApp válido. Cadastro liberado.' : '⚠️ Use um celular com DDD 16.'), state.phoneValid);
+
+    setPromoStepState(1, true, state.nameValid);
+    setPromoStepState(2, state.nameValid, state.birthValid);
+    setPromoStepState(3, state.birthValid, state.phoneValid);
+    setPromoStepState(4, state.phoneValid, state.ready);
+
+    var visibleStep = !state.nameValid ? 1 : !state.birthValid ? 2 : !state.phoneValid ? 3 : 4;
+    if (progressPromo && progressPromo.lastElementChild) {
+      progressPromo.lastElementChild.textContent = !state.nameValid
+        ? 'Etapa 1 de 4 · informe seu nome completo.'
+        : !state.birthValid
+          ? 'Etapa 2 de 4 · confirme sua data de nascimento válida e maior de 18 anos.'
+          : !state.phoneValid
+            ? 'Etapa 3 de 4 · informe um WhatsApp com DDD 16.'
+            : 'Etapa 4 de 4 · revise e envie seu cadastro.';
+    }
+    promoFlow.ready = state.ready;
+    if (btnEnviarPromo) {
+      btnEnviarPromo.disabled = !state.ready || _promoSubmitting;
+      btnEnviarPromo.setAttribute('aria-disabled', btnEnviarPromo.disabled ? 'true' : 'false');
+      btnEnviarPromo.innerHTML = _promoSubmitting
+        ? '🔄 Processando Inscrição...'
+        : (state.ready ? '🎁 Cadastrar para concorrer à Torta 2027' : 'Preencha as etapas para liberar o cadastro');
+    }
+    if (cfg.scroll && visibleStep > promoFlow.visibleStep) scrollToPromoStep(visibleStep);
+    promoFlow.visibleStep = visibleStep;
+    return state;
+  }
 
   function mostrarMensagem(msg, tipo) {
     if (!feedbackPromo) return;
@@ -89,6 +213,7 @@
     _promoSubmitting = true;
     if (btnEnviarPromo) {
       btnEnviarPromo.disabled = true;
+      btnEnviarPromo.setAttribute('aria-disabled', 'true');
       btnEnviarPromo.innerHTML = '🔄 Processando Inscrição...';
     }
 
@@ -131,6 +256,11 @@
         `;
         mostrarMensagem(msgSucesso, 'ok');
         formCadastroPromo.reset();
+        setPromoStepFeedback(feedbackBirthPromo, '', false);
+        setPromoStepFeedback(feedbackPhonePromo, '', false);
+        promoFlow.visibleStep = 1;
+        promoFlow.ready = false;
+        syncPromoCascade();
       } else {
         mostrarMensagem('❌ ' + (dados.error || 'Erro ao realizar cadastro. Verifique se já está cadastrado este mês.'), 'erro');
       }
@@ -138,10 +268,7 @@
       mostrarMensagem('❌ Não foi possível confirmar o cadastro. Verifique sua conexão e tente novamente.', 'erro');
     } finally {
       _promoSubmitting = false;
-      if (btnEnviarPromo) {
-        btnEnviarPromo.disabled = false;
-        btnEnviarPromo.innerHTML = '🎁 Cadastrar para concorrer à Torta 2027';
-      }
+      syncPromoCascade();
     }
   }
 
@@ -150,24 +277,36 @@
     inputPromoCelular.oninput = function(e) {
       var x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
       e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+      syncPromoCascade({ scroll: true });
     };
   }
+
+  [inputPromoNome, inputPromoDia, inputPromoMes, inputPromoAno].forEach(function(field) {
+    if (!field) return;
+    field.addEventListener('input', function() { syncPromoCascade({ scroll: true }); });
+    field.addEventListener('change', function() { syncPromoCascade({ scroll: true }); });
+  });
 
   if (formCadastroPromo) {
     formCadastroPromo.onsubmit = function(e) {
       e.preventDefault();
-      var nome = inputPromoNome.value.trim();
+      var state = syncPromoCascade();
+      var nome = state.nome;
       var dia = inputPromoDia ? inputPromoDia.value : '';
       var mes = inputPromoMes ? inputPromoMes.value : '';
       var ano = inputPromoAno ? inputPromoAno.value : '';
-      var cel = inputPromoCelular.value.replace(/\D/g, '');
+      var cel = state.phone;
 
-      if (!nome) {
+      if (!state.nameValid) {
         mostrarMensagem('Por favor, informe seu nome completo.', 'aviso');
         return;
       }
       if (!dia || !mes || !ano) {
         mostrarMensagem('Por favor, selecione sua data de nascimento completa.', 'aviso');
+        return;
+      }
+      if (!state.birthValid) {
+        mostrarMensagem('❌ Atenção: o cadastro exige uma data de nascimento válida para maiores de 18 anos.', 'erro');
         return;
       }
       if (!PROMO_MOBILE_REGEX.test(cel)) {
@@ -179,5 +318,7 @@
       enviarSorteioPromo(nome, dataNasc, cel);
     };
   }
+
+  syncPromoCascade();
 
 })();
