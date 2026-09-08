@@ -464,10 +464,19 @@
     $('#popsicle-subtitle').textContent = 'Lista única: ajuste quantidades sem sair desta tela, como no Encomendas.';
     renderPopsicleDialog(); openDialog('popsicle-dialog');
   }
+  function popsicleGroupTone(groupName) {
+    const label = normalize(groupName);
+    if (label.includes('premium') || label.includes('eskimo')) return 'premium';
+    if (label.includes('rechead')) return 'recheado';
+    if (label.includes('sem recheio') || label.includes('s/ recheio')) return 'sem-recheio';
+    if (label.includes('fruta') || label.includes('agua')) return 'fruta';
+    if (label.includes('especial') || label.includes('ninho') || label.includes('ovomaltine')) return 'especial';
+    return 'padrao';
+  }
   function renderPopsicleDialog() {
     const root = $('#popsicle-list'); const products = state.popsicleGroup || []; const quantityBox = $('#popsicle-quantity');
     root.innerHTML = '';
-    let activeGroup = '';
+    let activeGroup = ''; let groupItems = null;
     const totalSelected = products.reduce((sum, product) => sum + Number(state.popsicleSelections?.[product.sku] || 0), 0);
     const wholesale = totalSelected >= 100;
     const totalValue = products.reduce((sum, product) => {
@@ -479,10 +488,15 @@
       const groupName = String(product.picole?.groupName || 'Picolés');
       if (groupName !== activeGroup) {
         activeGroup = groupName;
+        const groupCard = document.createElement('section');
+        groupCard.className = `popsicle-type-card popsicle-type-card--${popsicleGroupTone(groupName)}`;
         const head = document.createElement('div');
-        head.className = 'base-row';
-        head.innerHTML = `<strong>${escape(groupName)}</strong> · Varejo ${money(product.picole?.varejo)} · Atacado ${money(product.picole?.atacado)}`;
-        root.append(head);
+        head.className = 'base-row popsicle-type-head';
+        head.innerHTML = `<p class="popsicle-type-title">${escape(groupName)}</p><p class="popsicle-type-prices"><strong>Varejo ${money(product.picole?.varejo)}</strong> · <strong>Atacado ${money(product.picole?.atacado)}</strong></p>`;
+        groupItems = document.createElement('div');
+        groupItems.className = 'popsicle-type-items';
+        groupCard.append(head, groupItems);
+        root.append(groupCard);
       }
       const quantity = Number(state.popsicleSelections?.[product.sku] || 0);
       const stock = Math.max(0, Number(product.picole?.stock || 0));
@@ -497,7 +511,7 @@
       const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar ${product.name}`); plus.disabled = unavailable || quantity >= stock; plus.addEventListener('click', () => { state.popsicleSelections[product.sku] = Math.min(stock, quantity + 1); renderPopsicleDialog(); });
       control.append(minus, count, plus);
       row.append(info, control);
-      root.append(row);
+      (groupItems || root).append(row);
     });
     quantityBox.hidden = false;
     quantityBox.innerHTML = `<span>Total selecionado</span><strong class="popsicle-quantity__total">${pad2(totalSelected)} unidade${totalSelected !== 1 ? 's' : ''} · ${wholesale ? 'Atacado aplicado' : 'Varejo (atacado a partir de 100)'} · ${money(totalValue)}</strong>`;
