@@ -60,8 +60,8 @@ try {
     return { massSoldOut, waterPopsicleSoldOut, stuffedPopsicleSoldOut };
   });
   assert(report.index.massSoldOut.includes('Abacaxi ao Vinho'), 'Home: Abacaxi ao Vinho não apareceu riscado');
-  assert(!report.index.massSoldOut.includes('Limão'), 'Home: Limão de massa apareceu esgotado sem estar esgotado');
-  assert(report.index.waterPopsicleSoldOut.includes('Limão'), 'Home: Limão de picolé não apareceu riscado');
+  assert(report.index.massSoldOut.includes('Limão'), 'Home: Limão de massa não apareceu riscado');
+  assert(!report.index.waterPopsicleSoldOut.includes('Limão'), 'Home: picolé de Limão apareceu esgotado sem estar esgotado');
   assert(report.index.stuffedPopsicleSoldOut.includes('Mamão Papaia'), 'Home: Mamão Papaia não apareceu riscado');
   await home.close();
 
@@ -76,7 +76,7 @@ try {
   await encomendas.waitForSelector('#grid-sabores .sabor-item', { timeout: 15000 });
   report.encomendasMassas = await encomendas.evaluate(() => [...document.querySelectorAll('#grid-sabores .sabor-item.is-esgotado span:last-child')].map((el) => el.textContent.trim()));
   assert(report.encomendasMassas.includes('Abacaxi ao Vinho'), 'Encomendas: Abacaxi ao Vinho não apareceu riscado');
-  assert(!report.encomendasMassas.includes('Limão'), 'Encomendas: Limão de massa apareceu esgotado sem estar esgotado');
+  assert(report.encomendasMassas.includes('Limão'), 'Encomendas: Limão de massa não apareceu riscado');
   await encomendas.evaluate(() => {
     window.fecharModal('modal-sabores');
     window.toggleSecao('sec-picoles');
@@ -112,7 +112,7 @@ try {
     disabled: Boolean(el.disabled) || Boolean(el.querySelector('.qty button:last-child')?.disabled),
   })));
   assert(report.retiradaMassas.some((item) => item.text.includes('Abacaxi ao Vinho') && item.soldOut && item.disabled), 'Retirada: Abacaxi ao Vinho não apareceu bloqueado');
-  assert(report.retiradaMassas.some((item) => item.text.includes('Limão') && !item.text.includes('Limão Suíço') && !item.soldOut), 'Retirada: Limão de massa apareceu esgotado sem estar esgotado');
+  assert(report.retiradaMassas.some((item) => item.text.includes('Limão') && !item.text.includes('Limão Suíço') && item.soldOut && item.disabled), 'Retirada: Limão de massa não apareceu bloqueado');
   await retirada.evaluate(() => {
     document.querySelector('[data-close="flavor-dialog"]')?.click();
     const button = [...document.querySelectorAll('.product .add-btn')].find((entry) => entry.textContent.includes('Abrir lista única'));
@@ -135,8 +135,8 @@ try {
       morango: rows.find((row) => row.text.includes('Morango')),
     };
   });
-  assert(report.retiradaPicoles.limao?.soldOut, 'Retirada: Limão não apareceu como esgotado na lista única de picolés');
-  assert(report.retiradaPicoles.limao?.plusDisabled, 'Retirada: Limão continuou podendo entrar no carrinho na lista única de picolés');
+  assert(!report.retiradaPicoles.limao?.soldOut, 'Retirada: picolé de Limão apareceu esgotado sem estar esgotado');
+  assert(!report.retiradaPicoles.limao?.plusDisabled, 'Retirada: picolé de Limão não voltou ao carrinho');
   assert.equal(report.retiradaPicoles.limao.index, report.retiradaPicoles.groselha.index + 1, 'Retirada: Limão saiu da posição oficial depois de Groselha');
   assert.equal(report.retiradaPicoles.melancia.index, report.retiradaPicoles.limao.index + 1, 'Retirada: Melância não ficou logo após Limão');
   assert(report.retiradaPicoles.mamao?.soldOut, 'Retirada: Mamão Papaia não apareceu como esgotado');
