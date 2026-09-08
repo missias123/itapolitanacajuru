@@ -67,9 +67,42 @@
   var progressPromo = document.getElementById('promo-form-progress');
   var _promoSubmitting = false;
   var promoFlow = { visibleStep: 1, ready: false };
+  var promoDuplicateState = { key: '', found: false, checking: false };
 
   function promoDigits(value) {
     return String(value || '').replace(/\D/g, '');
+  }
+
+  function promoNormalizeName(value) {
+    return String(value || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '');
+  }
+
+  function promoEntryKey(nome, birthdate) {
+    return promoNormalizeName(nome) + '__' + birthdate;
+  }
+
+  function hasLocalPromoLock(nome, birthdate, phone) {
+    try {
+      return Boolean(
+        window.localStorage.getItem('itap-promo-lock:' + promoEntryKey(nome, birthdate)) ||
+        window.localStorage.getItem('itap-promo-phone-lock:' + promoDigits(phone))
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function saveLocalPromoLock(nome, birthdate, phone, registrationId) {
+    try {
+      window.localStorage.setItem('itap-promo-lock:' + promoEntryKey(nome, birthdate), registrationId || '1');
+      window.localStorage.setItem('itap-promo-phone-lock:' + promoDigits(phone), registrationId || '1');
+    } catch (_) {}
   }
 
   function promoBirthdateValue() {
@@ -135,6 +168,7 @@
     var birthComplete = Boolean(birthdate);
     var birthValid = birthComplete && isAdultBirthdate(birthdate);
     var phoneValid = PROMO_MOBILE_REGEX.test(phone);
+    var duplicateFound = hasLocalPromoLock(nome, birthdate, phone) || promoDuplicateState.found;
     return {
       nome: nome,
       birthdate: birthdate,
@@ -143,8 +177,38 @@
       birthComplete: birthComplete,
       birthValid: birthValid,
       phoneValid: phoneValid,
-      ready: nameValid && birthValid && phoneValid
+      duplicateFound: duplicateFound,
+      duplicateChecking: promoDuplicateState.checking,
+      ready: nameValid && birthValid && phoneValid && !duplicateFound && !promoDuplicateState.checking
     };
+  }
+
+  async function checkPromoDuplicate(nome, birthdate) {
+    var key = promoEntryKey(nome, birthdate);
+    if (!nome || !birthdate || promoDuplicateState.key === key || promoDuplicateState.checking) return;
+    promoDuplicateState.key = key;
+    promoDuplicateState.found = false;
+    promoDuplicateState.checking = true;
+    syncPromoCascade();
+    try {
+      var resposta = await fetch(
+        ITAP_WORKER_API + '/api/sorteio/buscar?nome=' + encodeURIComponent(nome) + '&dataNasc=' + encodeURIComponent(birthdate),
+        { headers: { 'Cache-Control': 'no-store' } }
+      );
+      var dados = {};
+      var ct = resposta.headers.get('content-type') || '';
+      if (ct.includes('application/json')) dados = await resposta.json();
+      if (promoDuplicateState.key !== key) return;
+      promoDuplicateState.found = Boolean(dados && dados.found);
+    } catch (_) {
+      if (promoDuplicateState.key !== key) return;
+      promoDuplicateState.found = false;
+    } finally {
+      if (promoDuplicateState.key === key) {
+        promoDuplicateState.checking = false;
+        syncPromoCascade();
+      }
+    }
   }
 
   function syncPromoCascade(options) {
@@ -157,23 +221,47 @@
     });
     if (inputPromoCelular) inputPromoCelular.setAttribute('aria-invalid', state.phoneValid || !state.phone ? 'false' : 'true');
 
-    setPromoStepFeedback(feedbackBirthPromo, !state.birthComplete ? '' : (state.birthValid ? '✅ Data válida. Próxima etapa liberada.' : '⚠️ Informe uma data válida para maior de 18 anos.'), state.birthValid);
+    if (state.birthValid && !state.duplicateFound && !state.duplicateChecking) {
+      checkPromoDuplicate(state.nome, state.birthdate);
+    } else if (!state.birthValid || !state.nameValid) {
+      promoDuplicateState.key = '';
+      promoDuplicateState.found = false;
+      promoDuplicateState.checking = false;
+    }
+
+    setPromoStepFeedback(
+      feedbackBirthPromo,
+      !state.birthComplete
+        ? ''
+        : !state.birthValid
+          ? '⚠️ Informe uma data válida para maior de 18 anos.'
+          : state.duplicateChecking
+            ? '🔎 Verificando se já existe inscrição com estes dados...'
+            : state.duplicateFound
+              ? '⚠️ Já existe inscrição com este nome e data de nascimento. Não é possível cadastrar novamente.'
+              : '✅ Data válida. Próxima etapa liberada.',
+      state.birthValid && !state.duplicateFound && !state.duplicateChecking
+    );
     setPromoStepFeedback(feedbackPhonePromo, !state.phone ? '' : (state.phoneValid ? '✅ WhatsApp válido. Cadastro liberado.' : '⚠️ Use um celular com DDD 16.'), state.phoneValid);
 
     setPromoStepState(1, true, state.nameValid);
-    setPromoStepState(2, state.nameValid, state.birthValid);
-    setPromoStepState(3, state.birthValid, state.phoneValid);
-    setPromoStepState(4, state.phoneValid, state.ready);
+    setPromoStepState(2, state.nameValid, state.birthValid && !state.duplicateFound);
+    setPromoStepState(3, state.birthValid && !state.duplicateFound, state.phoneValid);
+    setPromoStepState(4, state.phoneValid && !state.duplicateFound && !state.duplicateChecking, state.ready);
 
-    var visibleStep = !state.nameValid ? 1 : !state.birthValid ? 2 : !state.phoneValid ? 3 : 4;
+    var visibleStep = !state.nameValid ? 1 : (!state.birthValid || state.duplicateFound) ? 2 : !state.phoneValid ? 3 : 4;
     if (progressPromo && progressPromo.lastElementChild) {
       progressPromo.lastElementChild.textContent = !state.nameValid
         ? 'Etapa 1 de 4 · informe seu nome completo.'
         : !state.birthValid
           ? 'Etapa 2 de 4 · confirme sua data de nascimento válida e maior de 18 anos.'
+          : state.duplicateFound
+            ? 'Etapa 2 de 4 · já existe inscrição com estes dados e o cadastro foi travado.'
           : !state.phoneValid
             ? 'Etapa 3 de 4 · informe um WhatsApp com DDD 16.'
-            : 'Etapa 4 de 4 · revise e envie seu cadastro.';
+            : state.duplicateChecking
+              ? 'Etapa 4 de 4 · aguarde a verificação da inscrição antes de enviar.'
+              : 'Etapa 4 de 4 · revise e envie seu cadastro.';
     }
     promoFlow.ready = state.ready;
     if (btnEnviarPromo) {
@@ -181,7 +269,11 @@
       btnEnviarPromo.setAttribute('aria-disabled', btnEnviarPromo.disabled ? 'true' : 'false');
       btnEnviarPromo.innerHTML = _promoSubmitting
         ? '🔄 Processando Inscrição...'
-        : (state.ready ? '🎁 Cadastrar para concorrer à Torta 2027' : 'Preencha as etapas para liberar o cadastro');
+        : state.duplicateFound
+          ? 'Cadastro já localizado para estes dados'
+          : state.duplicateChecking
+            ? 'Verificando inscrição existente...'
+            : (state.ready ? '🎁 Cadastrar para concorrer à Torta 2027' : 'Preencha as etapas para liberar o cadastro');
     }
     if (cfg.scroll && visibleStep > promoFlow.visibleStep) scrollToPromoStep(visibleStep);
     promoFlow.visibleStep = visibleStep;
@@ -240,6 +332,7 @@
 
       if (resposta.status === 201 && dados.success) {
         var regId = dados.registrationId || 'SRT-2027-' + Math.floor(1000 + Math.random() * 9000);
+        saveLocalPromoLock(nome, birthdate, phone, regId);
         var msgSucesso = `
           <div style="font-size: 1.1rem; margin-bottom: 8px;">🎉 <strong>Inscrição Confirmada com Sucesso!</strong> 🎉</div>
           <div style="font-size: 0.9rem; margin-bottom: 12px; color: #333;">Seu cadastro está confirmado para concorrer aos sorteios mensais de uma Torta de Sorvete. As inscrições estão abertas pelo site oficial da Itapolitana Cajuru, e o primeiro sorteio da torta será em janeiro de 2027.</div>
@@ -258,9 +351,16 @@
         formCadastroPromo.reset();
         setPromoStepFeedback(feedbackBirthPromo, '', false);
         setPromoStepFeedback(feedbackPhonePromo, '', false);
+        promoDuplicateState.key = '';
+        promoDuplicateState.found = false;
+        promoDuplicateState.checking = false;
         promoFlow.visibleStep = 1;
         promoFlow.ready = false;
         syncPromoCascade();
+      } else if (resposta.status === 409) {
+        promoDuplicateState.found = true;
+        saveLocalPromoLock(nome, birthdate, phone, dados.registrationId || '1');
+        mostrarMensagem('⚠️ ' + (dados.error || 'Você já está inscrito(a) nesta promoção.'), 'erro');
       } else {
         mostrarMensagem('❌ ' + (dados.error || 'Erro ao realizar cadastro. Verifique se já está cadastrado este mês.'), 'erro');
       }
@@ -311,6 +411,14 @@
       }
       if (!PROMO_MOBILE_REGEX.test(cel)) {
         mostrarMensagem('❌ Atenção: Apenas números de celular com **DDD 16** são aceitos para cadastro e pedidos na Itapolitana.', 'erro');
+        return;
+      }
+      if (state.duplicateChecking) {
+        mostrarMensagem('🔎 Aguarde a verificação da sua inscrição antes de continuar.', 'aviso');
+        return;
+      }
+      if (state.duplicateFound) {
+        mostrarMensagem('⚠️ Já encontramos uma inscrição com estes dados ou dados muito parecidos. Não é permitido cadastrar novamente.', 'erro');
         return;
       }
 

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const API_URL = '**/api/promocao/cadastro';
+const SEARCH_URL = '**/api/sorteio/buscar**';
 
 async function abrirFormularioPromo(page) {
   await page.goto('/promocao.html', { waitUntil: 'domcontentloaded' });
@@ -28,6 +29,13 @@ test.describe('Promoção — cadastro', () => {
   test('envia payload esperado e evita duplo clique', async ({ page }) => {
     let requests = 0;
     let capturedBody = null;
+    await page.route(SEARCH_URL, async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ found: false })
+      });
+    });
     await page.route(API_URL, async route => {
       requests += 1;
       capturedBody = route.request().postDataJSON();
@@ -64,6 +72,13 @@ test.describe('Promoção — cadastro', () => {
   test('reaproveita idempotency key no retry após erro 503', async ({ page }) => {
     let attempt = 0;
     const idempotencyKeys = [];
+    await page.route(SEARCH_URL, async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ found: false })
+      });
+    });
 
     await page.route(API_URL, async route => {
       attempt += 1;
@@ -98,6 +113,13 @@ test.describe('Promoção — cadastro', () => {
   });
 
   test('mostra mensagem específica para duplicidade (409)', async ({ page }) => {
+    await page.route(SEARCH_URL, async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ found: false })
+      });
+    });
     await page.route(API_URL, async route => {
       await route.fulfill({
         status: 409,
@@ -115,5 +137,22 @@ test.describe('Promoção — cadastro', () => {
     await page.locator('#promo-enviar-cadastro').click();
 
     await expect(page.locator('#promo-feedback-message')).toContainText('já está inscrito', { timeout: 5000 });
+  });
+
+  test('trava o fluxo antes do envio quando a busca detecta inscrição existente', async ({ page }) => {
+    await page.route(SEARCH_URL, async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ found: true })
+      });
+    });
+
+    await abrirFormularioPromo(page);
+    await preencherDados(page);
+
+    await expect(page.locator('#promo-birth-feedback')).toContainText('Já existe inscrição', { timeout: 5000 });
+    await expect(page.locator('#promo-enviar-cadastro')).toBeDisabled();
+    await expect(page.locator('#promo-form-progress')).toContainText('cadastro foi travado', { timeout: 5000 });
   });
 });
