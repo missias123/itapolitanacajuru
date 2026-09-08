@@ -120,13 +120,22 @@ try {
       plusDisabled: Boolean(row.querySelector('.qty button:last-child')?.disabled),
     }));
     return {
+      limao: rows.find((row) => row.text.includes('Limão')),
+      groselha: rows.find((row) => row.text.includes('Groselha')),
+      melancia: rows.find((row) => row.text.includes('Melância')),
       mamao: rows.find((row) => row.text.includes('Mamão Papaia')),
       maracuja: rows.find((row) => row.text.includes('Maracujá')),
+      morango: rows.find((row) => row.text.includes('Morango')),
     };
   });
+  assert(report.retiradaPicoles.limao?.soldOut, 'Retirada: Limão não apareceu como esgotado na lista única de picolés');
+  assert(report.retiradaPicoles.limao?.plusDisabled, 'Retirada: Limão continuou podendo entrar no carrinho na lista única de picolés');
+  assert.equal(report.retiradaPicoles.limao.index, report.retiradaPicoles.groselha.index + 1, 'Retirada: Limão saiu da posição oficial depois de Groselha');
+  assert.equal(report.retiradaPicoles.melancia.index, report.retiradaPicoles.limao.index + 1, 'Retirada: Melância não ficou logo após Limão');
   assert(report.retiradaPicoles.mamao?.soldOut, 'Retirada: Mamão Papaia não apareceu como esgotado');
   assert(report.retiradaPicoles.mamao?.plusDisabled, 'Retirada: Mamão Papaia continuou podendo entrar no carrinho');
-  assert(report.retiradaPicoles.mamao.index > report.retiradaPicoles.maracuja.index, 'Retirada: Mamão Papaia não ficou abaixo de Maracujá');
+  assert.equal(report.retiradaPicoles.mamao.index, report.retiradaPicoles.maracuja.index + 1, 'Retirada: Mamão Papaia saiu da posição oficial depois de Maracujá');
+  assert.equal(report.retiradaPicoles.morango.index, report.retiradaPicoles.mamao.index + 1, 'Retirada: Morango não ficou logo após Mamão Papaia');
   await retirada.close();
 
   console.log(JSON.stringify({ pass: true, report }, null, 2));
