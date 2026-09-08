@@ -127,6 +127,25 @@
     @keyframes formNextNeonPulse{0%,100%{transform:translateZ(0);filter:brightness(1)}50%{filter:brightness(1.08)}}
     @media(prefers-reduced-motion:reduce){.form-next-focus{animation:none}}
   </style>
+  <style>
+    /* Abas da Retirada alinhadas ao visual de Encomendas: cartões fortes, estado ativo claro e cascata simples. */
+    .section-nav{margin-top:10px;padding:8px;border:1px solid #E6D7DF;border-radius:14px;background:linear-gradient(180deg,#FFF 0%,#FFF6FA 100%);box-shadow:0 4px 14px rgba(109,22,63,.08)}
+    .section-nav button{min-height:44px;padding:0 14px;border:2px solid #E3CDD8;border-radius:999px;background:#fff;color:#6D163F;font-size:13px;font-weight:900;transition:all .18s var(--ease)}
+    .section-nav button:hover:not(:disabled){border-color:#EA1D2C;background:#FFF2F4;color:#B5121D;transform:translateY(-1px)}
+    .section-nav button.is-active,.section-nav button[aria-current="true"]{border-color:#EA1D2C;background:linear-gradient(135deg,#EA1D2C,#B5121D);color:#fff;box-shadow:0 6px 14px rgba(181,18,29,.24)}
+    .section-nav button:disabled{opacity:1;cursor:default}
+    .section-choice{border:2px solid #E6D7DF;border-radius:14px;background:linear-gradient(180deg,#FFF 0%,#FFF7FB 100%);box-shadow:0 4px 14px rgba(109,22,63,.06);transition:all .18s var(--ease)}
+    .section-choice:hover{border-color:#D8B4C7;transform:translateY(-1px)}
+    .section-choice.is-active{border-color:#EA1D2C;background:linear-gradient(180deg,#FFF0F3 0%,#FFE7ED 100%);box-shadow:0 8px 18px rgba(181,18,29,.16)}
+    .section-choice__title{color:#6D163F}
+    .section-choice__hint{color:#7C4F62}
+    .section-choice__count{background:linear-gradient(135deg,#EA1D2C,#B5121D);color:#fff}
+    .catalog-section{box-shadow:0 10px 24px rgba(65,20,37,.09)}
+    .catalog-section.is-active{animation:sectionCascadeFocus .22s ease-out}
+    @keyframes sectionCascadeFocus{0%{opacity:.94;transform:translateY(5px)}100%{opacity:1;transform:translateY(0)}}
+    @media(max-width:560px){.section-nav{padding:7px}.section-choice{border-radius:12px}.section-nav button{min-height:46px}}
+    @media(prefers-reduced-motion:reduce){.section-nav button,.section-choice,.catalog-section{transition:none}.catalog-section.is-active{animation:none}}
+  </style>
 </head>
 <body>
   <a class="skip" href="#catalogo">Pular para os produtos</a>
