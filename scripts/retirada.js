@@ -437,17 +437,19 @@
   }
   function renderPopsicles(products, section) {
     const list = document.createElement('div');
+    const allFlavors = products.filter((product) => product.picole);
     const available = products.filter((product) => product.picole && product.available && !product.picole.unavailable && product.picole.stock > 0);
     const totalStock = available.reduce((sum, product) => sum + Number(product.picole?.stock || 0), 0);
+    const unavailableCount = Math.max(0, allFlavors.length - available.length);
     list.className = 'product-list';
     const row = document.createElement('article');
     row.className = 'product';
-    row.dataset.catalogSku = available[0]?.sku || products[0]?.sku || '';
-    row.innerHTML = `<div><p class="product__name">Picolés por sabor${available.length ? '' : ' <span class="stock-tag">Esgotado</span>'}</p><p class="product__meta">${available.length ? `${available.length} sabor${available.length !== 1 ? 'es' : ''} disponíveis na lista única.` : 'Nenhum sabor disponível no momento.'} Ajuste tudo na mesma tela, sem abrir e fechar para cada sabor.</p><p class="product__price">${available.length ? `Varejo/atacado por quantidade total · estoque somado ${pad2(totalStock)} unidades` : 'Sem estoque para retirada agora'}</p></div>`;
+    row.dataset.catalogSku = allFlavors[0]?.sku || products[0]?.sku || '';
+    row.innerHTML = `<div><p class="product__name">Picolés por sabor${available.length ? '' : ' <span class="stock-tag">Esgotado</span>'}</p><p class="product__meta">${allFlavors.length ? `${allFlavors.length} sabor${allFlavors.length !== 1 ? 'es' : ''} na lista única${unavailableCount ? ` · ${unavailableCount} esgotado${unavailableCount !== 1 ? 's' : ''}` : ''}.` : 'Nenhum sabor cadastrado no momento.'} Ajuste tudo na mesma tela, sem abrir e fechar para cada sabor.</p><p class="product__price">${available.length ? `Varejo/atacado por quantidade total · estoque somado ${pad2(totalStock)} unidades` : 'Sem estoque para retirada agora'}</p></div>`;
     const button = document.createElement('button');
     button.className = 'add-btn'; button.type = 'button';
-    applyOrderButtonState(button, 'Abrir lista única', Boolean(available.length));
-    button.addEventListener('click', () => runWhenRetiradaOpen(() => { const focusSku = available[0]?.sku || products[0]?.sku || ''; state.lastCatalogSku = focusSku; captureCatalogViewport(focusSku); beginPopsicleGroup(products); }));
+    applyOrderButtonState(button, 'Abrir lista única', Boolean(allFlavors.length));
+    button.addEventListener('click', () => runWhenRetiradaOpen(() => { const focusSku = allFlavors[0]?.sku || products[0]?.sku || ''; state.lastCatalogSku = focusSku; captureCatalogViewport(focusSku); beginPopsicleGroup(products); }));
     row.append(button); list.append(row);
     section.append(list);
   }
