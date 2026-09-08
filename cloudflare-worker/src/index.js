@@ -1029,6 +1029,25 @@ function sorteioNascGlobalKey(nome, birthdate) {
 function sorteioCelKey(phone, loteMes) {
   return `sorteio:idx:cel:${loteMes}:${phone}`;
 }
+function sorteioCelGlobalKey(phone) {
+  return `sorteio:idx:cel-global:${phone}`;
+}
+function nomesSorteioSaoSemelhantes(a, b) {
+  const nomeA = normalizarNomeSorteio(a);
+  const nomeB = normalizarNomeSorteio(b);
+  if (!nomeA || !nomeB) return false;
+  if (nomeA === nomeB || nomeA.includes(nomeB) || nomeB.includes(nomeA)) return true;
+  const tokensA = [...new Set(nomeA.split('_').filter(Boolean))];
+  const tokensB = [...new Set(nomeB.split('_').filter(Boolean))];
+  if (!tokensA.length || !tokensB.length) return false;
+  const menores = tokensA.length <= tokensB.length ? tokensA : tokensB;
+  const maiores = new Set(tokensA.length <= tokensB.length ? tokensB : tokensA);
+  let comuns = 0;
+  for (const token of menores) {
+    if (maiores.has(token)) comuns++;
+  }
+  return menores.length >= 2 && comuns >= menores.length;
+}
 async function syncSorteioGlobalIndex(env, nome, birthdate, preferredId = '') {
   const globalKey = sorteioNascGlobalKey(nome, birthdate);
   if (preferredId) {
@@ -1046,6 +1065,50 @@ async function syncSorteioGlobalIndex(env, nome, birthdate, preferredId = '') {
     }
   }
   await env.CLIENTES_KV.delete(globalKey);
+}
+async function syncSorteioGlobalPhoneIndex(env, phone, preferredId = '') {
+  const globalKey = sorteioCelGlobalKey(phone);
+  if (!phone) {
+    await env.CLIENTES_KV.delete(globalKey);
+    return;
+  }
+  if (preferredId) {
+    await env.CLIENTES_KV.put(globalKey, preferredId);
+    return;
+  }
+  const lista = await env.CLIENTES_KV.list({ prefix: 'sorteio:inscrito:' });
+  for (const entry of lista.keys) {
+    const inscricao = await env.CLIENTES_KV.get(entry.name, 'json');
+    if (!inscricao) continue;
+    if (String(inscricao.phone || '') === phone) {
+      await env.CLIENTES_KV.put(globalKey, inscricao.id || entry.name.replace('sorteio:inscrito:', ''));
+      return;
+    }
+  }
+  await env.CLIENTES_KV.delete(globalKey);
+}
+async function findSorteioDuplicate(env, nome, birthdate, phone, loteMes) {
+  const directKeys = [
+    sorteioNascKey(nome, birthdate, loteMes),
+    sorteioNascGlobalKey(nome, birthdate),
+  ];
+  if (phone) {
+    directKeys.push(sorteioCelKey(phone, loteMes), sorteioCelGlobalKey(phone));
+  }
+  for (const key of directKeys) {
+    const id = await env.CLIENTES_KV.get(key);
+    if (id) return id;
+  }
+  const lista = await env.CLIENTES_KV.list({ prefix: 'sorteio:inscrito:' });
+  for (const entry of lista.keys) {
+    const inscricao = await env.CLIENTES_KV.get(entry.name, 'json');
+    if (!inscricao) continue;
+    const inscricaoId = inscricao.id || entry.name.replace('sorteio:inscrito:', '');
+    if (phone && String(inscricao.phone || '') === phone) return inscricaoId;
+    if (String(inscricao.birthdate || '') !== birthdate) continue;
+    if (nomesSorteioSaoSemelhantes(inscricao.nome, nome)) return inscricaoId;
+  }
+  return '';
 }
 async function obterLoteMensalSorteio(isoDatePrefix, env) {
   const loteMes = String(isoDatePrefix || '').slice(0, 7);
@@ -1071,13 +1134,15 @@ async function handlePostSorteioCadastro(request, env) {
   if (!phone || !/^169\d{8}$/.test(phone)) return jsonResp({ success: false, error: 'Apenas DDD 16 é permitido (formato 169XXXXXXXX).' }, 400);
 
   const agora = new Date().toISOString();
-  const lote = await obterLoteMensalSorteio(agora, env);
-  const loteMes = lote.loteMes;
+  const loteMes = agora.slice(0, 7);
   const nascKey = sorteioNascKey(nome, birthdate, loteMes);
   const celKey = sorteioCelKey(phone, loteMes);
+  const globalPhoneKey = sorteioCelGlobalKey(phone);
 
-  const existingId = await env.CLIENTES_KV.get(nascKey) || await env.CLIENTES_KV.get(celKey);
-  if (existingId) return jsonResp({ success: false, error: 'Você já está cadastrado na promoção deste mês.', registrationId: existingId }, 409);
+  const existingId = await findSorteioDuplicate(env, nome, birthdate, phone, loteMes);
+  if (existingId) return jsonResp({ success: false, error: 'Você já está inscrito(a) nesta promoção com estes dados ou dados muito parecidos.', registrationId: existingId }, 409);
+
+  const lote = await obterLoteMensalSorteio(agora, env);
 
   const contadorStr = await env.CLIENTES_KV.get('meta:sorteio_contador');
   let contador = parseInt(contadorStr || '0', 10) + 1;
@@ -1088,6 +1153,7 @@ async function handlePostSorteioCadastro(request, env) {
   await env.CLIENTES_KV.put(nascKey, registrationId);
   await env.CLIENTES_KV.put(sorteioNascGlobalKey(nome, birthdate), registrationId);
   await env.CLIENTES_KV.put(celKey, registrationId);
+  await env.CLIENTES_KV.put(globalPhoneKey, registrationId);
   await env.CLIENTES_KV.put('meta:sorteio_contador', String(contador));
 
   return jsonResp({ success: true, registrationId }, 201);
@@ -1099,8 +1165,7 @@ async function handleGetSorteioBuscar(request, env, url) {
   const nome = sanitizeString(url.searchParams.get('nome'), 200);
   const dataNasc = sanitizeString(url.searchParams.get('dataNasc'), 20);
   const loteMes = new Date().toISOString().slice(0, 7);
-  const id = await env.CLIENTES_KV.get(sorteioNascKey(nome, dataNasc, loteMes))
-    || await env.CLIENTES_KV.get(sorteioNascGlobalKey(nome, dataNasc));
+  const id = await findSorteioDuplicate(env, nome, dataNasc, '', loteMes);
   if (!id) return jsonResp({ found: false });
   const insc = await env.CLIENTES_KV.get(`sorteio:inscrito:${id}`, 'json');
   if (!insc) return jsonResp({ found: false });
@@ -1127,6 +1192,7 @@ async function handlePatchSorteioInscrito(id, request, env) {
   await env.CLIENTES_KV.delete(sorteioNascKey(insc.nome, insc.birthdate, loteMes));
   await env.CLIENTES_KV.delete(sorteioCelKey(insc.phone, loteMes));
   await syncSorteioGlobalIndex(env, insc.nome, insc.birthdate);
+  await syncSorteioGlobalPhoneIndex(env, insc.phone);
   if (body.nome) insc.nome = sanitizeString(body.nome, 200);
   if (body.birthdate) insc.birthdate = sanitizeString(body.birthdate, 20);
   if (body.phone) insc.phone = String(body.phone).replace(/\D/g, '');
@@ -1134,6 +1200,7 @@ async function handlePatchSorteioInscrito(id, request, env) {
   await env.CLIENTES_KV.put(sorteioNascKey(insc.nome, insc.birthdate, loteMes), id);
   await env.CLIENTES_KV.put(sorteioNascGlobalKey(insc.nome, insc.birthdate), id);
   await env.CLIENTES_KV.put(sorteioCelKey(insc.phone, loteMes), id);
+  await env.CLIENTES_KV.put(sorteioCelGlobalKey(insc.phone), id);
   return jsonResp({ ok: true, inscrito: insc });
 }
 
@@ -1145,6 +1212,7 @@ async function handleDeleteSorteioInscrito(id, env) {
   await env.CLIENTES_KV.delete(sorteioNascKey(insc.nome, insc.birthdate, loteMes));
   await env.CLIENTES_KV.delete(sorteioCelKey(insc.phone, loteMes));
   await syncSorteioGlobalIndex(env, insc.nome, insc.birthdate);
+  await syncSorteioGlobalPhoneIndex(env, insc.phone);
   return jsonResp({ ok: true });
 }
 

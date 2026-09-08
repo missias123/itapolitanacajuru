@@ -240,6 +240,77 @@ test('cadastro do sorteio grava índice global privado para buscas futuras', asy
   assert.equal(globalIndex, response.json.registrationId);
 });
 
+test('cadastro do sorteio bloqueia nova inscrição com nome semelhante e mesma data', async () => {
+  const env = createEnv();
+  const first = await request(env, '/api/promocao/cadastro', {
+    method: 'POST',
+    body: {
+      name: 'Maria da Silva',
+      birthdate: '1999-12-31',
+      phone: '16912345678',
+      regulation_accept: true,
+    },
+  });
+  assert.equal(first.status, 201);
+
+  const second = await request(env, '/api/promocao/cadastro', {
+    method: 'POST',
+    body: {
+      name: 'Maria Silva',
+      birthdate: '1999-12-31',
+      phone: '16999998888',
+      regulation_accept: true,
+    },
+  });
+  assert.equal(second.status, 409);
+  assert.equal(second.json.registrationId, first.json.registrationId);
+});
+
+test('cadastro do sorteio bloqueia telefone repetido mesmo fora do lote mensal', async () => {
+  const env = createEnv();
+  await env.CLIENTES_KV.put('sorteio:inscrito:SRT-2026-0001-ABCD', JSON.stringify({
+    id: 'SRT-2026-0001-ABCD',
+    nome: 'Cliente Original',
+    birthdate: '1990-01-01',
+    phone: '16912345678',
+    lote_mes: '2026-08',
+    lote_numero: 1,
+    created_at: '2026-08-12T12:00:00.000Z',
+  }));
+  await env.CLIENTES_KV.put('sorteio:idx:cel-global:16912345678', 'SRT-2026-0001-ABCD');
+
+  const response = await request(env, '/api/promocao/cadastro', {
+    method: 'POST',
+    body: {
+      name: 'Outro Cliente',
+      birthdate: '1992-02-02',
+      phone: '16912345678',
+      regulation_accept: true,
+    },
+  });
+  assert.equal(response.status, 409);
+  assert.equal(response.json.registrationId, 'SRT-2026-0001-ABCD');
+});
+
+test('busca pública do sorteio encontra nome semelhante com a mesma data sem expor PII', async () => {
+  const env = createEnv();
+  const id = 'sorteio-test-003';
+  await env.CLIENTES_KV.put(`sorteio:inscrito:${id}`, JSON.stringify({
+    id,
+    nome: 'Maria da Silva',
+    birthdate: '2000-01-02',
+    lote_mes: '2026-08',
+    phone: '16912345678',
+    created_at: '2026-08-12T12:00:00.000Z',
+  }));
+
+  const response = await request(env, `/api/sorteio/buscar?nome=${encodeURIComponent('Maria Silva')}&dataNasc=2000-01-02`);
+
+  assert.equal(response.status, 200);
+  assert.equal(response.json.found, true);
+  assert.equal(JSON.stringify(response.json).includes('16912345678'), false);
+});
+
 test('worker aplica headers rígidos de hardening nas respostas da API', async () => {
   const env = createEnv();
   const response = await request(env, '/api/health');
