@@ -3,6 +3,7 @@
   'use strict';
   if (window.__itapTouchFeedbackInstalled) return;
   window.__itapTouchFeedbackInstalled = true;
+  var CONTROL_SELECTOR = 'button, a[href], [role="button"], summary, input[type="button"], input[type="submit"], input[type="reset"]';
 
   var reduceMotion = false;
   try {
@@ -20,7 +21,7 @@
   function controlFromEvent(event) {
     var node = event && event.target;
     if (!node || node.nodeType !== 1) return null;
-    return node.closest('button, a, [role="button"], summary, input[type="button"], input[type="submit"], input[type="reset"]');
+    return node.closest(CONTROL_SELECTOR);
   }
 
   function isDisabled(control) {
@@ -44,7 +45,33 @@
     pulseVisual(control);
   }, { capture: true, passive: true });
 
+  document.addEventListener('click', function (event) {
+    if (!event || event.defaultPrevented) return;
+    if (controlFromEvent(event)) return;
+    if (typeof event.clientX !== 'number' || typeof event.clientY !== 'number') return;
+
+    var top = document.elementFromPoint(event.clientX, event.clientY);
+    if (!top || top.nodeType !== 1) return;
+    if (top.closest('.modal,[role="dialog"],dialog[open]')) return;
+    if (top.closest(CONTROL_SELECTOR)) return;
+
+    var prevPointer = top.style.pointerEvents;
+    top.style.pointerEvents = 'none';
+    var fallback = document.elementFromPoint(event.clientX, event.clientY);
+    top.style.pointerEvents = prevPointer;
+
+    var control = fallback && fallback.closest ? fallback.closest(CONTROL_SELECTOR) : null;
+    if (!control || isDisabled(control)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    control.click();
+  }, { capture: true });
+
   var style = document.createElement('style');
-  style.textContent = '.itap-touch-feedback-active{filter:brightness(.92);transform:scale(.985)!important;}';
+  style.textContent =
+    '.itap-touch-feedback-active{filter:brightness(.92);transform:scale(.985)!important;}' +
+    ':where(button,a[href],[role="button"],summary,input[type="button"],input[type="submit"],input[type="reset"]){touch-action:manipulation;}' +
+    ':where(button,a[href],[role="button"],summary) > *{pointer-events:none;}';
   document.head.appendChild(style);
 }());
