@@ -3,6 +3,7 @@
   'use strict';
   if (window.__itapTouchFeedbackInstalled) return;
   window.__itapTouchFeedbackInstalled = true;
+  var CONTROL_SELECTOR = 'button, a[href], [role="button"], summary, input[type="button"], input[type="submit"], input[type="reset"]';
 
   var reduceMotion = false;
   try {
@@ -20,7 +21,7 @@
   function controlFromEvent(event) {
     var node = event && event.target;
     if (!node || node.nodeType !== 1) return null;
-    return node.closest('button, a, [role="button"], summary, input[type="button"], input[type="submit"], input[type="reset"]');
+    return node.closest(CONTROL_SELECTOR);
   }
 
   function isDisabled(control) {
@@ -45,6 +46,9 @@
   }, { capture: true, passive: true });
 
   var style = document.createElement('style');
-  style.textContent = '.itap-touch-feedback-active{filter:brightness(.92);transform:scale(.985)!important;}';
+  style.textContent =
+    '.itap-touch-feedback-active{filter:brightness(.92);transform:scale(.985)!important;}' +
+    ':where(button,a[href],[role="button"],summary,input[type="button"],input[type="submit"],input[type="reset"]){touch-action:manipulation;}' +
+    ':where(button,a[href],[role="button"],summary) > :where(svg,use,span,small,strong,em,b,i){pointer-events:none;}';
   document.head.appendChild(style);
 }());

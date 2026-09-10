@@ -8,6 +8,7 @@
  * Uso:
  *   node scripts/quality-audit.js            # auditar todas as páginas
  *   node scripts/quality-audit.js --fail     # retornar exit 1 se houver críticos
+ *   node scripts/quality-audit.js --fail --strict-100  # exigir 100/100 em todas as páginas
  *   node scripts/quality-audit.js --md       # gerar relatório Markdown
  */
 
@@ -19,6 +20,7 @@ const path = require('path');
 const ROOT      = path.resolve(__dirname, '..');
 const FAIL_MODE = process.argv.includes('--fail');
 const MD_MODE   = process.argv.includes('--md');
+const STRICT_100_MODE = process.argv.includes('--strict-100');
 
 // Páginas auditadas
 const PAGINAS = [
@@ -425,10 +427,12 @@ function main() {
 
   const relatorios = PAGINAS.map(auditarPagina);
   let totalCriticos = 0;
+  let totalNaoAprovados = 0;
 
   for (const r of relatorios) {
     if (!r) continue;
     totalCriticos += r.criticos;
+    totalNaoAprovados += Math.max(0, r.total - r.aprovados);
     const emoji = r.score >= 90 ? '🟢' : r.score >= 70 ? '🟡' : '🔴';
     console.log(`${emoji} ${r.nome.padEnd(22)} Score: ${String(r.score).padStart(3)}/100  ✅ ${r.aprovados}/${r.total}  ${r.criticos > 0 ? '❌ ' + r.criticos + ' crítico(s)' : ''}  ${r.avisos > 0 ? '⚠️  ' + r.avisos + ' aviso(s)' : ''}`);
     for (const item of r.resultados.filter(i => !i.ok)) {
@@ -451,10 +455,14 @@ function main() {
   const scores = relatorios.filter(Boolean).map(r => r.score);
   const mediaScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
   const globalEmoji = mediaScore >= 90 ? '🟢' : mediaScore >= 70 ? '🟡' : '🔴';
-  console.log(`${globalEmoji} Score médio: ${mediaScore}/100  |  ${totalCriticos} item(ns) crítico(s) no total`);
+  console.log(`${globalEmoji} Score médio: ${mediaScore}/100  |  ${totalCriticos} item(ns) crítico(s)  |  ${totalNaoAprovados} item(ns) não aprovado(s)`);
 
   if (FAIL_MODE && totalCriticos > 0) {
     console.error('\n❌ Auditoria falhou: item(ns) crítico(s) encontrado(s). Corrija antes de fazer push para main.\n');
+    process.exit(1);
+  }
+  if (FAIL_MODE && STRICT_100_MODE && totalNaoAprovados > 0) {
+    console.error('\n❌ Auditoria falhou (modo estrito 100/100): existem itens não aprovados. Corrija avisos e críticos antes de fazer push.\n');
     process.exit(1);
   }
 
