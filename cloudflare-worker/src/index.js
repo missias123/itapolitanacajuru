@@ -298,6 +298,7 @@ function parseStoredSession(stored, env) {
   if (typeof stored !== 'object') return null;
   const expiresAt = Number(stored.expiresAt || 0);
   if (expiresAt && Date.now() > expiresAt) return null;
+  const githubToken = sanitizeString(stored.githubToken || '', 1000);
   return {
     ok: true,
     permissions: new Set(
@@ -306,6 +307,7 @@ function parseStoredSession(stored, env) {
         : [...normalizePermissionList(env.ADMIN_DEFAULT_PERMISSIONS)],
     ),
     authType: 'session',
+    githubToken,
   };
 }
 
@@ -458,8 +460,8 @@ function sanitizeString(v, maxLen = 200) {
   return String(v ?? '').replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, maxLen);
 }
 
-function resolveGitHubToken(env) {
-  const candidates = [env?.GITHUB_TOKEN, env?.GITHUB_PAT, env?.GH_TOKEN];
+function resolveGitHubToken(env, session = null) {
+  const candidates = [session?.githubToken, env?.GITHUB_TOKEN, env?.GITHUB_PAT, env?.GH_TOKEN];
   for (const candidate of candidates) {
     const token = sanitizeString(candidate, 1000);
     if (token) return token;
@@ -553,6 +555,11 @@ async function router(request, env) {
   if (path === '/api/admin/auth' && method === 'POST') return handleAdminAuth(request, env);
   if (path === '/api/admin/session' && method === 'POST') return handleAdminSession(request, env);
   if (path === '/api/admin/session' && method === 'DELETE') return handleAdminSessionLogout(request, env);
+  if (path === '/api/admin/session/github-token' && method === 'PUT') {
+    const guard = requireAdmin(await getSession());
+    if (guard) return guard;
+    return handleAdminSessionGitHubToken(request, env, await getSession());
+  }
 
   if (path === '/api/admin/pbkdf2-selftest' && method === 'POST') return handlePbkdf2Selftest(request, env);
   if (path === '/api/admin/generate-hash' && method === 'POST') return handleGenerateHash(request, env);
@@ -569,9 +576,10 @@ async function router(request, env) {
     return handleAdminGitHubFileGet(url.searchParams.get('path'), env);
   }
   if (path === '/api/admin/github-file' && method === 'PUT') {
-    const guard = requirePermission(await getSession(), 'catalog:write');
+    const session = await getSession();
+    const guard = requirePermission(session, 'catalog:write');
     if (guard) return guard;
-    return handleAdminGitHubFilePut(request, env);
+    return handleAdminGitHubFilePut(request, env, session);
   }
 
   if (path === '/api/clientes' && method === 'POST') return handlePostCliente(request, env);
@@ -678,12 +686,20 @@ async function handleAdminSession(request, env) {
   if (!(await verifyAdminPassword(password, env))) return jsonResp({ ok: false, error: 'Sessão ausente ou inválida' }, 401);
   const permissions = [...normalizePermissionList(env.ADMIN_DEFAULT_PERMISSIONS)];
   const token = generateIdHash();
+  const githubToken = sanitizeString(body.githubToken || body.github_token || '', 1000);
   await env.RATE_KV.put(`session:${token}`, JSON.stringify({
     permissions,
+    githubToken,
     createdAt: new Date().toISOString(),
     expiresAt: Date.now() + SESSION_TTL * 1000,
   }), { expirationTtl: SESSION_TTL });
-  return jsonResp({ ok: true, token, permissions, ttlSeconds: SESSION_TTL });
+  return jsonResp({
+    ok: true,
+    token,
+    permissions,
+    ttlSeconds: SESSION_TTL,
+    githubTokenConfigured: Boolean(resolveGitHubToken(env, { githubToken })),
+  });
 }
 
 async function handleAdminSessionLogout(request, env) {
@@ -778,9 +794,36 @@ async function handleAdminGitHubFileGet(filePath, env) {
   });
 }
 
-async function handleAdminGitHubFilePut(request, env) {
-  const githubToken = resolveGitHubToken(env);
-  if (!githubToken) return jsonResp({ ok: false, error: 'Token GitHub não configurado no Worker (GITHUB_TOKEN/GITHUB_PAT/GH_TOKEN)' }, 500);
+async function handleAdminSessionGitHubToken(request, env, session) {
+  const sessionToken = request.headers.get('X-Itap-Session-Token') || '';
+  if (!sessionToken) return jsonResp({ ok: false, error: 'Sessão ausente ou inválida' }, 401);
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 422); }
+  const githubToken = sanitizeString(body.githubToken || body.github_token || '', 1000);
+  if (!githubToken) return jsonResp({ ok: false, error: 'Token GitHub ausente' }, 400);
+  const existingStored = await env.RATE_KV.get(`session:${sessionToken}`, 'json');
+  const expiresAt = Date.now() + SESSION_TTL * 1000;
+  await env.RATE_KV.put(`session:${sessionToken}`, JSON.stringify({
+    ...(existingStored && typeof existingStored === 'object' ? existingStored : {}),
+    permissions: Array.isArray(existingStored?.permissions)
+      ? existingStored.permissions.filter((entry) => ADMIN_ALL_PERMISSIONS.has(entry))
+      : [...session.permissions],
+    githubToken,
+    createdAt: sanitizeString(existingStored?.createdAt || '', 100) || new Date().toISOString(),
+    expiresAt,
+  }), { expirationTtl: SESSION_TTL });
+  return jsonResp({ ok: true, ttlSeconds: SESSION_TTL, githubTokenConfigured: true });
+}
+
+async function handleAdminGitHubFilePut(request, env, session) {
+  const githubToken = resolveGitHubToken(env, session);
+  if (!githubToken) {
+    return jsonResp({
+      ok: false,
+      code: 'GITHUB_TOKEN_NOT_CONFIGURED',
+      error: 'Token GitHub não configurado no Worker nem na sessão administrativa',
+    }, 500);
+  }
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 422); }
   const filePath = sanitizeString(body.path, 200);

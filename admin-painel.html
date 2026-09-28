@@ -2932,13 +2932,13 @@ function getWorkerAuthHeaders(extra={}){
   const sessionToken=getWorkerSessionToken();
   return {'Content-Type':'application/json',...(sessionToken?{'X-Itap-Session-Token':sessionToken}:{}),...extra};
 }
-async function iniciarSessaoWorkerComSenha(senha){
+async function iniciarSessaoWorkerComSenha(senha,githubToken=''){
   if(!senha)return{ok:false,error:'Senha ausente',kind:'validation'};
   try{
     const r=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/session',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({password:senha})
+      body:JSON.stringify({password:senha,...(githubToken?{githubToken}:{})})
     },12000);
     const ct=r.headers.get('content-type')||'';
     if(!ct.includes('application/json'))return{ok:false,error:'Resposta inesperada de autenticação do Worker.',kind:'server'};
@@ -2952,7 +2952,31 @@ async function iniciarSessaoWorkerComSenha(senha){
       };
     }
     setWorkerSessionToken(dados.token);
-    return{ok:true};
+    return{ok:true,githubTokenConfigured:dados.githubTokenConfigured===true};
+  }catch(e){
+    return{ok:false,error:e&&e.message?e.message:'Falha de rede no Worker.',kind:'network'};
+  }
+}
+async function atualizarTokenGitHubDaSessaoWorker(githubToken){
+  const sessionToken=getWorkerSessionToken();
+  if(!sessionToken||!githubToken)return{ok:false,error:'Sessão ausente',kind:'validation'};
+  try{
+    const r=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/session/github-token',{
+      method:'PUT',
+      headers:getWorkerAuthHeaders(),
+      body:JSON.stringify({githubToken})
+    },12000);
+    const ct=r.headers.get('content-type')||'';
+    const dados=ct.includes('application/json')?await r.json():{};
+    if(!r.ok||!dados.ok){
+      return{
+        ok:false,
+        error:dados.error||'Falha ao sincronizar token GitHub com a sessão do Worker.',
+        status:r.status,
+        kind:r.status===401?'invalid_session':'server'
+      };
+    }
+    return{ok:true,githubTokenConfigured:dados.githubTokenConfigured===true};
   }catch(e){
     return{ok:false,error:e&&e.message?e.message:'Falha de rede no Worker.',kind:'network'};
   }
@@ -3210,6 +3234,7 @@ async function sha256(str) {
 async function entrar(){
   const senha=document.getElementById('inp-senha').value;
   const githubToken=(document.getElementById('inp-github-token')?.value||'').trim();
+  const githubTokenForWorker=tokenFormatoValido(githubToken)?githubToken:'';
   const loginErro=document.getElementById('login-erro');
   if(!senha){
     loginErro.innerHTML='&#x274C; Informe a senha do administrador.';
@@ -3217,7 +3242,7 @@ async function entrar(){
     return;
   }
   mostrarLoading('Verificando...');
-  const workerAuth=await iniciarSessaoWorkerComSenha(senha);
+  const workerAuth=await iniciarSessaoWorkerComSenha(senha,githubTokenForWorker);
   if(!workerAuth.ok){
     ocultarLoading();
     clearWorkerSessionToken();
@@ -3297,8 +3322,13 @@ async function reativarTokenGitHub(){
     GITHUB_PAT=token;
     GH_WRITE_ALLOWED=validacao.canWrite!==false;
     GH_TOKEN_CAN_WRITE=validacao.canWrite;
+    const workerSync=await atualizarTokenGitHubDaSessaoWorker(token);
     atualizarStatusGitHubToken('✅ Token GitHub validado. Edição e salvamento liberados.','success');
     atualizarBannerGitHubToken(GH_WRITE_ALLOWED);
+    if(!workerSync.ok){
+      console.warn('[Admin] Token GitHub local ativo, mas sem sincronizar sessão do Worker:',workerSync.error);
+      toast('⚠️ Token ativado neste painel, mas a sessão automática do catálogo não foi sincronizada. Se precisar do catálogo, entre novamente no painel.','aviso');
+    }
     fecharModalGitHubToken();
     toast('✅ Token GitHub ativado com sucesso!','sucesso');
   }finally{
