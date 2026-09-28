@@ -619,7 +619,7 @@ body { overflow-x: hidden; }
       Acesso protegido por duas credenciais: primeiro o usuário secreto e abaixo a senha alfanumérica. Depois, informe o token GitHub (PAT) para liberar escrita.
     </div>
     <div style="font-size:0.74rem;color:#b71c1c;background:#ffebee;border:1px solid #ffcdd2;border-radius:8px;padding:8px 10px;margin:0 0 12px;line-height:1.45">
-      ⚠️ Aviso de segurança: ao informar usuário inválido ou após 3 tentativas incorretas de senha, o IP de origem será enviado ao administrador do site.
+      ⚠️ Aviso de segurança: usuário inválido ou repetição de senha incorreta ativa bloqueio temporário automático do acesso.
     </div>
     <button type="button" class="btn-login" id="btn-entrar-admin">&#x1F510; Entrar no Admin</button>
     <div class="login-erro" id="login-erro">&#x274C; Informe a senha do administrador.</div>
@@ -3297,11 +3297,11 @@ async function entrar(){
     ocultarLoading();
     clearWorkerSessionToken();
     if(workerAuth.kind==='locked'){
-      applyAdminLoginLock(workerAuth.retryAfterSeconds||300,'&#x1F6A8; Tentativas inválidas detectadas. O IP foi registrado e enviado ao administrador do site.');
+      applyAdminLoginLock(workerAuth.retryAfterSeconds||300,'&#x1F6A8; Tentativas inválidas detectadas. Acesso bloqueado temporariamente por segurança.');
       return;
     }
     loginErro.innerHTML=workerAuth.kind==='invalid_username'
-      ? '&#x1F6A8; Tentativa de fraude detectada: usuário inválido. O IP será enviado ao administrador do site.'
+      ? '&#x1F6A8; Tentativa de fraude detectada: usuário inválido.'
       : workerAuth.kind==='invalid_credentials'
         ? '&#x274C; Senha incorreta.'
         : '⚠️ Não foi possível validar o acesso no Worker seguro agora. Verifique a conexão/configuração e tente novamente.';

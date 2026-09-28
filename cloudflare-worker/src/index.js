@@ -771,17 +771,18 @@ async function handleAdminSession(request, env) {
   const permissions = [...normalizePermissionList(env.ADMIN_DEFAULT_PERMISSIONS)];
   const token = generateIdHash();
   const githubToken = sanitizeString(body.githubToken || body.github_token || '', 1000);
+  const expiresAt = Date.now() + SESSION_TTL * 1000;
   await env.RATE_KV.put(`session:${token}`, JSON.stringify({
     permissions,
     githubToken,
     createdAt: new Date().toISOString(),
-    expiresAt: null,
-  }));
+    expiresAt,
+  }), { expirationTtl: SESSION_TTL });
   return jsonResp({
     ok: true,
     token,
     permissions,
-    ttlSeconds: null,
+    ttlSeconds: SESSION_TTL,
     githubTokenConfigured: Boolean(resolveGitHubToken(env, { githubToken })),
   });
 }
@@ -887,7 +888,9 @@ async function handleAdminSessionGitHubToken(request, env, session) {
   if (!githubToken) return jsonResp({ ok: false, error: 'Token GitHub ausente' }, 400);
   const existingStored = await env.RATE_KV.get(`session:${sessionToken}`, 'json');
   const existingExpiresAt = Number(existingStored?.expiresAt || 0);
-  const expiresAt = existingExpiresAt > Date.now() ? existingExpiresAt : null;
+  const now = Date.now();
+  const expiresAt = existingExpiresAt > now ? existingExpiresAt : (now + SESSION_TTL * 1000);
+  const ttlSeconds = Math.max(1, Math.ceil((expiresAt - now) / 1000));
   await env.RATE_KV.put(`session:${sessionToken}`, JSON.stringify({
     ...(existingStored && typeof existingStored === 'object' ? existingStored : {}),
     permissions: Array.isArray(existingStored?.permissions)
@@ -896,8 +899,8 @@ async function handleAdminSessionGitHubToken(request, env, session) {
     githubToken,
     createdAt: sanitizeString(existingStored?.createdAt || '', 100) || new Date().toISOString(),
     expiresAt,
-  }));
-  return jsonResp({ ok: true, ttlSeconds: expiresAt ? SESSION_TTL : null, githubTokenConfigured: true });
+  }), { expirationTtl: ttlSeconds });
+  return jsonResp({ ok: true, ttlSeconds, githubTokenConfigured: true });
 }
 
 async function handleAdminGitHubFilePut(request, env, session) {
