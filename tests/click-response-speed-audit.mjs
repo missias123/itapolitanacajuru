@@ -238,20 +238,24 @@ async function runScenario(browser, viewport, scenario) {
   const times = attempts.map((item) => item.nextPaintMs).sort((a, b) => a - b);
   const median = times[Math.floor(times.length / 2)];
   const fastest = times[0];
+  const slowest = times[times.length - 1];
   const pageErrors = attempts.flatMap((item) => item.pageErrors);
+  const slowAttempts = attempts.filter((item) => item.nextPaintMs > MAX_NEXT_PAINT_MS);
   const result = {
     scenario: scenario.id,
     page: scenario.page,
     viewport: viewport.name,
     selector: scenario.selector,
-    nextPaintMs: Number(median.toFixed(2)),
+    nextPaintMs: Number(slowest.toFixed(2)),
+    medianMs: Number(median.toFixed(2)),
     fastestMs: Number(fastest.toFixed(2)),
+    slowestMs: Number(slowest.toFixed(2)),
     attempts,
-    pass: median <= MAX_NEXT_PAINT_MS,
+    pass: slowAttempts.length === 0,
     pageErrors,
   };
   assert.deepEqual(pageErrors, [], `${scenario.id}/${viewport.name}: erros de página`);
-  assert.ok(median <= MAX_NEXT_PAINT_MS, `${scenario.id}/${viewport.name}: resposta lenta (mediana ${median.toFixed(2)}ms; melhor ${fastest.toFixed(2)}ms)`);
+  assert.ok(slowAttempts.length === 0, `${scenario.id}/${viewport.name}: resposta lenta detectada (limite ${MAX_NEXT_PAINT_MS}ms; pior ${slowest.toFixed(2)}ms; mediana ${median.toFixed(2)}ms; melhor ${fastest.toFixed(2)}ms)`);
   return result;
 }
 
