@@ -283,8 +283,10 @@ function writeReports(summary) {
   run('dependency-audit', process.execPath, ['scripts/dependency-audit.js']);
   run('security-regression', process.execPath, ['tests/security-regression-audit.mjs']);
   run('hardening-config', process.execPath, ['tests/hardening-config-audit.mjs']);
+  run('seo-local-gate', process.execPath, ['scripts/seo-local-gate.js']);
   run('catalogo-mestre-gate', process.execPath, ['scripts/catalogo-mestre-gate.js']);
   run('auditoria-duplicacoes', process.execPath, ['scripts/auditoria-duplicacoes.js', '--ci']);
+  run('site-wide-button-hit-gate', process.execPath, ['scripts/site-wide-button-hit-gate.js']);
   if (fs.existsSync(path.join(ROOT, 'scripts', 'auto-corrigir-regras.js'))) {
     run('auto-correcoes-regras-check', process.execPath, ['scripts/auto-corrigir-regras.js', '--check']);
   }
