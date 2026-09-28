@@ -604,7 +604,7 @@ body { overflow-x: hidden; }
     <h1>&#128737;&#65039; Painel Administrativo</h1>
     <p>Sorveteria Itapolitana Cajuru</p>
     <div class="inp-wrap" style="margin-bottom:8px">
-      <input type="password" id="inp-usuario-admin" placeholder="Usuário de acesso" autocomplete="off" spellcheck="false"/>
+      <input type="password" id="inp-usuario-admin" placeholder="Usuário secreto de acesso" autocomplete="off" spellcheck="false"/>
     </div>
     <div class="inp-wrap">
       <input type="password" id="inp-senha" placeholder="Senha do administrador" autocomplete="current-password"/>
@@ -616,7 +616,7 @@ body { overflow-x: hidden; }
     </div>
     <div id="github-token-status" style="font-size:0.72rem;color:#9ccc65;margin:2px 0 6px;min-height:1.1em">ℹ️ Sem token GitHub, o admin entra em modo somente leitura.</div>
     <div style="font-size:0.74rem;color:#666;margin-bottom:12px;line-height:1.45">
-      Entre com sua senha e seu token GitHub (PAT) para acessar o painel com permissão de escrita.
+      Acesso protegido por duas credenciais: primeiro o usuário secreto e abaixo a senha alfanumérica. Depois, informe o token GitHub (PAT) para liberar escrita.
     </div>
     <div style="font-size:0.74rem;color:#b71c1c;background:#ffebee;border:1px solid #ffcdd2;border-radius:8px;padding:8px 10px;margin:0 0 12px;line-height:1.45">
       ⚠️ Aviso de segurança: ao informar usuário inválido ou após 3 tentativas incorretas de senha, o IP de origem será enviado ao administrador do site.
@@ -3282,7 +3282,7 @@ async function entrar(){
     return;
   }
   if(!usuarioAdmin){
-    loginErro.innerHTML='&#x274C; Informe o usuário do administrador.';
+    loginErro.innerHTML='&#x274C; Informe o usuário secreto de acesso.';
     loginErro.style.display='block';
     return;
   }
