@@ -2926,7 +2926,25 @@ function pathEstaSemSha(path){
 const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.fidelidade,PATHS.promocoes]);
 
 // ── Compatibilidade legada (funções antigas de sessão) ─────────────────────────
-const ITAP_WORKER_API='https://api.itapolitanacajuru.com.br';
+const ITAP_WORKER_API_DEFAULT='https://api.itapolitanacajuru.com.br';
+function normalizeWorkerApiBase(value){
+  return String(value||'').trim().replace(/\/+$/,'');
+}
+function getSameOriginWorkerApiBase(){
+  try{
+    const origin=normalizeWorkerApiBase(window.location?.origin||'');
+    if(!origin||origin==='null'||origin.startsWith('file:'))return'';
+    return origin;
+  }catch(e){
+    return'';
+  }
+}
+function getWorkerApiBases(){
+  const configured=normalizeWorkerApiBase(globalThis.ITAP_WORKER_API||window.ITAP_WORKER_API||'');
+  const defaults=[configured,normalizeWorkerApiBase(ITAP_WORKER_API_DEFAULT),getSameOriginWorkerApiBase()];
+  return [...new Set(defaults.filter(Boolean))];
+}
+const ITAP_WORKER_API=getWorkerApiBases()[0]||ITAP_WORKER_API_DEFAULT;
 const WORKER_SESSION_TOKEN_KEY='itap_worker_session_token';
 let ADMIN_LOGIN_LOCK_UNTIL_MS=0;
 // Mantém o nome legado para evitar refatoração ampla no arquivo.
@@ -2942,33 +2960,52 @@ function getWorkerAuthHeaders(extra={}){
 }
 async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
   if(!senha)return{ok:false,error:'Senha ausente',kind:'validation'};
-  try{
-    const r=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/session',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username,password:senha,...(githubToken?{githubToken}:{})})
-    },12000);
-    const ct=r.headers.get('content-type')||'';
-    if(!ct.includes('application/json'))return{ok:false,error:'Resposta inesperada de autenticação do Worker.',kind:'server'};
-    const dados=await r.json();
-    if(!r.ok||!dados.ok||!dados.token){
-      return{
-        ok:false,
-        error:dados.error||'Falha na autenticação do Worker.',
-        status:r.status,
-        kind:r.status===429&&dados.code==='ADMIN_LOGIN_LOCKED'
-          ?'locked'
-          :r.status===401
-            ?(dados.code==='INVALID_ADMIN_USERNAME'?'invalid_username':'invalid_credentials')
-            :'server',
-        retryAfterSeconds:Math.max(0,Number(dados.retryAfterSeconds||0))
-      };
+  const payload={username,password:senha,...(githubToken?{githubToken}:{})};
+  const workerBases=getWorkerApiBases();
+  const sessionPaths=['/api/admin/session','/api/admin/auth'];
+  let lastError={ok:false,error:'Falha de rede no Worker.',kind:'network'};
+  for(const workerBase of workerBases){
+    for(const sessionPath of sessionPaths){
+      try{
+        const r=await fetchWithTimeout(workerBase+sessionPath,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(payload)
+        },12000);
+        const ct=(r.headers.get('content-type')||'').toLowerCase();
+        if(!ct.includes('application/json')){
+          lastError={ok:false,error:'Resposta inesperada de autenticação do Worker.',kind:'server',status:r.status};
+          if(r.status===404||r.status===405||r.status>=500)continue;
+          return lastError;
+        }
+        const dados=await r.json();
+        if(r.ok&&dados.ok&&dados.token){
+          setWorkerSessionToken(dados.token);
+          return{ok:true,githubTokenConfigured:dados.githubTokenConfigured===true};
+        }
+        const failure={
+          ok:false,
+          error:dados.error||'Falha na autenticação do Worker.',
+          status:r.status,
+          kind:r.status===429&&dados.code==='ADMIN_LOGIN_LOCKED'
+            ?'locked'
+            :r.status===401
+              ?(dados.code==='INVALID_ADMIN_USERNAME'?'invalid_username':'invalid_credentials')
+              :'server',
+          retryAfterSeconds:Math.max(0,Number(dados.retryAfterSeconds||0))
+        };
+        if((r.status===404||r.status===405)&&sessionPath!==sessionPaths[sessionPaths.length-1]){
+          lastError=failure;
+          continue;
+        }
+        return failure;
+      }catch(e){
+        lastError={ok:false,error:e&&e.message?e.message:'Falha de rede no Worker.',kind:'network'};
+        continue;
+      }
     }
-    setWorkerSessionToken(dados.token);
-    return{ok:true,githubTokenConfigured:dados.githubTokenConfigured===true};
-  }catch(e){
-    return{ok:false,error:e&&e.message?e.message:'Falha de rede no Worker.',kind:'network'};
   }
+  return lastError;
 }
 function setLoginButtonStateLocked(locked){
   const entrarBtn=document.getElementById('btn-entrar-admin');
