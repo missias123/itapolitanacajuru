@@ -46,6 +46,7 @@ const GH_ADMIN_JSON_PATHS = Object.freeze({
   promo:       'dados/promo.json',
   fidelidade:  'dados/fidelidade.json',
   promocoes:   'dados/promocoes.json',
+  errorReports:'dados/admin_error_reports.json',
   clientes:    'dados/clientes.json',
   pedidos:     'dados/pedidos.json',
   encomendas:  'dados/encomendas.json',
@@ -74,6 +75,7 @@ const RATE_LIMITS = {
   'admin-login':      { max: 10, windowMs: 3_600_000 },
   'admin-read':       { max: 120, windowMs: 3_600_000 },
   'admin-write':      { max: 30, windowMs: 3_600_000 },
+  'admin-error-report': { max: 40, windowMs: 3_600_000 },
   'post-enc':         { max: 10, windowMs: 3_600_000 },
   'resgatar':         { max: 10, windowMs: 3_600_000 },
   'post-sorteio':     { max: 3,  windowMs: 1_800_000 },
@@ -613,6 +615,12 @@ async function router(request, env) {
     if (guard) return guard;
     return handleAdminSessionGitHubToken(request, env, await getSession());
   }
+  if (path === '/api/admin/error-report' && method === 'POST') {
+    const session = await getSession();
+    const guard = requireAdmin(session);
+    if (guard) return guard;
+    return handleAdminErrorReport(request, env, session);
+  }
 
   if (path === '/api/admin/pbkdf2-selftest' && method === 'POST') return handlePbkdf2Selftest(request, env);
   if (path === '/api/admin/generate-hash' && method === 'POST') return handleGenerateHash(request, env);
@@ -915,6 +923,71 @@ async function handleAdminSessionGitHubToken(request, env, session) {
     expiresAt,
   }), { expirationTtl: ttlSeconds });
   return jsonResp({ ok: true, ttlSeconds, githubTokenConfigured: true });
+}
+
+function sanitizeErrorReportText(value, maxLen = 400) {
+  return sanitizeString(value ?? '', maxLen).replace(/\s+/g, ' ').trim();
+}
+
+async function handleAdminErrorReport(request, env, session) {
+  const ip = getClientIp(request);
+  const rl = await checkRateLimit(env, ip, 'admin-error-report');
+  if (!rl.allowed) return jsonResp({ ok: false, error: 'Limite de notificações atingido. Tente novamente depois.' }, 429);
+  const githubToken = resolveGitHubToken(env, session);
+  if (!githubToken) {
+    return jsonResp({
+      ok: false,
+      code: 'GITHUB_TOKEN_NOT_CONFIGURED',
+      error: 'Token GitHub não configurado no Worker nem na sessão administrativa',
+    }, 500);
+  }
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 422); }
+  const now = new Date().toISOString();
+  const report = {
+    id: generateIdHash(),
+    ts: now,
+    source: sanitizeErrorReportText(body.source || 'admin', 60),
+    type: sanitizeErrorReportText(body.type || 'runtime', 60),
+    message: sanitizeErrorReportText(body.message || 'Erro sem mensagem', 500),
+    stack: sanitizeErrorReportText(body.stack || '', 4000),
+    url: sanitizeErrorReportText(body.url || '', 500),
+    userAgent: sanitizeErrorReportText(body.userAgent || '', 400),
+    ipHash: await sha256Hex(`${ip}:${(env.ADMIN_SECRET || 'itap')}`).then((hash) => hash.slice(0, 16)),
+  };
+  const filePath = GH_ADMIN_JSON_PATHS.errorReports;
+  const getResp = await fetch(GH_API + filePath, { headers: { 'Authorization': `token ${githubToken}`, 'User-Agent': 'Itapolitana-Worker' } });
+  let existingSha = null;
+  let content = { version: 1, updatedAt: now, reports: [] };
+  if (getResp.ok) {
+    const ghJson = await getResp.json();
+    existingSha = ghJson.sha || null;
+    try {
+      const decoded = atob(String(ghJson.content || '').replace(/\n/g, ''));
+      const parsed = JSON.parse(decoded);
+      if (parsed && typeof parsed === 'object') content = parsed;
+    } catch (_e) {}
+  } else if (getResp.status !== 404) {
+    return jsonResp({ ok: false, error: 'Falha ao obter log de erros no GitHub' }, 500);
+  }
+  const reports = Array.isArray(content.reports) ? content.reports : [];
+  reports.push(report);
+  content = {
+    version: 1,
+    updatedAt: now,
+    reports: reports.slice(-200),
+  };
+  const putResp = await fetch(GH_API + filePath, {
+    method: 'PUT',
+    headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json', 'User-Agent': 'Itapolitana-Worker' },
+    body: JSON.stringify({
+      message: `chore(admin): registrar erro ${report.source}`,
+      content: encodeBase64(`${JSON.stringify(content, null, 2)}\n`),
+      ...(existingSha ? { sha: existingSha } : {}),
+    }),
+  });
+  if (!putResp.ok) return jsonResp({ ok: false, error: 'Falha ao registrar erro no GitHub' }, 500);
+  return jsonResp({ ok: true, reportId: report.id, remaining: rl.remaining });
 }
 
 async function handleAdminGitHubFilePut(request, env, session) {
