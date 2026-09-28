@@ -428,47 +428,47 @@ async function checkRateLimit(env, ip, key) {
     await env.RATE_KV.put(rlKey, JSON.stringify({ count: 1, window: now }), { expirationTtl: Math.ceil(cfg.windowMs / 1000) * 2 });
     return { allowed: true, remaining: cfg.max - 1 };
   }
-
-  async function readAdminLoginLock(env, ip) {
-    const lockRaw = await env.RATE_KV.get(`admin:login:lock:${ip}`, 'json');
-    const lockUntil = Number(lockRaw?.until || 0);
-    if (!lockUntil || Date.now() >= lockUntil) return { locked: false, retryAfterSeconds: 0 };
-    return { locked: true, retryAfterSeconds: Math.max(1, Math.ceil((lockUntil - Date.now()) / 1000)) };
-  }
-
-  async function registerAdminLoginFailure(env, ip) {
-    const key = `admin:login:fail:${ip}`;
-    const current = await env.RATE_KV.get(key, 'json');
-    const count = Math.max(0, Number(current?.count || 0)) + 1;
-    await env.RATE_KV.put(key, JSON.stringify({ count, updatedAt: Date.now() }), { expirationTtl: 24 * 3600 });
-    if (count >= ADMIN_LOGIN_FRAUD_THRESHOLD) {
-      const until = Date.now() + ADMIN_LOGIN_LOCK_SECONDS * 1000;
-      await env.RATE_KV.put(`admin:login:lock:${ip}`, JSON.stringify({ until }), { expirationTtl: ADMIN_LOGIN_LOCK_SECONDS });
-      await env.RATE_KV.delete(key);
-      return {
-        locked: true,
-        attempts: count,
-        retryAfterSeconds: ADMIN_LOGIN_LOCK_SECONDS,
-      };
-    }
-    return {
-      locked: false,
-      attempts: count,
-      remainingAttempts: Math.max(0, ADMIN_LOGIN_FRAUD_THRESHOLD - count),
-      retryAfterSeconds: 0,
-    };
-  }
-
-  async function clearAdminLoginFailures(env, ip) {
-    await Promise.allSettled([
-      env.RATE_KV.delete(`admin:login:fail:${ip}`),
-      env.RATE_KV.delete(`admin:login:lock:${ip}`),
-    ]);
-  }
   if (raw.count >= cfg.max) return { allowed: false, remaining: 0 };
   raw.count += 1;
   await env.RATE_KV.put(rlKey, JSON.stringify(raw), { expirationTtl: Math.ceil(cfg.windowMs / 1000) * 2 });
   return { allowed: true, remaining: cfg.max - raw.count };
+}
+
+async function readAdminLoginLock(env, ip) {
+  const lockRaw = await env.RATE_KV.get(`admin:login:lock:${ip}`, 'json');
+  const lockUntil = Number(lockRaw?.until || 0);
+  if (!lockUntil || Date.now() >= lockUntil) return { locked: false, retryAfterSeconds: 0 };
+  return { locked: true, retryAfterSeconds: Math.max(1, Math.ceil((lockUntil - Date.now()) / 1000)) };
+}
+
+async function registerAdminLoginFailure(env, ip) {
+  const key = `admin:login:fail:${ip}`;
+  const current = await env.RATE_KV.get(key, 'json');
+  const count = Math.max(0, Number(current?.count || 0)) + 1;
+  await env.RATE_KV.put(key, JSON.stringify({ count, updatedAt: Date.now() }), { expirationTtl: 24 * 3600 });
+  if (count >= ADMIN_LOGIN_FRAUD_THRESHOLD) {
+    const until = Date.now() + ADMIN_LOGIN_LOCK_SECONDS * 1000;
+    await env.RATE_KV.put(`admin:login:lock:${ip}`, JSON.stringify({ until }), { expirationTtl: ADMIN_LOGIN_LOCK_SECONDS });
+    await env.RATE_KV.delete(key);
+    return {
+      locked: true,
+      attempts: count,
+      retryAfterSeconds: ADMIN_LOGIN_LOCK_SECONDS,
+    };
+  }
+  return {
+    locked: false,
+    attempts: count,
+    remainingAttempts: Math.max(0, ADMIN_LOGIN_FRAUD_THRESHOLD - count),
+    retryAfterSeconds: 0,
+  };
+}
+
+async function clearAdminLoginFailures(env, ip) {
+  await Promise.allSettled([
+    env.RATE_KV.delete(`admin:login:fail:${ip}`),
+    env.RATE_KV.delete(`admin:login:lock:${ip}`),
+  ]);
 }
 
 function getClientIp(request) {

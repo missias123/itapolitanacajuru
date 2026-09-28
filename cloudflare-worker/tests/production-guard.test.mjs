@@ -30,6 +30,7 @@ const worker = await import(workerPath);
 // ──────────────────────────────────────────────────────────────────────────────
 
 const TEST_SETUP_KEY = 'setup-key-teste-nao-real-1234567890';
+const TEST_ADMIN_USERNAME = 'missiasdoval';
 
 /**
  * Cria um mock de RATE_KV que simula comportamento stateful mínimo.
@@ -375,14 +376,14 @@ describe('/api/admin/session', () => {
   test('POST sem senha retorna 401', async () => {
     const env = makeProductionEnv({ ADMIN_SECRET: 'senha-de-teste-nao-real' });
     env.RATE_KV = makeRateKv();
-    const resp = await fetchWorker('/api/admin/session', 'POST', { password: '' }, env);
+    const resp = await fetchWorker('/api/admin/session', 'POST', { username: TEST_ADMIN_USERNAME, password: '' }, env);
     assert.equal(resp.status, 401);
   });
 
   test('POST com senha incorreta retorna 401', async () => {
     const env = makeProductionEnv({ ADMIN_SECRET: 'senha-correta-nao-real' });
     env.RATE_KV = makeRateKv();
-    const resp = await fetchWorker('/api/admin/session', 'POST', { password: 'senha-errada' }, env);
+    const resp = await fetchWorker('/api/admin/session', 'POST', { username: TEST_ADMIN_USERNAME, password: 'senha-errada' }, env);
     assert.equal(resp.status, 401);
     const body = await resp.json();
     assert.equal(body.ok, false);
@@ -392,7 +393,7 @@ describe('/api/admin/session', () => {
     const env = makeProductionEnv({ ADMIN_SECRET: 'senhaCorretaTestesNaoReal' });
     env.RATE_KV = makeRateKv();
     const resp = await fetchWorker('/api/admin/session', 'POST',
-      { password: 'senhaCorretaTestesNaoReal' }, env);
+      { username: TEST_ADMIN_USERNAME, password: 'senhaCorretaTestesNaoReal' }, env);
     assert.equal(resp.status, 200);
     const body = await resp.json();
     assert.equal(body.ok, true);
@@ -428,7 +429,7 @@ describe('/api/admin/session', () => {
     const env = makeProductionEnv({ ADMIN_SECRET: 'senhaCorretaTestesNaoReal' });
     env.RATE_KV = makeRateKv();
     const resp = await fetchWorker('/api/admin/session', 'POST',
-      { password: 'senhaCorretaTestesNaoReal' }, env);
+      { username: TEST_ADMIN_USERNAME, password: 'senhaCorretaTestesNaoReal' }, env);
     const text = await resp.text();
     const lower = text.toLowerCase();
     assert.ok(!lower.includes('senhacorreta'), 'Senha não deve aparecer na resposta');
@@ -445,7 +446,7 @@ describe('/api/admin/session', () => {
     const loginEnv = makeProductionEnv({ ADMIN_PASSWORD_RECORD: record });
     loginEnv.RATE_KV = makeRateKv();
     const loginResp = await fetchWorker('/api/admin/session', 'POST',
-      { password: 'SenhaTestePBKDF2Valida1234' }, loginEnv);
+      { username: TEST_ADMIN_USERNAME, password: 'SenhaTestePBKDF2Valida1234' }, loginEnv);
     assert.equal(loginResp.status, 200);
     const loginBody = await loginResp.json();
     assert.equal(loginBody.ok, true);
@@ -462,7 +463,7 @@ describe('/api/admin/session', () => {
     const loginEnv = makeProductionEnv({ ADMIN_PASSWORD_RECORD: record });
     loginEnv.RATE_KV = makeRateKv();
     const loginResp = await fetchWorker('/api/admin/session', 'POST',
-      { password: 'SenhaErrada1234567890' }, loginEnv);
+      { username: TEST_ADMIN_USERNAME, password: 'SenhaErrada1234567890' }, loginEnv);
     assert.equal(loginResp.status, 401);
   });
 
@@ -472,7 +473,7 @@ describe('/api/admin/session', () => {
     });
     loginEnv.RATE_KV = makeRateKv();
     const loginResp = await fetchWorker('/api/admin/session', 'POST',
-      { password: 'qualquer' }, loginEnv);
+      { username: TEST_ADMIN_USERNAME, password: 'qualquer' }, loginEnv);
     // Deve retornar 500 (falha criptográfica tratada) sem expor detalhes internos
     assert.equal(loginResp.status, 500);
     const body = await loginResp.json();
@@ -556,7 +557,7 @@ describe('PBKDF2 — validação do algoritmo via generate-hash + session', () =
     const env = makeProductionEnv({ ADMIN_PASSWORD_RECORD });
     env.RATE_KV = makeRateKv();
     const resp = await fetchWorker('/api/admin/session', 'POST',
-      { password: 'SenhaAlongadaParaTeste12345' }, env);
+      { username: TEST_ADMIN_USERNAME, password: 'SenhaAlongadaParaTeste12345' }, env);
     assert.equal(resp.status, 200);
   });
 
@@ -568,7 +569,7 @@ describe('PBKDF2 — validação do algoritmo via generate-hash + session', () =
     const env = makeProductionEnv({ ADMIN_PASSWORD_RECORD });
     env.RATE_KV = makeRateKv();
     const resp = await fetchWorker('/api/admin/session', 'POST',
-      { password: 'SenhaErradaCompletamente999' }, env);
+      { username: TEST_ADMIN_USERNAME, password: 'SenhaErradaCompletamente999' }, env);
     assert.equal(resp.status, 401);
   });
 
