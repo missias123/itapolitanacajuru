@@ -3269,7 +3269,13 @@ async function entrar(){
         GH_TOKEN_CAN_WRITE=validacao.canWrite;
         tokenOk=true;
         if(!workerGithubTokenConfigured){
-          const workerSync=await atualizarTokenGitHubDaSessaoWorker(githubTokenAtivo);
+          let workerSync={ok:false,error:'Falha não detalhada na sincronização do token com o Worker.'};
+          try{
+            const syncResult=await atualizarTokenGitHubDaSessaoWorker(githubTokenAtivo);
+            workerSync=(syncResult&&typeof syncResult==='object')?syncResult:workerSync;
+          }catch(e){
+            workerSync={ok:false,error:e&&e.message?e.message:'Exceção ao sincronizar token com o Worker.'};
+          }
           if(workerSync.ok&&workerSync.githubTokenConfigured===true){
             workerGithubTokenConfigured=true;
           }else{
