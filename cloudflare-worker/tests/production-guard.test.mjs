@@ -31,6 +31,7 @@ const worker = await import(workerPath);
 
 const TEST_SETUP_KEY = 'setup-key-teste-nao-real-1234567890';
 const TEST_ADMIN_USERNAME = 'missiasdoval';
+const TEST_ADMIN_USERNAME_LEGACY_ALIAS = 'misssiasdoval';
 
 /**
  * Cria um mock de RATE_KV que simula comportamento stateful mínimo.
@@ -400,6 +401,28 @@ describe('/api/admin/session', () => {
     assert.ok(typeof body.token === 'string' && body.token.length > 0, 'Deve retornar token');
     // Token não deve ser a própria senha
     assert.notEqual(body.token, 'senhaCorretaTestesNaoReal');
+  });
+
+  test('POST aceita alias legado do usuário admin padrão', async () => {
+    const env = makeProductionEnv({ ADMIN_SECRET: 'senhaCorretaTestesNaoReal' });
+    env.RATE_KV = makeRateKv();
+    const resp = await fetchWorker('/api/admin/session', 'POST',
+      { username: TEST_ADMIN_USERNAME_LEGACY_ALIAS, password: 'senhaCorretaTestesNaoReal' }, env);
+    assert.equal(resp.status, 200);
+    const body = await resp.json();
+    assert.equal(body.ok, true);
+    assert.ok(typeof body.token === 'string' && body.token.length > 0);
+  });
+
+  test('POST com usuário fora da lista permitida retorna 401 e INVALID_ADMIN_USERNAME', async () => {
+    const env = makeProductionEnv({ ADMIN_SECRET: 'senhaCorretaTestesNaoReal' });
+    env.RATE_KV = makeRateKv();
+    const resp = await fetchWorker('/api/admin/session', 'POST',
+      { username: 'usuario-desconhecido', password: 'senhaCorretaTestesNaoReal' }, env);
+    assert.equal(resp.status, 401);
+    const body = await resp.json();
+    assert.equal(body.ok, false);
+    assert.equal(body.code, 'INVALID_ADMIN_USERNAME');
   });
 
   test('POST com corpo inválido retorna 400', async () => {
