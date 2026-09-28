@@ -603,6 +603,9 @@ body { overflow-x: hidden; }
     <img class="logo-img-admin" src="images/logo.webp" alt="Logo Itapolitana" onerror="this.style.display='none'">
     <h1>&#128737;&#65039; Painel Administrativo</h1>
     <p>Sorveteria Itapolitana Cajuru</p>
+    <div class="inp-wrap" style="margin-bottom:8px">
+      <input type="text" id="inp-usuario-admin" placeholder="Usuário administrador" autocomplete="username" spellcheck="false"/>
+    </div>
     <div class="inp-wrap">
       <input type="password" id="inp-senha" placeholder="Senha do administrador" autocomplete="current-password"/>
       <button type="button" class="eye" id="eye-btn" aria-label="Mostrar ou ocultar senha">&#x1F441;&#xFE0F;</button>
@@ -616,7 +619,7 @@ body { overflow-x: hidden; }
       Entre com sua senha e seu token GitHub (PAT) para acessar o painel com permissão de escrita.
     </div>
     <div style="font-size:0.74rem;color:#b71c1c;background:#ffebee;border:1px solid #ffcdd2;border-radius:8px;padding:8px 10px;margin:0 0 12px;line-height:1.45">
-      ⚠️ Aviso de segurança: após 3 tentativas incorretas de senha, o IP de origem pode ser registrado e enviado ao administrador do site.
+      ⚠️ Aviso de segurança: ao informar usuário inválido ou após 3 tentativas incorretas de senha, o IP de origem será enviado ao administrador do site.
     </div>
     <button type="button" class="btn-login" id="btn-entrar-admin">&#x1F510; Entrar no Admin</button>
     <div class="login-erro" id="login-erro">&#x274C; Informe a senha do administrador.</div>
@@ -2924,6 +2927,7 @@ const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.fid
 // ── Compatibilidade legada (funções antigas de sessão) ─────────────────────────
 const ITAP_WORKER_API='https://api.itapolitanacajuru.com.br';
 const WORKER_SESSION_TOKEN_KEY='itap_worker_session_token';
+const ADMIN_LOGIN_USERNAME='missiasdoval';
 // Mantém o nome legado para evitar refatoração ampla no arquivo.
 function getAdminToken(){return GH_WRITE_ALLOWED?getToken():'';}
 function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','Authorization':`token ${getAdminToken()}`,...extra};}
@@ -2935,13 +2939,13 @@ function getWorkerAuthHeaders(extra={}){
   const sessionToken=getWorkerSessionToken();
   return {'Content-Type':'application/json',...(sessionToken?{'X-Itap-Session-Token':sessionToken}:{}),...extra};
 }
-async function iniciarSessaoWorkerComSenha(senha,githubToken=''){
+async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
   if(!senha)return{ok:false,error:'Senha ausente',kind:'validation'};
   try{
     const r=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/session',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({password:senha,...(githubToken?{githubToken}:{})})
+      body:JSON.stringify({username,password:senha,...(githubToken?{githubToken}:{})})
     },12000);
     const ct=r.headers.get('content-type')||'';
     if(!ct.includes('application/json'))return{ok:false,error:'Resposta inesperada de autenticação do Worker.',kind:'server'};
@@ -2951,7 +2955,9 @@ async function iniciarSessaoWorkerComSenha(senha,githubToken=''){
         ok:false,
         error:dados.error||'Falha na autenticação do Worker.',
         status:r.status,
-        kind:r.status===401?'invalid_credentials':'server'
+        kind:r.status===401
+          ?(dados.code==='INVALID_ADMIN_USERNAME'?'invalid_username':'invalid_credentials')
+          :'server'
       };
     }
     setWorkerSessionToken(dados.token);
@@ -3235,25 +3241,38 @@ async function sha256(str) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 async function entrar(){
+  const usuarioAdmin=(document.getElementById('inp-usuario-admin')?.value||'').trim();
   const senha=document.getElementById('inp-senha').value;
   const githubTokenDigitado=(document.getElementById('inp-github-token')?.value||'').trim();
   const githubTokenSalvo=getToken().trim();
   const githubTokenAtivo=githubTokenDigitado||githubTokenSalvo;
   const githubTokenForWorker=tokenFormatoValido(githubTokenAtivo)?githubTokenAtivo:'';
   const loginErro=document.getElementById('login-erro');
+  if(!usuarioAdmin){
+    loginErro.innerHTML='&#x274C; Informe o usuário do administrador.';
+    loginErro.style.display='block';
+    return;
+  }
+  if(usuarioAdmin.toLowerCase()!==ADMIN_LOGIN_USERNAME.toLowerCase()){
+    loginErro.innerHTML='&#x1F6A8; Tentativa de fraude detectada: usuário inválido. O IP será enviado ao administrador do site.';
+    loginErro.style.display='block';
+    return;
+  }
   if(!senha){
     loginErro.innerHTML='&#x274C; Informe a senha do administrador.';
     loginErro.style.display='block';
     return;
   }
   mostrarLoading('Verificando...');
-  const workerAuth=await iniciarSessaoWorkerComSenha(senha,githubTokenForWorker);
+  const workerAuth=await iniciarSessaoWorkerComSenha(senha,githubTokenForWorker,usuarioAdmin);
   if(!workerAuth.ok){
     ocultarLoading();
     clearWorkerSessionToken();
-    loginErro.innerHTML=workerAuth.kind==='invalid_credentials'
-      ? '&#x274C; Senha incorreta.'
-      : '⚠️ Não foi possível validar o acesso no Worker seguro agora. Verifique a conexão/configuração e tente novamente.';
+    loginErro.innerHTML=workerAuth.kind==='invalid_username'
+      ? '&#x1F6A8; Tentativa de fraude detectada: usuário inválido. O IP será enviado ao administrador do site.'
+      : workerAuth.kind==='invalid_credentials'
+        ? '&#x274C; Senha incorreta.'
+        : '⚠️ Não foi possível validar o acesso no Worker seguro agora. Verifique a conexão/configuração e tente novamente.';
     loginErro.style.display='block';
     return;
   }
@@ -3282,7 +3301,7 @@ async function entrar(){
           if(workerSync.ok&&workerSync.githubTokenConfigured===true){
             workerGithubTokenConfigured=true;
           }else{
-            const workerRetry=await iniciarSessaoWorkerComSenha(senha,githubTokenAtivo);
+            const workerRetry=await iniciarSessaoWorkerComSenha(senha,githubTokenAtivo,usuarioAdmin);
             if(workerRetry.ok&&workerRetry.githubTokenConfigured===true){
               workerGithubTokenConfigured=true;
             }
@@ -3368,6 +3387,8 @@ async function reativarSessaoWorker(){await reativarTokenGitHub();}
 function sair(){
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('admin-app').style.display='none';
+  const usuarioInput=document.getElementById('inp-usuario-admin');
+  if(usuarioInput)usuarioInput.value='';
   document.getElementById('inp-senha').value='';
   const tokenInput=document.getElementById('inp-github-token');
   if(tokenInput)tokenInput.value='';
@@ -8077,6 +8098,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 0. Carrega a sessão já ativa nesta aba e mostra o status ao usuário
   try { preencherTokenSalvoNoLogin(); } catch(e) { console.warn('[Admin] preencherTokenSalvoNoLogin', e); }
+  const usuarioAdminInput=document.getElementById('inp-usuario-admin');
+  if(usuarioAdminInput&&!usuarioAdminInput.value)usuarioAdminInput.value=ADMIN_LOGIN_USERNAME;
   try { carregarConfigAdmin(); } catch(e) { console.warn('[Admin] carregarConfigAdmin', e); }
 
   // 1. Spellcheck e autocorreção em todos os campos
@@ -10728,12 +10751,13 @@ async function zerarPontosNegativos(clienteId){
 /* Controles de acesso resilientes: independentes de onclick inline e seguros contra submit acidental. */
 (function () {
   function configurarAcesso() {
+    const usuario = document.getElementById('inp-usuario-admin');
     const senha = document.getElementById('inp-senha');
     const token = document.getElementById('inp-github-token');
     const olhoSenha = document.getElementById('eye-btn');
     const olhoToken = document.getElementById('eye-btn-token');
     const entrarBtn = document.getElementById('btn-entrar-admin');
-    if (!senha || !token || !olhoSenha || !olhoToken || !entrarBtn) return;
+    if (!usuario || !senha || !token || !olhoSenha || !olhoToken || !entrarBtn) return;
 
     const alternar = (campo, botao, nome) => {
       const visivel = campo.type === 'password';
@@ -10756,6 +10780,9 @@ async function zerarPontosNegativos(clienteId){
       if (typeof window.entrar === 'function') window.entrar();
     };
     entrarBtn.addEventListener('click', submeter);
+    usuario.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') submeter(event);
+    });
     senha.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') submeter(event);
     });

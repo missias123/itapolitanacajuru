@@ -682,6 +682,11 @@ async function handleAdminSession(request, env) {
   if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas de login.' }, 429);
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 400); }
+  const username = sanitizeString(body.username || body.user || '', 120);
+  const expectedUsername = sanitizeString(env.ADMIN_USERNAME || 'missiasdoval', 120);
+  if (!username || !expectedUsername || username.toLowerCase() !== expectedUsername.toLowerCase()) {
+    return jsonResp({ ok: false, code: 'INVALID_ADMIN_USERNAME', error: 'Tentativa de fraude detectada' }, 401);
+  }
   const password = sanitizeString(body.password || body.secret, 200);
   if (!(await verifyAdminPassword(password, env))) return jsonResp({ ok: false, error: 'Sessão ausente ou inválida' }, 401);
   const permissions = [...normalizePermissionList(env.ADMIN_DEFAULT_PERMISSIONS)];
