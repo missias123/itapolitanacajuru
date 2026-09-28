@@ -2994,7 +2994,7 @@ async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
               :'server',
           retryAfterSeconds:Math.max(0,Number(dados.retryAfterSeconds||0))
         };
-        if(r.status===404||r.status===405){
+        if((r.status===404||r.status===405)&&sessionPath!==sessionPaths[sessionPaths.length-1]){
           lastError=failure;
           continue;
         }
