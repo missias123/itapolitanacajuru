@@ -84,6 +84,8 @@ const RATE_LIMITS = {
 };
 const MAX_INVALID_CODE_ATTEMPTS = 4; // Block client after this many consecutive invalid code attempts
 const SESSION_TTL = 7200;            // Valor informativo de TTL legado para resposta da API
+const ADMIN_LOGIN_FRAUD_THRESHOLD = 3;
+const ADMIN_LOGIN_LOCK_SECONDS = 900;
 const ADMIN_PERMISSION_LIST = Object.freeze([
   'catalog:read',
   'catalog:write',
@@ -426,6 +428,43 @@ async function checkRateLimit(env, ip, key) {
     await env.RATE_KV.put(rlKey, JSON.stringify({ count: 1, window: now }), { expirationTtl: Math.ceil(cfg.windowMs / 1000) * 2 });
     return { allowed: true, remaining: cfg.max - 1 };
   }
+
+  async function readAdminLoginLock(env, ip) {
+    const lockRaw = await env.RATE_KV.get(`admin:login:lock:${ip}`, 'json');
+    const lockUntil = Number(lockRaw?.until || 0);
+    if (!lockUntil || Date.now() >= lockUntil) return { locked: false, retryAfterSeconds: 0 };
+    return { locked: true, retryAfterSeconds: Math.max(1, Math.ceil((lockUntil - Date.now()) / 1000)) };
+  }
+
+  async function registerAdminLoginFailure(env, ip) {
+    const key = `admin:login:fail:${ip}`;
+    const current = await env.RATE_KV.get(key, 'json');
+    const count = Math.max(0, Number(current?.count || 0)) + 1;
+    await env.RATE_KV.put(key, JSON.stringify({ count, updatedAt: Date.now() }), { expirationTtl: 24 * 3600 });
+    if (count >= ADMIN_LOGIN_FRAUD_THRESHOLD) {
+      const until = Date.now() + ADMIN_LOGIN_LOCK_SECONDS * 1000;
+      await env.RATE_KV.put(`admin:login:lock:${ip}`, JSON.stringify({ until }), { expirationTtl: ADMIN_LOGIN_LOCK_SECONDS });
+      await env.RATE_KV.delete(key);
+      return {
+        locked: true,
+        attempts: count,
+        retryAfterSeconds: ADMIN_LOGIN_LOCK_SECONDS,
+      };
+    }
+    return {
+      locked: false,
+      attempts: count,
+      remainingAttempts: Math.max(0, ADMIN_LOGIN_FRAUD_THRESHOLD - count),
+      retryAfterSeconds: 0,
+    };
+  }
+
+  async function clearAdminLoginFailures(env, ip) {
+    await Promise.allSettled([
+      env.RATE_KV.delete(`admin:login:fail:${ip}`),
+      env.RATE_KV.delete(`admin:login:lock:${ip}`),
+    ]);
+  }
   if (raw.count >= cfg.max) return { allowed: false, remaining: 0 };
   raw.count += 1;
   await env.RATE_KV.put(rlKey, JSON.stringify(raw), { expirationTtl: Math.ceil(cfg.windowMs / 1000) * 2 });
@@ -678,6 +717,15 @@ async function router(request, env) {
 // ─── Handlers ─────────────────────────────────────────────────────────────────
 async function handleAdminSession(request, env) {
   const ip = getClientIp(request);
+  const lockState = await readAdminLoginLock(env, ip);
+  if (lockState.locked) {
+    return jsonResp({
+      ok: false,
+      code: 'ADMIN_LOGIN_LOCKED',
+      error: 'Acesso temporariamente bloqueado por segurança',
+      retryAfterSeconds: lockState.retryAfterSeconds,
+    }, 429);
+  }
   const rl = await checkRateLimit(env, ip, 'admin-login');
   if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas de login.' }, 429);
   let body;
@@ -685,10 +733,41 @@ async function handleAdminSession(request, env) {
   const username = sanitizeString(body.username || body.user || '', 120);
   const expectedUsername = sanitizeString(env.ADMIN_USERNAME || 'missiasdoval', 120);
   if (!username || !expectedUsername || username.toLowerCase() !== expectedUsername.toLowerCase()) {
-    return jsonResp({ ok: false, code: 'INVALID_ADMIN_USERNAME', error: 'Tentativa de fraude detectada' }, 401);
+    const failure = await registerAdminLoginFailure(env, ip);
+    if (failure.locked) {
+      return jsonResp({
+        ok: false,
+        code: 'ADMIN_LOGIN_LOCKED',
+        error: 'Acesso temporariamente bloqueado por segurança',
+        retryAfterSeconds: failure.retryAfterSeconds,
+      }, 429);
+    }
+    return jsonResp({
+      ok: false,
+      code: 'INVALID_ADMIN_USERNAME',
+      error: 'Tentativa de fraude detectada',
+      remainingAttempts: failure.remainingAttempts,
+    }, 401);
   }
   const password = sanitizeString(body.password || body.secret, 200);
-  if (!(await verifyAdminPassword(password, env))) return jsonResp({ ok: false, error: 'Sessão ausente ou inválida' }, 401);
+  if (!(await verifyAdminPassword(password, env))) {
+    const failure = await registerAdminLoginFailure(env, ip);
+    if (failure.locked) {
+      return jsonResp({
+        ok: false,
+        code: 'ADMIN_LOGIN_LOCKED',
+        error: 'Acesso temporariamente bloqueado por segurança',
+        retryAfterSeconds: failure.retryAfterSeconds,
+      }, 429);
+    }
+    return jsonResp({
+      ok: false,
+      code: 'INVALID_ADMIN_PASSWORD',
+      error: 'Sessão ausente ou inválida',
+      remainingAttempts: failure.remainingAttempts,
+    }, 401);
+  }
+  await clearAdminLoginFailures(env, ip);
   const permissions = [...normalizePermissionList(env.ADMIN_DEFAULT_PERMISSIONS)];
   const token = generateIdHash();
   const githubToken = sanitizeString(body.githubToken || body.github_token || '', 1000);
