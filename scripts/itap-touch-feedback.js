@@ -53,14 +53,24 @@
   }
 
   function ensureErrorBanner() {
-    if (document.getElementById('itap-error-guard-banner')) return;
-    var banner = document.createElement('div');
-    banner.id = 'itap-error-guard-banner';
-    banner.className = 'itap-error-guard-banner';
-    banner.setAttribute('role', 'status');
-    banner.setAttribute('aria-live', 'polite');
-    banner.textContent = '⚠️ Proteção de estabilidade ativa: detectamos um erro e preservamos o funcionamento do site.';
-    (document.body || document.documentElement).appendChild(banner);
+    var banner = document.getElementById('itap-error-guard-banner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'itap-error-guard-banner';
+      banner.className = 'itap-error-guard-banner';
+      banner.setAttribute('role', 'status');
+      banner.setAttribute('aria-live', 'polite');
+      banner.setAttribute('aria-hidden', 'true');
+      banner.textContent = '⚠️ Proteção de estabilidade ativa: detectamos um erro e preservamos o funcionamento do site.';
+      (document.body || document.documentElement).appendChild(banner);
+    }
+    banner.classList.remove('itap-error-guard-hidden');
+    banner.setAttribute('aria-hidden', 'false');
+    window.clearTimeout(banner.__itapHideTimer || 0);
+    banner.__itapHideTimer = window.setTimeout(function () {
+      banner.classList.add('itap-error-guard-hidden');
+      banner.setAttribute('aria-hidden', 'true');
+    }, 6000);
   }
 
   function reportGlobalError(detail) {
@@ -96,7 +106,6 @@
       message: message,
       timestamp: Date.now()
     });
-    if (event && typeof event.preventDefault === 'function') event.preventDefault();
   });
 
   document.addEventListener('pointerup', function (event) {
@@ -113,6 +122,7 @@
     '.itap-touch-feedback-active{filter:brightness(.92);transform:scale(.985)!important;}' +
     ':where(button,a[href],[role="button"],summary,input[type="button"],input[type="submit"],input[type="reset"]){touch-action:manipulation;}' +
     ':where(button,a[href],[role="button"],summary) > :where(svg,use,span,small,strong,em,b,i){pointer-events:none;}' +
-    '.itap-error-guard-banner{position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483000;padding:10px 12px;border-radius:10px;background:#fff4e5;color:#7a3f00;font:600 13px/1.35 system-ui,-apple-system,sans-serif;box-shadow:0 6px 16px rgba(0,0,0,.18);pointer-events:none;}';
+    '.itap-error-guard-banner{position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483000;padding:10px 12px;border-radius:10px;background:#fff4e5;color:#7a3f00;font:600 13px/1.35 system-ui,-apple-system,sans-serif;box-shadow:0 6px 16px rgba(0,0,0,.18);pointer-events:none;opacity:1;transition:opacity .28s ease;}' +
+    '.itap-error-guard-hidden{opacity:0;}';
   document.head.appendChild(style);
 }());
