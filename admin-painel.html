@@ -605,6 +605,7 @@ body { overflow-x: hidden; }
     <p>Sorveteria Itapolitana Cajuru</p>
     <div class="inp-wrap" style="margin-bottom:8px">
       <input type="password" id="inp-usuario-admin" aria-label="Usuário secreto de acesso" placeholder="Usuário secreto de acesso" autocomplete="off" spellcheck="false"/>
+      <button type="button" class="eye" id="eye-btn-usuario" aria-label="Mostrar ou ocultar usuário secreto">&#x1F441;&#xFE0F;</button>
     </div>
     <div class="inp-wrap">
       <input type="password" id="inp-senha" aria-label="Senha alfanumérica do administrador" placeholder="Senha do administrador" autocomplete="current-password"/>
@@ -10785,10 +10786,11 @@ async function zerarPontosNegativos(clienteId){
     const usuario = document.getElementById('inp-usuario-admin');
     const senha = document.getElementById('inp-senha');
     const token = document.getElementById('inp-github-token');
+    const olhoUsuario = document.getElementById('eye-btn-usuario');
     const olhoSenha = document.getElementById('eye-btn');
     const olhoToken = document.getElementById('eye-btn-token');
     const entrarBtn = document.getElementById('btn-entrar-admin');
-    if (!usuario || !senha || !token || !olhoSenha || !olhoToken || !entrarBtn) return;
+    if (!usuario || !senha || !token || !olhoUsuario || !olhoSenha || !olhoToken || !entrarBtn) return;
 
     const alternar = (campo, botao, nome) => {
       const visivel = campo.type === 'password';
@@ -10798,6 +10800,10 @@ async function zerarPontosNegativos(clienteId){
       campo.focus({ preventScroll: true });
     };
 
+    olhoUsuario.addEventListener('click', (event) => {
+      event.preventDefault();
+      alternar(usuario, olhoUsuario, 'usuário secreto');
+    });
     olhoSenha.addEventListener('click', (event) => {
       event.preventDefault();
       alternar(senha, olhoSenha, 'senha');
