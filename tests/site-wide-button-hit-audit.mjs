@@ -225,6 +225,8 @@ const BUTTON_SCAN_FN = (selector) => {
       classList: typeof el.className === 'string' ? el.className.split(' ').filter(Boolean) : [],
       disabled: el.disabled || el.getAttribute('aria-disabled') === 'true',
       inputType: String(el.getAttribute('type') || '').toLowerCase(),
+      buttonType: String(el.type || el.getAttribute('type') || '').toLowerCase(),
+      formBound: Boolean(el.form),
       bbox: { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height },
       minTouchTarget: r.width >= 44 && r.height >= 44,
       hitCount,
@@ -510,6 +512,8 @@ function isCriticalButton(button) {
   const classes = Array.isArray(button.classList) ? button.classList.join(' ').toLowerCase() : '';
   const tag = String(button.tag || '').toLowerCase();
   const inputType = String(button.inputType || '').toLowerCase();
+  const buttonType = String(button.buttonType || '').toLowerCase();
+  const formBound = Boolean(button.formBound);
   const identifier = `${id} ${classes} ${text}`.trim();
   if (!identifier && tag !== 'button' && tag !== 'input') return false;
   if (NON_CRITICAL_KEYWORDS_RE.test(identifier) && !CRITICAL_KEYWORDS_RE.test(identifier)) return false;
@@ -517,10 +521,16 @@ function isCriticalButton(button) {
     || /btn-(?:comprar|pedido|checkout|salvar|atualizar|confirm|carrinho)/i.test(identifier)
     || /(?:save|checkout|submit|confirm|buy|order|cart|login|publish)/i.test(identifier);
   if (tag === 'input') {
-    if (['submit', 'button'].includes(inputType)) return byActionKeyword;
+    if (inputType === 'submit') return true;
+    if (inputType === 'button') return byActionKeyword;
     return false;
   }
-  if (tag === 'button') return byActionKeyword;
+  if (tag === 'button') {
+    if (buttonType === 'submit') return true;
+    if (buttonType === 'reset') return false;
+    if (formBound && !buttonType) return true;
+    return byActionKeyword;
+  }
   return byActionKeyword;
 }
 

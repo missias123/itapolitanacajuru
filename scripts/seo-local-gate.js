@@ -53,6 +53,11 @@ function hasCanonical(html, expectedHref) {
   });
 }
 
+function getTitleText(html) {
+  const match = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  return (match?.[1] || '').replace(/\s+/g, ' ').trim();
+}
+
 for (const rule of PAGE_RULES) {
   let html = '';
   try {
@@ -62,7 +67,8 @@ for (const rule of PAGE_RULES) {
     continue;
   }
 
-  check(`${rule.file}: <title> com foco local`, has(html, new RegExp(`<title[^>]*>[^<]*${rule.localTerm.source}[^<]*<\\/title>`, 'i')), 'Título deve conter termo local relevante.');
+  const titleText = getTitleText(html);
+  check(`${rule.file}: <title> com foco local`, rule.localTerm.test(titleText), `Título atual: ${titleText || 'ausente'}`);
   const description = getMetaContentByName(html, 'description');
   check(`${rule.file}: meta description local`, rule.localTerm.test(description), `Description atual: ${description || 'ausente'}`);
   check(`${rule.file}: canonical oficial`, hasCanonical(html, rule.canonical), rule.canonical);
