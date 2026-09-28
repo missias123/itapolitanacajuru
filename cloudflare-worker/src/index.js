@@ -461,7 +461,7 @@ function sanitizeString(v, maxLen = 200) {
 }
 
 function resolveGitHubToken(env, session = null) {
-  const candidates = [env?.GITHUB_TOKEN, env?.GITHUB_PAT, env?.GH_TOKEN, session?.githubToken];
+  const candidates = [session?.githubToken, env?.GITHUB_TOKEN, env?.GITHUB_PAT, env?.GH_TOKEN];
   for (const candidate of candidates) {
     const token = sanitizeString(candidate, 1000);
     if (token) return token;
