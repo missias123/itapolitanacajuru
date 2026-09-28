@@ -22,6 +22,10 @@ import puppeteer from 'puppeteer';
 const base = process.env.AUDIT_BASE || 'http://127.0.0.1:8135';
 const out = process.env.AUDIT_OUT || '/tmp/itapolitana-site-wide-hit-audit.json';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const STRICT_CRITICAL = process.env.AUDIT_STRICT_CRITICAL !== '0';
+const EXTRA_PAGE_CANDIDATES = [
+  'admin/index.html',
+];
 
 const VIEWPORTS = [
   { name: 'iphone-se',      width: 320, height: 700,  isMobile: true  },
@@ -34,10 +38,20 @@ const VIEWPORTS = [
 
 async function listHtmlPages() {
   const rootEntries = await fs.readdir(root, { withFileTypes: true });
-  return rootEntries
+  const pages = rootEntries
     .filter((entry) => entry.isFile() && entry.name.endsWith('.html') && !entry.name.startsWith('.'))
     .map((entry) => entry.name)
     .sort();
+  for (const candidate of EXTRA_PAGE_CANDIDATES) {
+    const absolute = path.resolve(root, candidate);
+    try {
+      const stat = await fs.stat(absolute);
+      if (stat.isFile()) pages.push(candidate);
+    } catch (_) {
+      // arquivo opcional
+    }
+  }
+  return [...new Set(pages)].sort();
 }
 
 // Seletor amplo de candidatos a botão
@@ -45,6 +59,9 @@ const BUTTON_SELECTOR =
   'button, [role="button"], input[type="button"], input[type="submit"],' +
   ' input[type="reset"], a[href], summary, label[for],' +
   ' .btn, .categoria-header, .modal-close, [data-action]';
+
+const CRITICAL_KEYWORDS_RE = /\b(comprar|encomendar|encomenda|retirada|finalizar|checkout|carrinho|pedir|pedido|salvar|atualizar|publicar|login|entrar|confirmar|pagar)\b/i;
+const NON_CRITICAL_KEYWORDS_RE = /\b(fechar|cancelar|voltar|ocultar|x|×)\b/i;
 
 // ── helpers de avaliação no browser ────────────────────────────────────────
 
@@ -207,6 +224,9 @@ const BUTTON_SCAN_FN = (selector) => {
       text: (el.textContent || el.value || '').trim().slice(0, 80),
       classList: typeof el.className === 'string' ? el.className.split(' ').filter(Boolean) : [],
       disabled: el.disabled || el.getAttribute('aria-disabled') === 'true',
+      inputType: String(el.getAttribute('type') || '').toLowerCase(),
+      buttonType: String(el.type || el.getAttribute('type') || '').toLowerCase(),
+      formBound: Boolean(el.form),
       bbox: { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height },
       minTouchTarget: r.width >= 44 && r.height >= 44,
       hitCount,
@@ -486,6 +506,49 @@ const summary = {
   partialDetails,
 };
 
+function isCriticalButton(button) {
+  const id = String(button.id || '').toLowerCase();
+  const text = String(button.text || '').toLowerCase();
+  const classes = Array.isArray(button.classList) ? button.classList.join(' ').toLowerCase() : '';
+  const tag = String(button.tag || '').toLowerCase();
+  const inputType = String(button.inputType || '').toLowerCase();
+  const buttonType = String(button.buttonType || '').toLowerCase();
+  const formBound = Boolean(button.formBound);
+  const identifier = `${id} ${classes} ${text}`.trim();
+  if (!identifier && tag !== 'button' && tag !== 'input') return false;
+  if (NON_CRITICAL_KEYWORDS_RE.test(identifier) && !CRITICAL_KEYWORDS_RE.test(identifier)) return false;
+  const byActionKeyword = CRITICAL_KEYWORDS_RE.test(identifier)
+    || /btn-(?:comprar|pedido|checkout|salvar|atualizar|confirm|carrinho)/i.test(identifier)
+    || /(?:save|checkout|submit|confirm|buy|order|cart|login|publish)/i.test(identifier);
+  if (tag === 'input') {
+    if (inputType === 'submit') return true;
+    if (inputType === 'button') return byActionKeyword;
+    return false;
+  }
+  if (tag === 'button') {
+    if (buttonType === 'submit') return true;
+    if (buttonType === 'reset') return false;
+    if (formBound && !buttonType) return true;
+    return byActionKeyword;
+  }
+  return byActionKeyword;
+}
+
+const criticalPartiallyBlocked = allButtons
+  .filter((button) => button._status === 'partiallyBlocked' && isCriticalButton(button))
+  .map((button) => ({
+    page: button._page,
+    state: button._state,
+    viewport: button._viewport,
+    tag: button.tag,
+    id: button.id,
+    text: button.text,
+    classList: button.classList,
+    hitCount: button.hitCount,
+  }));
+summary.criticalPartiallyBlocked = criticalPartiallyBlocked.length;
+summary.criticalPartiallyBlockedDetails = criticalPartiallyBlocked;
+
 const payload = {
   generatedAt: new Date().toISOString(),
   base,
@@ -500,6 +563,9 @@ console.log(JSON.stringify({ out, summary: { ...summary, blockedDetails: undefin
 if (summary.blocked > 0) {
   console.error(`\n❌ ${summary.blocked} botões BLOQUEADOS encontrados. Ver: ${out}`);
   process.exitCode = 1;
+} else if (STRICT_CRITICAL && summary.criticalPartiallyBlocked > 0) {
+  console.error(`\n❌ ${summary.criticalPartiallyBlocked} botões CRÍTICOS parcialmente bloqueados encontrados. Ver: ${out}`);
+  process.exitCode = 1;
 } else {
-  console.log(`\n✅ Nenhum botão completamente bloqueado. ${summary.partiallyBlocked} parcialmente bloqueados. Ver: ${out}`);
+  console.log(`\n✅ Nenhum bloqueio impeditivo. Parcialmente bloqueados: ${summary.partiallyBlocked}; críticos parcialmente bloqueados: ${summary.criticalPartiallyBlocked}. Ver: ${out}`);
 }
