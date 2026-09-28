@@ -125,6 +125,62 @@ test('aceita GITHUB_PAT como alias permanente para escrita administrativa', asyn
   }
 });
 
+test('reaproveita token GitHub salvo na sessão admin quando o Worker não tem segredo global', async () => {
+  const env = createEnv({ GITHUB_TOKEN: '' });
+  await env.RATE_KV.put('session:t3-session-token', JSON.stringify({
+    permissions: ['catalog:write'],
+    githubToken: 'token-da-sessao',
+    expiresAt: Date.now() + 60000,
+  }));
+
+  const originalFetch = globalThis.fetch;
+  const authHeaders = [];
+  globalThis.fetch = async (url, options = {}) => {
+    const target = String(url);
+    if (target.includes('/contents/dados/config.json') && (!options.method || options.method === 'GET')) {
+      authHeaders.push(options?.headers?.Authorization || '');
+      return new Response(JSON.stringify({ sha: 'sha-atual' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    if (target.includes('/contents/dados/config.json') && options.method === 'PUT') {
+      authHeaders.push(options?.headers?.Authorization || '');
+      return new Response(JSON.stringify({ content: { sha: 'sha-novo' } }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    throw new Error(`URL inesperada: ${target}`);
+  };
+
+  try {
+    const { status, json } = await request(env, '/api/admin/github-file', {
+      method: 'PUT',
+      headers: { 'X-Itap-Session-Token': 't3-session-token' },
+      body: { path: 'dados/config.json', content: { ok: true } },
+    });
+    assert.equal(status, 200);
+    assert.equal(json.ok, true);
+    assert.deepEqual(authHeaders, ['token token-da-sessao', 'token token-da-sessao']);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('sincroniza token GitHub validado para a sessão admin existente', async () => {
+  const env = createEnv({ GITHUB_TOKEN: '' });
+  await env.RATE_KV.put('session:t4-sync', JSON.stringify({
+    permissions: ['catalog:write'],
+    expiresAt: Date.now() + 60000,
+  }));
+
+  const { status, json } = await request(env, '/api/admin/session/github-token', {
+    method: 'PUT',
+    headers: { 'X-Itap-Session-Token': 't4-sync' },
+    body: { githubToken: 'token-sessao-atualizado' },
+  });
+  assert.equal(status, 200);
+  assert.equal(json.ok, true);
+
+  const stored = await env.RATE_KV.get('session:t4-sync', 'json');
+  assert.equal(stored.githubToken, 'token-sessao-atualizado');
+});
+
 test('deduplica encomenda por idempotency key', async () => {
   const env = createEnv();
   const originalFetch = globalThis.fetch;
