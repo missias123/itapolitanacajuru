@@ -2930,6 +2930,14 @@ const ITAP_WORKER_API_DEFAULT='https://api.itapolitanacajuru.com.br';
 function normalizeWorkerApiBase(value){
   return String(value||'').trim().replace(/\/+$/,'');
 }
+const WORKER_API_BASE_KEY='itap_worker_api_base';
+function getStoredWorkerApiBase(){
+  return normalizeWorkerApiBase(ssGet(WORKER_API_BASE_KEY)||'');
+}
+function setStoredWorkerApiBase(base){
+  const normalized=normalizeWorkerApiBase(base);
+  if(normalized)ssSet(WORKER_API_BASE_KEY,normalized);
+}
 function getSameOriginWorkerApiBase(){
   try{
     const origin=normalizeWorkerApiBase(window.location?.origin||'');
@@ -2941,10 +2949,13 @@ function getSameOriginWorkerApiBase(){
 }
 function getWorkerApiBases(){
   const configured=normalizeWorkerApiBase(globalThis.ITAP_WORKER_API||window.ITAP_WORKER_API||'');
-  const defaults=[configured,normalizeWorkerApiBase(ITAP_WORKER_API_DEFAULT),getSameOriginWorkerApiBase()];
+  const defaults=[getStoredWorkerApiBase(),configured,normalizeWorkerApiBase(ITAP_WORKER_API_DEFAULT),getSameOriginWorkerApiBase()];
   return [...new Set(defaults.filter(Boolean))];
 }
-const ITAP_WORKER_API=getWorkerApiBases()[0]||ITAP_WORKER_API_DEFAULT;
+function getCurrentWorkerApiBase(){
+  return getWorkerApiBases()[0]||ITAP_WORKER_API_DEFAULT;
+}
+const ITAP_WORKER_API=getCurrentWorkerApiBase();
 const WORKER_SESSION_TOKEN_KEY='itap_worker_session_token';
 let ADMIN_LOGIN_LOCK_UNTIL_MS=0;
 // Mantém o nome legado para evitar refatoração ampla no arquivo.
@@ -2987,6 +2998,7 @@ async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
         }
         const dados=await r.json();
         if(r.ok&&dados.ok&&dados.token){
+          setStoredWorkerApiBase(workerBase);
           setWorkerSessionToken(dados.token);
           return{ok:true,githubTokenConfigured:dados.githubTokenConfigured===true};
         }
@@ -3045,7 +3057,7 @@ async function atualizarTokenGitHubDaSessaoWorker(githubToken){
   const sessionToken=getWorkerSessionToken();
   if(!sessionToken||!githubToken)return{ok:false,error:'Sessão ausente',kind:'validation'};
   try{
-    const r=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/session/github-token',{
+    const r=await fetchWithTimeout(getCurrentWorkerApiBase()+'/api/admin/session/github-token',{
       method:'PUT',
       headers:getWorkerAuthHeaders(),
       body:JSON.stringify({githubToken})
@@ -5446,7 +5458,7 @@ async function carregarInscritosSorteio() {
     return;
   }
   try {
-    const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos', {
+    const r = await fetchWithTimeout(getCurrentWorkerApiBase() + '/api/admin/sorteio/inscritos', {
       headers: getWorkerAuthHeaders()
     }, 12000);
     const ct = r.headers.get('content-type') || '';
@@ -5591,7 +5603,7 @@ async function salvarEdicaoInscritoSorteio() {
 
   mostrarLoading('Salvando alterações…');
   try {
-    const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos/' + encodeURIComponent(id), {
+    const r = await fetchWithTimeout(getCurrentWorkerApiBase() + '/api/admin/sorteio/inscritos/' + encodeURIComponent(id), {
       method: 'PATCH',
       headers: getWorkerAuthHeaders(),
       body: JSON.stringify({ nome, birthdate: nasc, phone: tel })
@@ -5633,7 +5645,7 @@ async function deletarInscritoSorteio(id) {
 
   mostrarLoading('Removendo inscrito…');
   try {
-    const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos/' + encodeURIComponent(id), {
+    const r = await fetchWithTimeout(getCurrentWorkerApiBase() + '/api/admin/sorteio/inscritos/' + encodeURIComponent(id), {
       method: 'DELETE',
       headers: getWorkerAuthHeaders()
     }, 10000);
@@ -9424,7 +9436,7 @@ async function carregarSincronizacao() {
   }
 
   try {
-    const resp = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sync/domains', {
+    const resp = await fetchWithTimeout(getCurrentWorkerApiBase() + '/api/admin/sync/domains', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', 'X-Itap-Session-Token': sessionToken },
     }, 12000);
