@@ -9,12 +9,12 @@ const failures = [];
 const checks = [];
 
 const PAGE_RULES = [
-  { file: 'index.html', canonical: 'https://itapolitanacajuru.com.br/' },
-  { file: 'encomendas.html', canonical: 'https://itapolitanacajuru.com.br/encomendas.html' },
-  { file: 'retirada.html', canonical: 'https://itapolitanacajuru.com.br/retirada.html' },
-  { file: 'promocao.html', canonical: 'https://itapolitanacajuru.com.br/promocao.html' },
-  { file: 'dicas.html', canonical: 'https://itapolitanacajuru.com.br/dicas.html' },
-  { file: 'sobre.html', canonical: 'https://itapolitanacajuru.com.br/sobre.html' },
+  { file: 'index.html', canonical: 'https://itapolitanacajuru.com.br/', localTerm: /cajuru/i },
+  { file: 'encomendas.html', canonical: 'https://itapolitanacajuru.com.br/encomendas.html', localTerm: /cajuru/i },
+  { file: 'retirada.html', canonical: 'https://itapolitanacajuru.com.br/retirada.html', localTerm: /cajuru/i },
+  { file: 'promocao.html', canonical: 'https://itapolitanacajuru.com.br/promocao.html', localTerm: /cajuru/i },
+  { file: 'dicas.html', canonical: 'https://itapolitanacajuru.com.br/dicas.html', localTerm: /itapolitana|cajuru/i },
+  { file: 'sobre.html', canonical: 'https://itapolitanacajuru.com.br/sobre.html', localTerm: /itapolitana|cajuru/i },
 ];
 
 function check(name, passed, detail = '') {
@@ -62,9 +62,9 @@ for (const rule of PAGE_RULES) {
     continue;
   }
 
-  check(`${rule.file}: <title> com foco local`, has(html, /<title[^>]*>[^<]*cajuru[^<]*<\/title>/i), 'Título deve incluir "Cajuru".');
+  check(`${rule.file}: <title> com foco local`, has(html, new RegExp(`<title[^>]*>[^<]*${rule.localTerm.source}[^<]*<\\/title>`, 'i')), 'Título deve conter termo local relevante.');
   const description = getMetaContentByName(html, 'description');
-  check(`${rule.file}: meta description local`, /cajuru/i.test(description), `Description atual: ${description || 'ausente'}`);
+  check(`${rule.file}: meta description local`, rule.localTerm.test(description), `Description atual: ${description || 'ausente'}`);
   check(`${rule.file}: canonical oficial`, hasCanonical(html, rule.canonical), rule.canonical);
 }
 

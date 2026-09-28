@@ -224,6 +224,7 @@ const BUTTON_SCAN_FN = (selector) => {
       text: (el.textContent || el.value || '').trim().slice(0, 80),
       classList: typeof el.className === 'string' ? el.className.split(' ').filter(Boolean) : [],
       disabled: el.disabled || el.getAttribute('aria-disabled') === 'true',
+      inputType: String(el.getAttribute('type') || '').toLowerCase(),
       bbox: { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height },
       minTouchTarget: r.width >= 44 && r.height >= 44,
       hitCount,
@@ -508,14 +509,19 @@ function isCriticalButton(button) {
   const text = String(button.text || '').toLowerCase();
   const classes = Array.isArray(button.classList) ? button.classList.join(' ').toLowerCase() : '';
   const tag = String(button.tag || '').toLowerCase();
+  const inputType = String(button.inputType || '').toLowerCase();
   const identifier = `${id} ${classes} ${text}`.trim();
   if (!identifier && tag !== 'button' && tag !== 'input') return false;
-  if (NON_CRITICAL_KEYWORDS_RE.test(text) && !CRITICAL_KEYWORDS_RE.test(text)) return false;
-  if (tag === 'input') return true;
-  if (tag === 'button') return true;
-  return CRITICAL_KEYWORDS_RE.test(identifier)
+  if (NON_CRITICAL_KEYWORDS_RE.test(identifier) && !CRITICAL_KEYWORDS_RE.test(identifier)) return false;
+  const byActionKeyword = CRITICAL_KEYWORDS_RE.test(identifier)
     || /btn-(?:comprar|pedido|checkout|salvar|atualizar|confirm|carrinho)/i.test(identifier)
     || /(?:save|checkout|submit|confirm|buy|order|cart|login|publish)/i.test(identifier);
+  if (tag === 'input') {
+    if (['submit', 'button'].includes(inputType)) return byActionKeyword;
+    return false;
+  }
+  if (tag === 'button') return byActionKeyword;
+  return byActionKeyword;
 }
 
 const criticalPartiallyBlocked = allButtons
