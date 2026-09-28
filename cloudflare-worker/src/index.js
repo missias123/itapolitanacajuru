@@ -803,7 +803,7 @@ async function handleAdminSessionGitHubToken(request, env, session) {
   if (!githubToken) return jsonResp({ ok: false, error: 'Token GitHub ausente' }, 400);
   const existingStored = await env.RATE_KV.get(`session:${sessionToken}`, 'json');
   const existingExpiresAt = Number(existingStored?.expiresAt || 0);
-  const expiresAt = existingExpiresAt > 0 ? existingExpiresAt : null;
+  const expiresAt = existingExpiresAt > Date.now() ? existingExpiresAt : null;
   await env.RATE_KV.put(`session:${sessionToken}`, JSON.stringify({
     ...(existingStored && typeof existingStored === 'object' ? existingStored : {}),
     permissions: Array.isArray(existingStored?.permissions)
