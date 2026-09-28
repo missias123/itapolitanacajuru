@@ -121,7 +121,7 @@
   <script>
   (function(){
     'use strict';
-    const PATH='dados/produtos.json', ITAP_WORKER_API='https://api.itapolitanacajuru.com.br', WORKER_SESSION_TOKEN_KEY='itap_worker_session_token';
+    const PATH='dados/produtos.json', ITAP_WORKER_API='https://api.itapolitanacajuru.com.br', WORKER_SESSION_TOKEN_KEY='itap_worker_session_token', WORKER_SESSION_SYNC_KEY='itap_worker_session_sync';
     const state={raw:null,query:'',skuQuery:'',category:'',activeOnly:false,soldOutOnly:false,dirty:false,tab:'produtos',pending:[],confirmation:null};
     const $=id=>document.getElementById(id);
     const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
@@ -129,6 +129,22 @@
     const money=v=>Number.isFinite(Number(v))?Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):'—';
     const getWorkerSessionToken=()=>{try{return sessionStorage.getItem(WORKER_SESSION_TOKEN_KEY)||''}catch(e){return ''}};
     const clearWorkerSession=()=>{try{sessionStorage.removeItem(WORKER_SESSION_TOKEN_KEY)}catch(e){}};
+    const readWorkerSessionSync=()=>{
+      try{
+        const raw=localStorage.getItem(WORKER_SESSION_SYNC_KEY)||'';
+        if(!raw)return '';
+        const parsed=JSON.parse(raw);
+        return String(parsed?.token||'').trim();
+      }catch(e){return ''}
+    };
+    function syncWorkerSessionFromSharedState(silent=false){
+      const syncedToken=readWorkerSessionSync();
+      if(!syncedToken||syncedToken===getWorkerSessionToken())return false;
+      try{sessionStorage.setItem(WORKER_SESSION_TOKEN_KEY,syncedToken)}catch(e){return false}
+      updateSave();
+      if(!silent)notice('Sessão admin sincronizada nesta aba. Você já pode atualizar os SKUs.','success');
+      return true;
+    }
     const hasWriteSession=()=>Boolean(getWorkerSessionToken());
     const updateTokenBtn=()=>{const has=hasWriteSession();$('tokenBtn').className='button token-btn'+(has?' active':'');$('tokenBtn').textContent=has?'🔒 Sessão admin ativa':'🔒 Fazer login admin'};
     const clone=value=>JSON.parse(JSON.stringify(value));
@@ -441,8 +457,10 @@
     function requestSave(){if(!state.dirty){notice('Nenhuma alteração pendente para atualizar.');return}if(!hasWriteSession()){notice('Sessão administrativa ausente. Faça login no painel admin para publicar.');openSessionDialog();return}save()}
     $('save').addEventListener('click',requestSave);$('saveBottom').addEventListener('click',requestSave);
     $('tokenBtn').addEventListener('click',openSessionDialog);
+    window.addEventListener('storage',event=>{if(event.key!==WORKER_SESSION_SYNC_KEY)return;syncWorkerSessionFromSharedState(false)});
     $('sessionClear').addEventListener('click',()=>{clearWorkerSession();$('sessionDialog').close();updateTokenBtn();updateSave();notice('Sessão administrativa removida desta aba. O catálogo voltou ao modo de consulta.')});
     $('sessionClose').addEventListener('click',()=>{$('sessionDialog').close()});
+    syncWorkerSessionFromSharedState(true);
     load();
   })();
   </script>

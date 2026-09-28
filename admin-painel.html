@@ -2958,14 +2958,27 @@ function getCurrentWorkerApiBase(){
 }
 const ITAP_WORKER_API=getCurrentWorkerApiBase();
 const WORKER_SESSION_TOKEN_KEY='itap_worker_session_token';
+const WORKER_SESSION_SYNC_KEY='itap_worker_session_sync';
 let ADMIN_LOGIN_LOCK_UNTIL_MS=0;
 // Mantém o nome legado para evitar refatoração ampla no arquivo.
 function getAdminToken(){return GH_WRITE_ALLOWED?getToken():'';}
 function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','Authorization':`token ${getAdminToken()}`,...extra};}
 function workerRepoPathAllowed(path){return true;} // Todos os arquivos agora podem ser salvos via GitHub API
 function getWorkerSessionToken(){return ssGet(WORKER_SESSION_TOKEN_KEY)||'';}
-function setWorkerSessionToken(token){if(token)ssSet(WORKER_SESSION_TOKEN_KEY,token);}
-function clearWorkerSessionToken(){ssRemove(WORKER_SESSION_TOKEN_KEY);}
+function publishWorkerSessionTokenSync(token){
+  const normalized=(token||'').trim().slice(0,300);
+  const payload=JSON.stringify({token:normalized,ts:Date.now(),nonce:Math.random().toString(36).slice(2)});
+  lsSet(WORKER_SESSION_SYNC_KEY,payload);
+}
+function setWorkerSessionToken(token){
+  const normalized=(token||'').trim();
+  if(normalized)ssSet(WORKER_SESSION_TOKEN_KEY,normalized);
+  publishWorkerSessionTokenSync(normalized);
+}
+function clearWorkerSessionToken(){
+  ssRemove(WORKER_SESSION_TOKEN_KEY);
+  publishWorkerSessionTokenSync('');
+}
 function getWorkerAuthHeaders(extra={}){
   const sessionToken=getWorkerSessionToken();
   return {'Content-Type':'application/json',...(sessionToken?{'X-Itap-Session-Token':sessionToken}:{}),...extra};
@@ -3462,6 +3475,7 @@ async function reativarTokenGitHub(){
     GH_WRITE_ALLOWED=validacao.canWrite!==false;
     GH_TOKEN_CAN_WRITE=validacao.canWrite;
     const workerSync=await atualizarTokenGitHubDaSessaoWorker(token);
+    if(workerSync.ok)publishWorkerSessionTokenSync(getWorkerSessionToken());
     atualizarStatusGitHubToken('✅ Token GitHub validado. Edição e salvamento liberados.','success');
     atualizarBannerGitHubToken(GH_WRITE_ALLOWED);
     if(!workerSync.ok){
