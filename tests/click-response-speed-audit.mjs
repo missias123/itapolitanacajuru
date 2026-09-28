@@ -6,11 +6,12 @@ import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const port = 8161;
+const port = Number(process.env.AUDIT_PORT || 8161);
 const base = `http://127.0.0.1:${port}`;
 const out = process.env.AUDIT_OUT || '/tmp/itapolitana-click-response-speed-audit.json';
 const MAX_NEXT_PAINT_MS = Number(process.env.MAX_CLICK_RESPONSE_MS || 220);
 const MAX_SPREAD_MS = Number(process.env.MAX_CLICK_RESPONSE_SPREAD_MS || 140);
+const RETRIES = Math.max(1, Number(process.env.CLICK_AUDIT_RETRIES || 3));
 
 const server = spawn(process.execPath, ['tests/local-static-server.mjs'], {
   cwd: root,
@@ -198,7 +199,7 @@ async function medirClique(page, selector, waitForFn) {
   return result.nextPaintMs;
 }
 
-async function runScenario(browser, viewport, scenario) {
+async function runScenarioAttempt(browser, viewport, scenario) {
   const page = await browser.newPage();
   try {
     await page.setViewport({
@@ -222,23 +223,40 @@ async function runScenario(browser, viewport, scenario) {
 
     const nextPaintMs = await medirClique(page, scenario.selector, scenario.waitFor);
 
-    const result = {
-      scenario: scenario.id,
-      page: scenario.page,
-      viewport: viewport.name,
-      selector: scenario.selector,
+    return {
       nextPaintMs: Number(nextPaintMs.toFixed(2)),
-      pass: nextPaintMs <= MAX_NEXT_PAINT_MS,
       pageErrors,
     };
-
-    assert.deepEqual(pageErrors, [], `${scenario.id}/${viewport.name}: erros de página`);
-    assert.ok(nextPaintMs <= MAX_NEXT_PAINT_MS, `${scenario.id}/${viewport.name}: resposta lenta (${nextPaintMs.toFixed(2)}ms)`);
-
-    return result;
   } finally {
     await page.close();
   }
+}
+
+async function runScenario(browser, viewport, scenario) {
+  const attempts = [];
+  for (let i = 0; i < RETRIES; i += 1) attempts.push(await runScenarioAttempt(browser, viewport, scenario));
+  const times = attempts.map((item) => item.nextPaintMs).sort((a, b) => a - b);
+  const median = times[Math.floor(times.length / 2)];
+  const fastest = times[0];
+  const slowest = times[times.length - 1];
+  const pageErrors = attempts.flatMap((item) => item.pageErrors);
+  const slowAttempts = attempts.filter((item) => item.nextPaintMs > MAX_NEXT_PAINT_MS);
+  const result = {
+    scenario: scenario.id,
+    page: scenario.page,
+    viewport: viewport.name,
+    selector: scenario.selector,
+    nextPaintMs: Number(slowest.toFixed(2)),
+    medianMs: Number(median.toFixed(2)),
+    fastestMs: Number(fastest.toFixed(2)),
+    slowestMs: Number(slowest.toFixed(2)),
+    attempts,
+    pass: slowAttempts.length === 0,
+    pageErrors,
+  };
+  assert.deepEqual(pageErrors, [], `${scenario.id}/${viewport.name}: erros de página`);
+  assert.ok(slowAttempts.length === 0, `${scenario.id}/${viewport.name}: resposta lenta detectada (limite ${MAX_NEXT_PAINT_MS}ms; pior ${slowest.toFixed(2)}ms; mediana ${median.toFixed(2)}ms; melhor ${fastest.toFixed(2)}ms)`);
+  return result;
 }
 
 const results = [];

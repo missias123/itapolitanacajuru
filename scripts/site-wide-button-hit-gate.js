@@ -2,12 +2,33 @@
 'use strict';
 
 const path = require('node:path');
+const net = require('node:net');
 const { spawn } = require('node:child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const PORT = Number(process.env.AUDIT_PORT || 8165);
-const BASE = process.env.AUDIT_BASE || `http://127.0.0.1:${PORT}`;
+const DEFAULT_PORT = Number(process.env.AUDIT_PORT || 8165);
 const STRICT = process.env.AUDIT_STRICT_CRITICAL || '1';
+
+function findFreePort(preferredPort) {
+  return new Promise((resolve, reject) => {
+    const tryListen = (port) => {
+      const server = net.createServer();
+      server.unref();
+      server.once('error', (error) => {
+        if (error && error.code === 'EADDRINUSE' && port !== 0) {
+          tryListen(0);
+          return;
+        }
+        reject(error);
+      });
+      server.listen(port, '127.0.0.1', () => {
+        const selected = server.address().port;
+        server.close(() => resolve(selected));
+      });
+    };
+    tryListen(preferredPort);
+  });
+}
 
 function waitForServer(child, timeoutMs = 10000) {
   return new Promise((resolve, reject) => {
@@ -39,6 +60,8 @@ function waitExit(child) {
 }
 
 (async () => {
+  const PORT = await findFreePort(DEFAULT_PORT);
+  const BASE = process.env.AUDIT_BASE || `http://127.0.0.1:${PORT}`;
   const server = spawn(process.execPath, ['tests/local-static-server.mjs'], {
     cwd: ROOT,
     env: { ...process.env, PORT: String(PORT) },

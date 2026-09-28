@@ -2958,18 +2958,74 @@ function getCurrentWorkerApiBase(){
 }
 const ITAP_WORKER_API=getCurrentWorkerApiBase();
 const WORKER_SESSION_TOKEN_KEY='itap_worker_session_token';
+const WORKER_SESSION_SYNC_KEY='itap_worker_session_sync';
 let ADMIN_LOGIN_LOCK_UNTIL_MS=0;
 // Mantém o nome legado para evitar refatoração ampla no arquivo.
 function getAdminToken(){return GH_WRITE_ALLOWED?getToken():'';}
 function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','Authorization':`token ${getAdminToken()}`,...extra};}
 function workerRepoPathAllowed(path){return true;} // Todos os arquivos agora podem ser salvos via GitHub API
 function getWorkerSessionToken(){return ssGet(WORKER_SESSION_TOKEN_KEY)||'';}
-function setWorkerSessionToken(token){if(token)ssSet(WORKER_SESSION_TOKEN_KEY,token);}
-function clearWorkerSessionToken(){ssRemove(WORKER_SESSION_TOKEN_KEY);}
+function publishWorkerSessionTokenSync(token){
+  const normalized=(token||'').trim().slice(0,300);
+  const payload=JSON.stringify({token:normalized,ts:Date.now(),nonce:Math.random().toString(36).slice(2)});
+  lsSet(WORKER_SESSION_SYNC_KEY,payload);
+}
+function setWorkerSessionToken(token){
+  const normalized=(token||'').trim();
+  if(normalized)ssSet(WORKER_SESSION_TOKEN_KEY,normalized);
+  publishWorkerSessionTokenSync(normalized);
+}
+function clearWorkerSessionToken(){
+  ssRemove(WORKER_SESSION_TOKEN_KEY);
+  publishWorkerSessionTokenSync('');
+}
 function getWorkerAuthHeaders(extra={}){
   const sessionToken=getWorkerSessionToken();
   return {'Content-Type':'application/json',...(sessionToken?{'X-Itap-Session-Token':sessionToken}:{}),...extra};
 }
+const ADMIN_ERROR_FINGERPRINTS=new Set();
+function reportAdminError(payload={}){
+  const sessionToken=getWorkerSessionToken();
+  if(!sessionToken)return;
+  const body={
+    source:'admin-painel',
+    type:String(payload.type||'runtime').slice(0,60),
+    message:String(payload.message||'Erro sem mensagem').slice(0,500),
+    stack:String(payload.stack||'').slice(0,4000),
+    url:String(payload.url||location.href).slice(0,500),
+    userAgent:String(navigator.userAgent||'').slice(0,400)
+  };
+  const fingerprint=`${body.type}|${body.message}|${body.stack.slice(0,200)}`;
+  if(ADMIN_ERROR_FINGERPRINTS.has(fingerprint))return;
+  ADMIN_ERROR_FINGERPRINTS.add(fingerprint);
+  fetch(getCurrentWorkerApiBase()+'/api/admin/error-report',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','X-Itap-Session-Token':sessionToken},
+    body:JSON.stringify(body),
+    keepalive:true
+  }).catch(()=>{});
+}
+function setupAdminGlobalErrorReporting(){
+  if(window.__itapAdminErrorReportingReady)return;
+  window.__itapAdminErrorReportingReady=true;
+  window.addEventListener('error',event=>{
+    reportAdminError({
+      type:'error',
+      message:event?.message||'Erro em janela',
+      stack:event?.error?.stack||'',
+      url:event?.filename||location.href
+    });
+  });
+  window.addEventListener('unhandledrejection',event=>{
+    const reason=event?.reason;
+    reportAdminError({
+      type:'unhandledrejection',
+      message:reason?.message||String(reason||'Promise rejeitada sem motivo'),
+      stack:reason?.stack||''
+    });
+  });
+}
+setupAdminGlobalErrorReporting();
 async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
   if(!senha)return{ok:false,error:'Senha ausente',kind:'validation'};
   const payload={username,password:senha,...(githubToken?{githubToken}:{})};
@@ -3462,6 +3518,7 @@ async function reativarTokenGitHub(){
     GH_WRITE_ALLOWED=validacao.canWrite!==false;
     GH_TOKEN_CAN_WRITE=validacao.canWrite;
     const workerSync=await atualizarTokenGitHubDaSessaoWorker(token);
+    if(workerSync.ok)publishWorkerSessionTokenSync(getWorkerSessionToken());
     atualizarStatusGitHubToken('✅ Token GitHub validado. Edição e salvamento liberados.','success');
     atualizarBannerGitHubToken(GH_WRITE_ALLOWED);
     if(!workerSync.ok){
