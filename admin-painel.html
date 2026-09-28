@@ -3233,8 +3233,10 @@ async function sha256(str) {
 }
 async function entrar(){
   const senha=document.getElementById('inp-senha').value;
-  const githubToken=(document.getElementById('inp-github-token')?.value||'').trim();
-  const githubTokenForWorker=tokenFormatoValido(githubToken)?githubToken:'';
+  const githubTokenDigitado=(document.getElementById('inp-github-token')?.value||'').trim();
+  const githubTokenSalvo=getToken().trim();
+  const githubTokenAtivo=githubTokenDigitado||githubTokenSalvo;
+  const githubTokenForWorker=tokenFormatoValido(githubTokenAtivo)?githubTokenAtivo:'';
   const loginErro=document.getElementById('login-erro');
   if(!senha){
     loginErro.innerHTML='&#x274C; Informe a senha do administrador.';
@@ -3254,17 +3256,27 @@ async function entrar(){
   }
   // --- GitHub Token: validar token e habilitar escrita ---
   let tokenOk=false;
-  if(githubToken){
-    if(!tokenFormatoValido(githubToken)){
+  if(githubTokenAtivo){
+    if(!tokenFormatoValido(githubTokenAtivo)){
       atualizarStatusGitHubToken('⚠️ Token GitHub com formato inválido. Admin em modo somente leitura.','warning');
     }else{
-      const validacao=await validarToken(githubToken);
+      const validacao=await validarToken(githubTokenAtivo);
       if(validacao.ok){
-        ssSet('itap_github_token',githubToken);
-        GITHUB_PAT=githubToken;
+        ssSet('itap_github_token',githubTokenAtivo);
+        GITHUB_PAT=githubTokenAtivo;
         GH_WRITE_ALLOWED=validacao.canWrite!==false;
         GH_TOKEN_CAN_WRITE=validacao.canWrite;
         tokenOk=true;
+        if(workerAuth.githubTokenConfigured!==true){
+          const workerSync=await atualizarTokenGitHubDaSessaoWorker(githubTokenAtivo);
+          if(!workerSync.ok){
+            const workerRetry=await iniciarSessaoWorkerComSenha(senha,githubTokenAtivo);
+            if(!workerRetry.ok||workerRetry.githubTokenConfigured!==true){
+              console.warn('[Admin] Falha ao sincronizar token GitHub na sessão do Worker durante login:',workerSync.error);
+              toast('⚠️ Token validado no painel, mas não foi possível sincronizar a sessão automática do catálogo agora. Tente entrar novamente em instantes.','aviso');
+            }
+          }
+        }
         if(GH_WRITE_ALLOWED){
           atualizarStatusGitHubToken('✅ Token GitHub válido. Edição e salvamento liberados.','success');
         }else if(validacao.canWrite===false){
@@ -3280,7 +3292,7 @@ async function entrar(){
   if(!tokenOk){
     GH_WRITE_ALLOWED=false;
     GITHUB_PAT='';
-    if(!githubToken){
+    if(!githubTokenAtivo){
       atualizarStatusGitHubToken('ℹ️ Token GitHub não informado. Admin em modo somente leitura.','info');
     }
   }
