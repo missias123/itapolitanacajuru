@@ -411,6 +411,20 @@ function base64ToBytes(b64) {
   return bytes;
 }
 
+function normalizeAdminUsername(value) {
+  return sanitizeString(value || '', 120).toLowerCase();
+}
+
+function getAllowedAdminUsernames(env) {
+  const primary = normalizeAdminUsername(env.ADMIN_USERNAME || 'missiasdoval');
+  const configuredAliases = sanitizeString(env.ADMIN_USERNAME_ALIASES || '', 500)
+    .split(',')
+    .map((entry) => normalizeAdminUsername(entry))
+    .filter(Boolean);
+  const legacyAliases = primary === 'missiasdoval' ? ['misssiasdoval'] : [];
+  return new Set([primary, ...configuredAliases, ...legacyAliases].filter(Boolean));
+}
+
 function bytesToBase64(bytes) {
   let bin = '';
   for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
@@ -730,9 +744,9 @@ async function handleAdminSession(request, env) {
   if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas de login.' }, 429);
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 400); }
-  const username = sanitizeString(body.username || body.user || '', 120);
-  const expectedUsername = sanitizeString(env.ADMIN_USERNAME || 'missiasdoval', 120);
-  if (!username || !expectedUsername || username.toLowerCase() !== expectedUsername.toLowerCase()) {
+  const username = normalizeAdminUsername(body.username || body.user || '');
+  const allowedUsernames = getAllowedAdminUsernames(env);
+  if (!username || !allowedUsernames.has(username)) {
     const failure = await registerAdminLoginFailure(env, ip);
     if (failure.locked) {
       return jsonResp({
