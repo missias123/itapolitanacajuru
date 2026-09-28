@@ -801,11 +801,15 @@ async function handleAdminSessionGitHubToken(request, env, session) {
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 422); }
   const githubToken = sanitizeString(body.githubToken || body.github_token || '', 1000);
   if (!githubToken) return jsonResp({ ok: false, error: 'Token GitHub ausente' }, 400);
+  const existingStored = await env.RATE_KV.get(`session:${sessionToken}`, 'json');
   const expiresAt = Date.now() + SESSION_TTL * 1000;
   await env.RATE_KV.put(`session:${sessionToken}`, JSON.stringify({
-    permissions: [...session.permissions],
+    ...(existingStored && typeof existingStored === 'object' ? existingStored : {}),
+    permissions: Array.isArray(existingStored?.permissions)
+      ? existingStored.permissions.filter((entry) => ADMIN_ALL_PERMISSIONS.has(entry))
+      : [...session.permissions],
     githubToken,
-    createdAt: new Date().toISOString(),
+    createdAt: sanitizeString(existingStored?.createdAt || '', 100) || new Date().toISOString(),
     expiresAt,
   }), { expirationTtl: SESSION_TTL });
   return jsonResp({ ok: true, ttlSeconds: SESSION_TTL, githubTokenConfigured: true });
