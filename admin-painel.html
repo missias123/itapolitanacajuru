@@ -2977,8 +2977,12 @@ async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
         const ct=(r.headers.get('content-type')||'').toLowerCase();
         if(!ct.includes('application/json')){
           lastError={ok:false,error:'Resposta inesperada de autenticação do Worker.',kind:'server',status:r.status};
+          if(r.status===404||r.status===405){
+            sawMissingWorkerRoute=true;
+            continue;
+          }
           lastNonRouteFailure=lastError;
-          if(r.status===404||r.status===405||r.status>=500)continue;
+          if(r.status>=500)continue;
           return lastError;
         }
         const dados=await r.json();
@@ -3009,8 +3013,8 @@ async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
       }
     }
   }
-  if(lastNonRouteFailure)return lastNonRouteFailure;
   if(sawMissingWorkerRoute)return{ok:false,error:'Endpoint administrativo indisponível no Worker.',kind:'server'};
+  if(lastNonRouteFailure)return lastNonRouteFailure;
   return lastError;
 }
 function setLoginButtonStateLocked(locked){
