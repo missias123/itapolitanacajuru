@@ -2964,7 +2964,7 @@ async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
   const workerBases=getWorkerApiBases();
   const sessionPaths=['/api/admin/session','/api/admin/auth'];
   let lastError={ok:false,error:'Falha de rede no Worker.',kind:'network'};
-  let firstStructuredRouteFailure=null;
+  let lastStructuredRouteFailure=null;
   for(const workerBase of workerBases){
     for(const sessionPath of sessionPaths){
       try{
@@ -2996,7 +2996,7 @@ async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
           retryAfterSeconds:Math.max(0,Number(dados.retryAfterSeconds||0))
         };
         if(r.status===404||r.status===405){
-          if(!firstStructuredRouteFailure)firstStructuredRouteFailure=failure;
+          lastStructuredRouteFailure=failure;
           lastError=failure;
           continue;
         }
@@ -3007,7 +3007,7 @@ async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
       }
     }
   }
-  return firstStructuredRouteFailure||lastError;
+  return lastStructuredRouteFailure||lastError;
 }
 function setLoginButtonStateLocked(locked){
   const entrarBtn=document.getElementById('btn-entrar-admin');
