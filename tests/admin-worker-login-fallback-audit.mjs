@@ -47,6 +47,7 @@ this.getWorkerApiBases = getWorkerApiBases;
 this.getCurrentWorkerApiBase = getCurrentWorkerApiBase;
 this.iniciarSessaoWorkerComSenha = iniciarSessaoWorkerComSenha;
 this.atualizarTokenGitHubDaSessaoWorker = atualizarTokenGitHubDaSessaoWorker;
+this.setStoredWorkerApiBase = setStoredWorkerApiBase;
 `, context);
   return { context, sessionStorage };
 }
@@ -61,6 +62,18 @@ this.atualizarTokenGitHubDaSessaoWorker = atualizarTokenGitHubDaSessaoWorker;
     Array.from(context.getWorkerApiBases()),
     ['https://worker-custom.example', 'https://api.itapolitanacajuru.com.br', 'https://painel.example']
   );
+}
+
+{
+  const { context, sessionStorage } = loadAdminAuthContext({
+    workerOverride: 'https://worker-custom.example///',
+    origin: 'https://painel.example',
+    fetchImpl: async () => { throw new Error('fetch não esperado neste cenário'); },
+  });
+  context.setStoredWorkerApiBase('https://api.itapolitanacajuru.com.br');
+  assert.equal(sessionStorage.get('itap_worker_api_base'), 'https://api.itapolitanacajuru.com.br');
+  context.setStoredWorkerApiBase('');
+  assert.equal(sessionStorage.has('itap_worker_api_base'), false);
 }
 
 {

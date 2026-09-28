@@ -2937,6 +2937,7 @@ function getStoredWorkerApiBase(){
 function setStoredWorkerApiBase(base){
   const normalized=normalizeWorkerApiBase(base);
   if(normalized)ssSet(WORKER_API_BASE_KEY,normalized);
+  else ssRemove(WORKER_API_BASE_KEY);
 }
 function getSameOriginWorkerApiBase(){
   try{
@@ -3488,6 +3489,7 @@ function sair(){
   // Limpar token GitHub ao sair
   ssRemove('itap_github_token');
   clearWorkerSessionToken();
+  setStoredWorkerApiBase('');
   GITHUB_PAT='';
   GH_WRITE_ALLOWED=false;
 }
