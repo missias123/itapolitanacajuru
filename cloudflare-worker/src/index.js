@@ -83,7 +83,7 @@ const RATE_LIMITS = {
   'picole-form':      { max: 5,  windowMs: 3_600_000 },  // 5 envios por hora por IP
 };
 const MAX_INVALID_CODE_ATTEMPTS = 4; // Block client after this many consecutive invalid code attempts
-const SESSION_TTL = 7200;            // Admin session lifetime: 2 hours
+const SESSION_TTL = 7200;            // Valor informativo de TTL legado para resposta da API
 const ADMIN_PERMISSION_LIST = Object.freeze([
   'catalog:read',
   'catalog:write',
@@ -691,13 +691,13 @@ async function handleAdminSession(request, env) {
     permissions,
     githubToken,
     createdAt: new Date().toISOString(),
-    expiresAt: Date.now() + SESSION_TTL * 1000,
-  }), { expirationTtl: SESSION_TTL });
+    expiresAt: null,
+  }));
   return jsonResp({
     ok: true,
     token,
     permissions,
-    ttlSeconds: SESSION_TTL,
+    ttlSeconds: null,
     githubTokenConfigured: Boolean(resolveGitHubToken(env, { githubToken })),
   });
 }
@@ -802,7 +802,8 @@ async function handleAdminSessionGitHubToken(request, env, session) {
   const githubToken = sanitizeString(body.githubToken || body.github_token || '', 1000);
   if (!githubToken) return jsonResp({ ok: false, error: 'Token GitHub ausente' }, 400);
   const existingStored = await env.RATE_KV.get(`session:${sessionToken}`, 'json');
-  const expiresAt = Date.now() + SESSION_TTL * 1000;
+  const existingExpiresAt = Number(existingStored?.expiresAt || 0);
+  const expiresAt = existingExpiresAt > 0 ? existingExpiresAt : null;
   await env.RATE_KV.put(`session:${sessionToken}`, JSON.stringify({
     ...(existingStored && typeof existingStored === 'object' ? existingStored : {}),
     permissions: Array.isArray(existingStored?.permissions)
@@ -811,8 +812,8 @@ async function handleAdminSessionGitHubToken(request, env, session) {
     githubToken,
     createdAt: sanitizeString(existingStored?.createdAt || '', 100) || new Date().toISOString(),
     expiresAt,
-  }), { expirationTtl: SESSION_TTL });
-  return jsonResp({ ok: true, ttlSeconds: SESSION_TTL, githubTokenConfigured: true });
+  }));
+  return jsonResp({ ok: true, ttlSeconds: expiresAt ? SESSION_TTL : null, githubTokenConfigured: true });
 }
 
 async function handleAdminGitHubFilePut(request, env, session) {

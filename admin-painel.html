@@ -3256,6 +3256,7 @@ async function entrar(){
   }
   // --- GitHub Token: validar token e habilitar escrita ---
   let tokenOk=false;
+  let workerGithubTokenConfigured=workerAuth.githubTokenConfigured===true;
   if(githubTokenAtivo){
     if(!tokenFormatoValido(githubTokenAtivo)){
       atualizarStatusGitHubToken('⚠️ Token GitHub com formato inválido. Admin em modo somente leitura.','warning');
@@ -3267,10 +3268,15 @@ async function entrar(){
         GH_WRITE_ALLOWED=validacao.canWrite!==false;
         GH_TOKEN_CAN_WRITE=validacao.canWrite;
         tokenOk=true;
-        if(workerAuth.githubTokenConfigured!==true){
+        if(!workerGithubTokenConfigured){
           const workerSync=await atualizarTokenGitHubDaSessaoWorker(githubTokenAtivo);
-          if(!workerSync.ok){
+          if(workerSync.ok&&workerSync.githubTokenConfigured===true){
+            workerGithubTokenConfigured=true;
+          }else{
             const workerRetry=await iniciarSessaoWorkerComSenha(senha,githubTokenAtivo);
+            if(workerRetry.ok&&workerRetry.githubTokenConfigured===true){
+              workerGithubTokenConfigured=true;
+            }
             if(!workerRetry.ok||workerRetry.githubTokenConfigured!==true){
               console.warn('[Admin] Falha ao sincronizar token GitHub na sessão do Worker durante login:',workerSync.error);
               toast('⚠️ Token validado no painel, mas não foi possível sincronizar a sessão automática do catálogo agora. Tente entrar novamente em instantes.','aviso');
