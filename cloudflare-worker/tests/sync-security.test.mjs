@@ -92,6 +92,39 @@ test('retorna 409 no PUT admin com ifMatch divergente', async () => {
   }
 });
 
+test('aceita GITHUB_PAT como alias permanente para escrita administrativa', async () => {
+  const env = createEnv({ GITHUB_TOKEN: '', GITHUB_PAT: 'token-alias-pat' });
+  await env.RATE_KV.put('session:t2-alias', JSON.stringify({ permissions: ['catalog:write'], expiresAt: Date.now() + 60000 }));
+
+  const originalFetch = globalThis.fetch;
+  const authHeaders = [];
+  globalThis.fetch = async (url, options = {}) => {
+    const target = String(url);
+    if (target.includes('/contents/dados/config.json') && (!options.method || options.method === 'GET')) {
+      authHeaders.push(options?.headers?.Authorization || '');
+      return new Response(JSON.stringify({ sha: 'sha-atual' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    if (target.includes('/contents/dados/config.json') && options.method === 'PUT') {
+      authHeaders.push(options?.headers?.Authorization || '');
+      return new Response(JSON.stringify({ content: { sha: 'sha-novo' } }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    throw new Error(`URL inesperada: ${target}`);
+  };
+
+  try {
+    const { status, json } = await request(env, '/api/admin/github-file', {
+      method: 'PUT',
+      headers: { 'X-Itap-Session-Token': 't2-alias' },
+      body: { path: 'dados/config.json', content: { ok: true } },
+    });
+    assert.equal(status, 200);
+    assert.equal(json.ok, true);
+    assert.deepEqual(authHeaders, ['token token-alias-pat', 'token token-alias-pat']);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test('deduplica encomenda por idempotency key', async () => {
   const env = createEnv();
   const originalFetch = globalThis.fetch;

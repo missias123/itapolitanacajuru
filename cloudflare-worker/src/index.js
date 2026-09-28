@@ -10,7 +10,8 @@
  * como segredo no Cloudflare.
  *
  * Variáveis de ambiente obrigatórias (wrangler secret put):
- *   GITHUB_TOKEN   — PAT do GitHub com escopo "repo" (para o admin inteiro)
+ *   GITHUB_TOKEN   — PAT do GitHub com escopo "repo" (preferencial para o admin)
+ *   GITHUB_PAT / GH_TOKEN — aliases aceitos para compatibilidade operacional
  *
  * Autenticação administrativa (preferência em ordem):
  *   ADMIN_PASSWORD_RECORD   — formato versionado (pbkdf2-sha256$v=1$iter=...$salt=...$hash=...)
@@ -457,6 +458,15 @@ function sanitizeString(v, maxLen = 200) {
   return String(v ?? '').replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, maxLen);
 }
 
+function resolveGitHubToken(env) {
+  const candidates = [env?.GITHUB_TOKEN, env?.GITHUB_PAT, env?.GH_TOKEN];
+  for (const candidate of candidates) {
+    const token = sanitizeString(candidate, 1000);
+    if (token) return token;
+  }
+  return '';
+}
+
 // ─── Base64 encode for GitHub API ─────────────────────────────────────────────
 function encodeBase64(str) {
   const bytes = new TextEncoder().encode(str);
@@ -479,7 +489,8 @@ async function sha256Hex(value) {
 
 async function readGitHubFileMeta(path, env) {
   const headers = { 'User-Agent': 'Itapolitana-Worker' };
-  if (env.GITHUB_TOKEN) headers.Authorization = `token ${env.GITHUB_TOKEN}`;
+  const githubToken = resolveGitHubToken(env);
+  if (githubToken) headers.Authorization = `token ${githubToken}`;
   const ghResp = await fetch(GH_API + path, { headers });
   if (ghResp.ok) {
     const ghJson = await ghResp.json();
@@ -768,13 +779,14 @@ async function handleAdminGitHubFileGet(filePath, env) {
 }
 
 async function handleAdminGitHubFilePut(request, env) {
-  if (!env.GITHUB_TOKEN) return jsonResp({ ok: false, error: 'GITHUB_TOKEN não configurado' }, 500);
+  const githubToken = resolveGitHubToken(env);
+  if (!githubToken) return jsonResp({ ok: false, error: 'Token GitHub não configurado no Worker (GITHUB_TOKEN/GITHUB_PAT/GH_TOKEN)' }, 500);
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 422); }
   const filePath = sanitizeString(body.path, 200);
   const ifMatch = sanitizeString(body.ifMatch || request.headers.get('If-Match') || '', 200);
   if (!GH_ADMIN_PATH_SET.has(filePath)) return jsonResp({ ok: false, error: 'Caminho não permitido' }, 403);
-  const getResp = await fetch(GH_API + filePath, { headers: { 'Authorization': `token ${env.GITHUB_TOKEN}`, 'User-Agent': 'Itapolitana-Worker' } });
+  const getResp = await fetch(GH_API + filePath, { headers: { 'Authorization': `token ${githubToken}`, 'User-Agent': 'Itapolitana-Worker' } });
   if (!getResp.ok) return jsonResp({ ok: false, error: 'Falha ao obter SHA' }, 500);
   const getJson = await getResp.json();
   if (ifMatch && ifMatch !== getJson.sha) {
@@ -791,7 +803,7 @@ async function handleAdminGitHubFilePut(request, env) {
     : `${JSON.stringify(body.content, null, 2)}\n`;
   const putResp = await fetch(GH_API + filePath, {
     method: 'PUT',
-    headers: { 'Authorization': `token ${env.GITHUB_TOKEN}`, 'Content-Type': 'application/json', 'User-Agent': 'Itapolitana-Worker' },
+    headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json', 'User-Agent': 'Itapolitana-Worker' },
     body: JSON.stringify({ message: `Admin: alteração em ${filePath}`, content: encodeBase64(normalizedContent), sha: getJson.sha })
   });
   if (putResp.status === 409) return jsonResp({ ok: false, error: 'Conflito de versão', code: 'VERSION_CONFLICT' }, 409);
