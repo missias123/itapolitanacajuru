@@ -817,7 +817,13 @@ async function handleAdminSessionGitHubToken(request, env, session) {
 
 async function handleAdminGitHubFilePut(request, env, session) {
   const githubToken = resolveGitHubToken(env, session);
-  if (!githubToken) return jsonResp({ ok: false, error: 'Token GitHub não configurado no Worker (GITHUB_TOKEN/GITHUB_PAT/GH_TOKEN)' }, 500);
+  if (!githubToken) {
+    return jsonResp({
+      ok: false,
+      code: 'GITHUB_TOKEN_NOT_CONFIGURED',
+      error: 'Token GitHub não configurado no Worker nem na sessão administrativa',
+    }, 500);
+  }
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 422); }
   const filePath = sanitizeString(body.path, 200);
