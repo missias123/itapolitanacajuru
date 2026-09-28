@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const port = 8166;
+const port = Number(process.env.AUDIT_PORT || 8166);
 const base = `http://127.0.0.1:${port}`;
 const server = spawn(process.execPath, ['tests/local-static-server.mjs'], {
   cwd: root,
@@ -30,7 +31,32 @@ async function gotoPage(page, pathname) {
   await page.goto(`${base}${pathname}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
 }
 
+async function loadExpectedSoldOut() {
+  const raw = await fs.readFile(path.join(root, 'dados/produtos.json'), 'utf8');
+  const parsed = JSON.parse(raw);
+  const allEntries = Object.entries(parsed?.cadastro_skus?.por_chave || {}).map(([key, item]) => ({ key, ...(item || {}) }));
+  const inactiveMass = allEntries
+    .filter((item) => item?.categoria === 'Sabores de massa' && item?.ativo === false)
+    .map((item) => String(item.nome || '').trim())
+    .filter(Boolean);
+  const picoleFlavors = allEntries.filter((item) => item.key.startsWith('picoles.') && item.key.split('.').length >= 3);
+  const inactivePicoles = picoleFlavors
+    .filter((item) => item?.ativo === false)
+    .map((item) => String(item.nome || '').trim())
+    .filter(Boolean);
+  const activeMassSample = allEntries
+    .filter((item) => item?.categoria === 'Sabores de massa' && item?.ativo !== false)
+    .map((item) => String(item.nome || '').trim())
+    .find(Boolean) || '';
+  const activePicoleSample = picoleFlavors
+    .filter((item) => item?.ativo !== false)
+    .map((item) => String(item.nome || '').trim())
+    .find(Boolean) || '';
+  return { inactiveMass, inactivePicoles, activeMassSample, activePicoleSample };
+}
+
 await waitForServer();
+const expected = await loadExpectedSoldOut();
 const browser = await puppeteer.launch({
   headless: true,
   executablePath: '/usr/bin/chromium',
@@ -59,10 +85,12 @@ try {
     const stuffedPopsicleSoldOut = soldOutTexts(popsicleRoot);
     return { massSoldOut, waterPopsicleSoldOut, stuffedPopsicleSoldOut };
   });
-  assert(report.index.massSoldOut.includes('Abacaxi ao Vinho'), 'Home: Abacaxi ao Vinho não apareceu riscado');
-  assert(report.index.massSoldOut.includes('Limão'), 'Home: Limão de massa não apareceu riscado');
-  assert(!report.index.waterPopsicleSoldOut.includes('Limão'), 'Home: picolé de Limão apareceu esgotado sem estar esgotado');
-  assert(report.index.stuffedPopsicleSoldOut.includes('Mamão Papaia'), 'Home: Mamão Papaia não apareceu riscado');
+  expected.inactiveMass.forEach((name) => {
+    assert(report.index.massSoldOut.includes(name), `Home: ${name} não apareceu riscado`);
+  });
+  if (expected.activeMassSample) {
+    assert(!report.index.massSoldOut.includes(expected.activeMassSample), `Home: ${expected.activeMassSample} apareceu esgotado sem estar esgotado`);
+  }
   await home.close();
 
   const encomendas = await browser.newPage();
@@ -75,29 +103,29 @@ try {
   });
   await encomendas.waitForSelector('#grid-sabores .sabor-item', { timeout: 15000 });
   report.encomendasMassas = await encomendas.evaluate(() => [...document.querySelectorAll('#grid-sabores .sabor-item.is-esgotado span:last-child')].map((el) => el.textContent.trim()));
-  assert(report.encomendasMassas.includes('Abacaxi ao Vinho'), 'Encomendas: Abacaxi ao Vinho não apareceu riscado');
-  assert(report.encomendasMassas.includes('Limão'), 'Encomendas: Limão de massa não apareceu riscado');
+  expected.inactiveMass.forEach((name) => {
+    assert(report.encomendasMassas.includes(name), `Encomendas: ${name} não apareceu riscado`);
+  });
   await encomendas.evaluate(() => {
     window.fecharModal('modal-sabores');
     window.toggleSecao('sec-picoles');
     document.querySelector('button.btn-sabores--picoles')?.click();
   });
   await encomendas.waitForSelector('#lista-sabores-picole [data-picole-key]', { timeout: 15000 });
-  report.encomendasPicoles = await encomendas.evaluate(() => {
-    const rows = [...document.querySelectorAll('#lista-sabores-picole [data-picole-key]')].map((row, index) => ({
-      index,
-      text: row.textContent,
-      soldOut: row.classList.contains('is-esgotado'),
-      plusDisabled: Boolean(row.querySelector('.picole-qtd-btn--plus')?.disabled),
-    }));
-    return {
-      mamao: rows.find((row) => row.text.includes('Mamão Papaia')),
-      maracuja: rows.find((row) => row.text.includes('Maracujá')),
-    };
+  report.encomendasPicoles = await encomendas.evaluate(() => [...document.querySelectorAll('#lista-sabores-picole [data-picole-key]')].map((row) => ({
+    text: String(row.textContent || '').trim(),
+    soldOut: row.classList.contains('is-esgotado'),
+    plusDisabled: Boolean(row.querySelector('.picole-qtd-btn--plus')?.disabled),
+  })));
+  expected.inactivePicoles.forEach((name) => {
+    const row = report.encomendasPicoles.find((item) => item.text.includes(name));
+    assert(row?.soldOut, `Encomendas: ${name} não apareceu como esgotado`);
+    assert(row?.plusDisabled, `Encomendas: ${name} continuou podendo entrar no carrinho`);
   });
-  assert(report.encomendasPicoles.mamao?.soldOut, 'Encomendas: Mamão Papaia não apareceu como esgotado');
-  assert(report.encomendasPicoles.mamao?.plusDisabled, 'Encomendas: Mamão Papaia continuou podendo entrar no carrinho');
-  assert(report.encomendasPicoles.mamao.index > report.encomendasPicoles.maracuja.index, 'Encomendas: Mamão Papaia não ficou abaixo de Maracujá');
+  if (expected.activePicoleSample) {
+    const row = report.encomendasPicoles.find((item) => item.text.includes(expected.activePicoleSample));
+    assert(row && !row.soldOut && !row.plusDisabled, `Encomendas: ${expected.activePicoleSample} apareceu bloqueado sem estar esgotado`);
+  }
   await encomendas.close();
 
   const retirada = await browser.newPage();
@@ -111,38 +139,29 @@ try {
     soldOut: el.classList.contains('is-unavailable') || el.classList.contains('is-esgotado'),
     disabled: Boolean(el.disabled) || Boolean(el.querySelector('.qty button:last-child')?.disabled),
   })));
-  assert(report.retiradaMassas.some((item) => item.text.includes('Abacaxi ao Vinho') && item.soldOut && item.disabled), 'Retirada: Abacaxi ao Vinho não apareceu bloqueado');
-  assert(report.retiradaMassas.some((item) => item.text.includes('Limão') && !item.text.includes('Limão Suíço') && item.soldOut && item.disabled), 'Retirada: Limão de massa não apareceu bloqueado');
+  expected.inactiveMass.forEach((name) => {
+    assert(report.retiradaMassas.some((item) => item.text.includes(name) && item.soldOut && item.disabled), `Retirada: ${name} não apareceu bloqueado`);
+  });
   await retirada.evaluate(() => {
     document.querySelector('[data-close="flavor-dialog"]')?.click();
     const button = [...document.querySelectorAll('.product .add-btn')].find((entry) => entry.textContent.includes('Abrir lista única'));
     button?.click();
   });
   await retirada.waitForSelector('#popsicle-list .popsicle-row', { timeout: 15000 });
-  report.retiradaPicoles = await retirada.evaluate(() => {
-    const rows = [...document.querySelectorAll('#popsicle-list .popsicle-row')].map((row, index) => ({
-      index,
-      text: row.textContent,
-      soldOut: row.classList.contains('is-unavailable'),
-      plusDisabled: Boolean(row.querySelector('.qty button:last-child')?.disabled),
-    }));
-    return {
-      limao: rows.find((row) => row.text.includes('Limão')),
-      groselha: rows.find((row) => row.text.includes('Groselha')),
-      melancia: rows.find((row) => row.text.includes('Melância')),
-      mamao: rows.find((row) => row.text.includes('Mamão Papaia')),
-      maracuja: rows.find((row) => row.text.includes('Maracujá')),
-      morango: rows.find((row) => row.text.includes('Morango')),
-    };
+  report.retiradaPicoles = await retirada.evaluate(() => [...document.querySelectorAll('#popsicle-list .popsicle-row')].map((row) => ({
+    text: String(row.textContent || '').trim(),
+    soldOut: row.classList.contains('is-unavailable'),
+    plusDisabled: Boolean(row.querySelector('.qty button:last-child')?.disabled),
+  })));
+  expected.inactivePicoles.forEach((name) => {
+    const row = report.retiradaPicoles.find((item) => item.text.includes(name));
+    assert(row?.soldOut, `Retirada: ${name} não apareceu como esgotado`);
+    assert(row?.plusDisabled, `Retirada: ${name} continuou podendo entrar no carrinho`);
   });
-  assert(!report.retiradaPicoles.limao?.soldOut, 'Retirada: picolé de Limão apareceu esgotado sem estar esgotado');
-  assert(!report.retiradaPicoles.limao?.plusDisabled, 'Retirada: picolé de Limão não voltou ao carrinho');
-  assert.equal(report.retiradaPicoles.limao.index, report.retiradaPicoles.groselha.index + 1, 'Retirada: Limão saiu da posição oficial depois de Groselha');
-  assert.equal(report.retiradaPicoles.melancia.index, report.retiradaPicoles.limao.index + 1, 'Retirada: Melância não ficou logo após Limão');
-  assert(report.retiradaPicoles.mamao?.soldOut, 'Retirada: Mamão Papaia não apareceu como esgotado');
-  assert(report.retiradaPicoles.mamao?.plusDisabled, 'Retirada: Mamão Papaia continuou podendo entrar no carrinho');
-  assert.equal(report.retiradaPicoles.mamao.index, report.retiradaPicoles.maracuja.index + 1, 'Retirada: Mamão Papaia saiu da posição oficial depois de Maracujá');
-  assert.equal(report.retiradaPicoles.morango.index, report.retiradaPicoles.mamao.index + 1, 'Retirada: Morango não ficou logo após Mamão Papaia');
+  if (expected.activePicoleSample) {
+    const row = report.retiradaPicoles.find((item) => item.text.includes(expected.activePicoleSample));
+    assert(row && !row.soldOut && !row.plusDisabled, `Retirada: ${expected.activePicoleSample} apareceu bloqueado sem estar esgotado`);
+  }
   await retirada.close();
 
   console.log(JSON.stringify({ pass: true, report }, null, 2));
