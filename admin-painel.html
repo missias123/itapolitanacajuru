@@ -2964,6 +2964,7 @@ async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
   const workerBases=getWorkerApiBases();
   const sessionPaths=['/api/admin/session','/api/admin/auth'];
   let lastError={ok:false,error:'Falha de rede no Worker.',kind:'network'};
+  let lastNonRouteFailure=null;
   let sawMissingWorkerRoute=false;
   for(const workerBase of workerBases){
     for(const sessionPath of sessionPaths){
@@ -2976,6 +2977,7 @@ async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
         const ct=(r.headers.get('content-type')||'').toLowerCase();
         if(!ct.includes('application/json')){
           lastError={ok:false,error:'Resposta inesperada de autenticação do Worker.',kind:'server',status:r.status};
+          lastNonRouteFailure=lastError;
           if(r.status===404||r.status===405||r.status>=500)continue;
           return lastError;
         }
@@ -3002,10 +3004,12 @@ async function iniciarSessaoWorkerComSenha(senha,githubToken='',username=''){
         return failure;
       }catch(e){
         lastError={ok:false,error:e&&e.message?e.message:'Falha de rede no Worker.',kind:'network'};
+        lastNonRouteFailure=lastError;
         continue;
       }
     }
   }
+  if(lastNonRouteFailure)return lastNonRouteFailure;
   if(sawMissingWorkerRoute)return{ok:false,error:'Endpoint administrativo indisponível no Worker.',kind:'server'};
   return lastError;
 }
