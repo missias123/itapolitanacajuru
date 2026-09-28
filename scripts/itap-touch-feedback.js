@@ -64,7 +64,7 @@
       banner.textContent = '⚠️ Proteção de estabilidade ativa: detectamos um erro e preservamos o funcionamento do site.';
       (document.body || document.documentElement).appendChild(banner);
     }
-    banner.classList.remove('itap-error-guard-hidden');
+    banner.className = 'itap-error-guard-banner';
     banner.setAttribute('aria-hidden', 'false');
     window.clearTimeout(banner.__itapHideTimer || 0);
     banner.__itapHideTimer = window.setTimeout(function () {
