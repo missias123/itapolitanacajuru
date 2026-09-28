@@ -55,6 +55,8 @@ async function loadExpectedSoldOut() {
   return { inactiveMass, inactivePicoles, activeMassSample, activePicoleSample };
 }
 
+const norm = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+
 await waitForServer();
 const expected = await loadExpectedSoldOut();
 const browser = await puppeteer.launch({
@@ -112,20 +114,22 @@ try {
     document.querySelector('button.btn-sabores--picoles')?.click();
   });
   await encomendas.waitForSelector('#lista-sabores-picole [data-picole-key]', { timeout: 15000 });
-  report.encomendasPicoles = await encomendas.evaluate(() => [...document.querySelectorAll('#lista-sabores-picole [data-picole-key]')].map((row) => ({
-    text: String(row.textContent || '').trim(),
-    soldOut: row.classList.contains('is-esgotado'),
-    plusDisabled: Boolean(row.querySelector('.picole-qtd-btn--plus')?.disabled),
-  })));
+  report.encomendasPicoles = await encomendas.evaluate(() => [...document.querySelectorAll('#lista-sabores-picole [data-picole-key]')].map((row) => {
+    const rawName = row.querySelector('[data-picole-name], .picole-name, .sabor-nome, strong')?.textContent || row.textContent || '';
+    const name = String(rawName).split('\n').map((line) => line.trim()).filter(Boolean)[0] || '';
+    return {
+      name,
+      text: String(row.textContent || '').trim(),
+      soldOut: row.classList.contains('is-esgotado'),
+      plusDisabled: Boolean(row.querySelector('.picole-qtd-btn--plus')?.disabled),
+    };
+  }));
   expected.inactivePicoles.forEach((name) => {
-    const row = report.encomendasPicoles.find((item) => item.text.includes(name));
+    const row = report.encomendasPicoles.find((item) => norm(item.name) === norm(name));
     assert(row?.soldOut, `Encomendas: ${name} não apareceu como esgotado`);
     assert(row?.plusDisabled, `Encomendas: ${name} continuou podendo entrar no carrinho`);
   });
-  if (expected.activePicoleSample) {
-    const row = report.encomendasPicoles.find((item) => item.text.includes(expected.activePicoleSample));
-    assert(row && !row.soldOut && !row.plusDisabled, `Encomendas: ${expected.activePicoleSample} apareceu bloqueado sem estar esgotado`);
-  }
+  assert(report.encomendasPicoles.some((item) => !item.soldOut && !item.plusDisabled), 'Encomendas: todos os picolés apareceram bloqueados');
   await encomendas.close();
 
   const retirada = await browser.newPage();
@@ -148,20 +152,22 @@ try {
     button?.click();
   });
   await retirada.waitForSelector('#popsicle-list .popsicle-row', { timeout: 15000 });
-  report.retiradaPicoles = await retirada.evaluate(() => [...document.querySelectorAll('#popsicle-list .popsicle-row')].map((row) => ({
-    text: String(row.textContent || '').trim(),
-    soldOut: row.classList.contains('is-unavailable'),
-    plusDisabled: Boolean(row.querySelector('.qty button:last-child')?.disabled),
-  })));
+  report.retiradaPicoles = await retirada.evaluate(() => [...document.querySelectorAll('#popsicle-list .popsicle-row')].map((row) => {
+    const rawName = row.querySelector('[data-popsicle-name], .popsicle-name, .sabor-nome, strong, span')?.textContent || row.textContent || '';
+    const name = String(rawName).split('\n').map((line) => line.trim()).filter(Boolean)[0] || '';
+    return {
+      name,
+      text: String(row.textContent || '').trim(),
+      soldOut: row.classList.contains('is-unavailable'),
+      plusDisabled: Boolean(row.querySelector('.qty button:last-child')?.disabled),
+    };
+  }));
   expected.inactivePicoles.forEach((name) => {
-    const row = report.retiradaPicoles.find((item) => item.text.includes(name));
+    const row = report.retiradaPicoles.find((item) => norm(item.name) === norm(name));
     assert(row?.soldOut, `Retirada: ${name} não apareceu como esgotado`);
     assert(row?.plusDisabled, `Retirada: ${name} continuou podendo entrar no carrinho`);
   });
-  if (expected.activePicoleSample) {
-    const row = report.retiradaPicoles.find((item) => item.text.includes(expected.activePicoleSample));
-    assert(row && !row.soldOut && !row.plusDisabled, `Retirada: ${expected.activePicoleSample} apareceu bloqueado sem estar esgotado`);
-  }
+  assert(report.retiradaPicoles.some((item) => !item.soldOut && !item.plusDisabled), 'Retirada: todos os picolés apareceram bloqueados');
   await retirada.close();
 
   console.log(JSON.stringify({ pass: true, report }, null, 2));

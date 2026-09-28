@@ -956,38 +956,43 @@ async function handleAdminErrorReport(request, env, session) {
     ipHash: await sha256Hex(`${ip}:${(env.ADMIN_SECRET || 'itap')}`).then((hash) => hash.slice(0, 16)),
   };
   const filePath = GH_ADMIN_JSON_PATHS.errorReports;
-  const getResp = await fetch(GH_API + filePath, { headers: { 'Authorization': `token ${githubToken}`, 'User-Agent': 'Itapolitana-Worker' } });
-  let existingSha = null;
-  let content = { version: 1, updatedAt: now, reports: [] };
-  if (getResp.ok) {
-    const ghJson = await getResp.json();
-    existingSha = ghJson.sha || null;
-    try {
-      const decoded = atob(String(ghJson.content || '').replace(/\n/g, ''));
-      const parsed = JSON.parse(decoded);
-      if (parsed && typeof parsed === 'object') content = parsed;
-    } catch (_e) {}
-  } else if (getResp.status !== 404) {
-    return jsonResp({ ok: false, error: 'Falha ao obter log de erros no GitHub' }, 500);
+  const commonHeaders = { 'Authorization': `token ${githubToken}`, 'User-Agent': 'Itapolitana-Worker' };
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const getResp = await fetch(GH_API + filePath, { headers: commonHeaders });
+    let existingSha = null;
+    let content = { version: 1, updatedAt: now, reports: [] };
+    if (getResp.ok) {
+      const ghJson = await getResp.json();
+      existingSha = ghJson.sha || null;
+      try {
+        const decoded = atob(String(ghJson.content || '').replace(/\n/g, ''));
+        const parsed = JSON.parse(decoded);
+        if (parsed && typeof parsed === 'object') content = parsed;
+      } catch (_e) {}
+    } else if (getResp.status !== 404) {
+      return jsonResp({ ok: false, error: 'Falha ao obter log de erros no GitHub' }, 500);
+    }
+    const reports = Array.isArray(content.reports) ? content.reports : [];
+    if (!reports.some((entry) => entry?.id === report.id)) reports.push(report);
+    content = {
+      version: 1,
+      updatedAt: now,
+      reports: reports.slice(-200),
+    };
+    const putResp = await fetch(GH_API + filePath, {
+      method: 'PUT',
+      headers: { ...commonHeaders, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: `chore(admin): registrar erro ${report.source}`,
+        content: encodeBase64(`${JSON.stringify(content, null, 2)}\n`),
+        ...(existingSha ? { sha: existingSha } : {}),
+      }),
+    });
+    if (putResp.ok) return jsonResp({ ok: true, reportId: report.id, remaining: rl.remaining, attempts: attempt + 1 });
+    if (putResp.status === 409) continue;
+    return jsonResp({ ok: false, error: 'Falha ao registrar erro no GitHub' }, 500);
   }
-  const reports = Array.isArray(content.reports) ? content.reports : [];
-  reports.push(report);
-  content = {
-    version: 1,
-    updatedAt: now,
-    reports: reports.slice(-200),
-  };
-  const putResp = await fetch(GH_API + filePath, {
-    method: 'PUT',
-    headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json', 'User-Agent': 'Itapolitana-Worker' },
-    body: JSON.stringify({
-      message: `chore(admin): registrar erro ${report.source}`,
-      content: encodeBase64(`${JSON.stringify(content, null, 2)}\n`),
-      ...(existingSha ? { sha: existingSha } : {}),
-    }),
-  });
-  if (!putResp.ok) return jsonResp({ ok: false, error: 'Falha ao registrar erro no GitHub' }, 500);
-  return jsonResp({ ok: true, reportId: report.id, remaining: rl.remaining });
+  return jsonResp({ ok: false, error: 'Conflito ao registrar erro no GitHub. Tente novamente.' }, 409);
 }
 
 async function handleAdminGitHubFilePut(request, env, session) {

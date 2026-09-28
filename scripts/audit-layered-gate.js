@@ -62,6 +62,7 @@ async function executeCheck(check) {
 const checks = [
   { id: 'catalog-contract', layer: 'camada-1-estatico-contrato', severity: 'high', command: 'npm', args: ['run', 'audit:catalog'] },
   { id: 'admin-site-sync', layer: 'camada-1-estatico-contrato', severity: 'high', command: 'npm', args: ['run', 'audit:admin-sync'] },
+  { id: 'admin-session-hooks', layer: 'camada-1-estatico-contrato', severity: 'high', command: 'npm', args: ['run', 'audit:admin-session-hooks'] },
   { id: 'security-regression', layer: 'camada-1-estatico-contrato', severity: 'critical', command: 'npm', args: ['run', 'audit:security-regression'] },
   { id: 'button-hit', layer: 'camada-2-fluxos-criticos', severity: 'critical', command: 'npm', args: ['run', 'audit:button-hit-gate'], portEnv: 'AUDIT_PORT', preferredPort: 8165, retries: 2 },
   { id: 'click-speed', layer: 'camada-2-fluxos-criticos', severity: 'critical', command: 'npm', args: ['run', 'audit:click-speed'], portEnv: 'AUDIT_PORT', preferredPort: 8161, env: { CLICK_AUDIT_RETRIES: '3' }, retries: 2 },
