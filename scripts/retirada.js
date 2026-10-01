@@ -1024,7 +1024,10 @@
     try {
       const response = await fetch(`dados/produtos.json?v=${now}`, { cache: 'no-store' });
       if (!response.ok) throw new Error('Não foi possível carregar o catálogo.');
-      state.data = await response.json();
+      const bruto = await response.json();
+      state.data = window.ITAP_CATALOGO_MESTRE && typeof window.ITAP_CATALOGO_MESTRE.aplicar === 'function'
+        ? window.ITAP_CATALOGO_MESTRE.aplicar(bruto)
+        : bruto;
       state.catalog = buildCatalog(state.data);
       $('#loading')?.remove();
       renderCatalog();
