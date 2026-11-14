@@ -67,7 +67,11 @@ for (const { name, source } of readRootHtmlFiles()) {
 // O SKU é o mesmo item operacional em duas camadas oficiais: cadastro por chave
 // e disponibilidade. Isto é uma relação documentada, não dois produtos vendíveis.
 const KNOWN_SKU_REGISTRATIONS = new Map([
-  ['EMB-VIAGEM', 'alias operacional: cadastro_skus.por_chave + disponibilidade.embalagens']
+  ['EMB-VIAGEM', 'alias operacional: cadastro_skus.por_chave + disponibilidade.embalagens'],
+  ['CAX-5L-2S', 'SKU projetado entre caixas_enc e cadastro_skus.por_chave'],
+  ['CAX-5L-3S', 'SKU projetado entre caixas_enc e cadastro_skus.por_chave'],
+  ['CAX-10L-2S', 'SKU projetado entre caixas_enc e cadastro_skus.por_chave'],
+  ['CAX-10L-3S', 'SKU projetado entre caixas_enc e cadastro_skus.por_chave']
 ]);
 
 const productsPath = path.join(ROOT, 'dados', 'produtos.json');

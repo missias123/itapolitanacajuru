@@ -72,18 +72,18 @@
       'vegano':        '\ud83c\udf3f Para informa\u00e7\u00f5es sobre op\u00e7\u00f5es veganas, entre em contato pelo WhatsApp: (16) 99606-2046.',
       'lactose':       '\ud83c\udf3f Para op\u00e7\u00f5es sem lactose, fale pelo WhatsApp: (16) 99606-2046.',
       'alergia':       '\u26a0\ufe0f Para d\u00favidas sobre alergia ou intoler\u00e2ncia aliment\u00e2r, fale diretamente com nossa equipe: (16) 99606-2046.',
-      'preço':         '\ud83d\udcb0 Sorvetes a partir de R$ 8,00 \u00b7 Milkshakes a partir de R$ 17,00 \u00b7 A\u00e7a\u00ed a partir de R$ 15,00.',
-      'preços':        '\ud83d\udcb0 Sorvetes a partir de R$ 8,00 \u00b7 Milkshakes a partir de R$ 17,00 \u00b7 A\u00e7a\u00ed a partir de R$ 15,00.',
-      'quanto':        '\ud83d\udcb0 Sorvetes a partir de R$ 8,00 \u00b7 Milkshakes a partir de R$ 17,00 \u00b7 A\u00e7a\u00ed a partir de R$ 15,00 \u00b7 Picol\u00e9s a partir de R$ 2,50.',
+      'preço':         '\ud83d\udcb0 Sorvetes a partir de R$ 8,00 \u00b7 Milkshakes a partir de R$ 18,00 \u00b7 A\u00e7a\u00ed a partir de R$ 15,00.',
+      'preços':        '\ud83d\udcb0 Sorvetes a partir de R$ 8,00 \u00b7 Milkshakes a partir de R$ 18,00 \u00b7 A\u00e7a\u00ed a partir de R$ 15,00.',
+      'quanto':        '\ud83d\udcb0 Sorvetes a partir de R$ 8,00 \u00b7 Milkshakes a partir de R$ 18,00 \u00b7 A\u00e7a\u00ed a partir de R$ 15,00 \u00b7 Picol\u00e9s a partir de R$ 2,50.',
       'pagamento':     '\ud83d\udcb3 Aceitamos Dinheiro, Pix, Cart\u00e3o de D\u00e9bito e Cr\u00e9dito. Encomendas exigem pagamento antecipado.',
       'pix':           '\ud83d\udcb3 Sim! Aceitamos Pix. Para encomendas, pagamento via Pix antecipado.',
       'cartão':        '\ud83d\udcb3 Sim! Aceitamos cart\u00e3o de d\u00e9bito e cr\u00e9dito. Tamb\u00e9m Pix e dinheiro.',
       'complemento':   '\ud83e\uded0 Complementos do a\u00e7a\u00ed: Frutas (R$ 2), Cremes Nutella/Ninho (R$ 3), Guloseimas (R$ 2), Chocolates Kit Kat/Oreo (R$ 4).',
       'atacado':       '\ud83d\udce6 Picol\u00e9s no atacado: m\u00ednimo 100 un., prazo de 3 dias \u00fateis, pagamento antecipado. (16) 99606-2046.',
       'prazo':         '\ud83d\udce6 O prazo m\u00ednimo para encomendas \u00e9 de 3 dias \u00fateis ap\u00f3s confirma\u00e7\u00e3o e pagamento.',
-      'torta':         '\ud83c\udf82 Torta de Sorvete R$ 100 com at\u00e9 3 sabores. Encomende com 3 dias de anteced\u00eancia!',
-      'caixa':         '\ud83c\udf66 Caixas de 5L (a partir de R$ 100) e 10L (a partir de R$ 150) com 2 ou 3 sabores. Perfeito para festas!',
-      'isopor':        '\ud83c\udf66 Is\u00f3pores para viagem: 4 bolas (R$ 25), 7 bolas (R$ 30), 9 bolas (R$ 40), 12 bolas (R$ 50).',
+      'torta':         '\ud83c\udf82 Torta de Sorvete R$ 110 com at\u00e9 3 sabores. Encomende com 3 dias de anteced\u00eancia!',
+      'caixa':         '\ud83c\udf66 Caixas de 5L (a partir de R$ 115) e 10L (a partir de R$ 165) com 2 ou 3 sabores. Perfeito para festas!',
+      'isopor':        '\ud83c\udf66 Is\u00f3pores para viagem: 4 bolas (R$ 25), 7 bolas (R$ 35), 9 bolas (R$ 45), 12 bolas (R$ 55).',
       'taça':          '\ud83c\udf68 Ta\u00e7as especiais: Colegial R$ 20, Sundae R$ 23, Banana Split R$ 25, Ula-Ula R$ 48 e muito mais!',
       'sundae':        '\ud83c\udf68 Sundae R$ 23,00 e Sundae com Nutela R$ 28,00.',
       'brownie':       '\ud83e\udd6e Brownie com Sorvete: 1 bola R$ 20 \u00b7 2 bolas R$ 25.',
@@ -223,7 +223,7 @@
         ? Object.keys(trad).slice(0, 5).map(function (k) { return k + ' R$ ' + trad[k].toFixed(2).replace('.', ','); }).join('\n')
         : 'Colegial R$ 20 \u00b7 Sundae R$ 23 \u00b7 Banana Split R$ 25 \u00b7 Universit\u00e1rio R$ 23 \u00b7 Ula-Ula R$ 48';
       return {
-        answer: '\ud83c\udf68 Ta\u00e7as e Sobremesas!\n\n\u2728 Ta\u00e7as tradicionais:\n' + lista + '\n\n\ud83c\udf6b Ta\u00e7as sujas (Prest\u00edgio, Bis, Kit Kat, Sonho de Valsa) \u2014 R$ 42-45\n\n\ud83e\udd82 Tamb\u00e9m: Brownie R$ 20, Fondue R$ 25, Petit G\u00e2teau R$ 20, Torta de Sorvete R$ 100',
+        answer: '\ud83c\udf68 Ta\u00e7as e Sobremesas!\n\n\u2728 Ta\u00e7as tradicionais:\n' + lista + '\n\n\ud83c\udf6b Ta\u00e7as sujas (Prest\u00edgio, Bis, Kit Kat, Sonho de Valsa) \u2014 R$ 42-45\n\n\ud83e\udd82 Tamb\u00e9m: Brownie R$ 20, Fondue R$ 25, Petit G\u00e2teau R$ 20, Torta de Sorvete R$ 110',
         linkText: '\ud83c\udf68 Ver card\u00e1pio completo',
         linkHref: 'encomendas.html',
         chips: ['\ud83c\udf66 Sorvetes', '\ud83e\uded0 A\u00e7a\u00ed', '\ud83c\udf78 Milkshakes']
@@ -232,10 +232,10 @@
 
     function _respMilkshake() {
       var mk   = (_prodData && _prodData.milkshake && _prodData.milkshake.tradicional) ? _prodData.milkshake.tradicional : null;
-      var pMin = (mk && mk['300ml'] != null) ? 'R$ ' + mk['300ml'].toFixed(2).replace('.', ',') : 'R$ 17,00';
-      var pMax = (mk && mk['750ml'] != null) ? 'R$ ' + mk['750ml'].toFixed(2).replace('.', ',') : 'R$ 28,00';
+      var pMin = (mk && mk['300ml'] != null) ? 'R$ ' + mk['300ml'].toFixed(2).replace('.', ',') : 'R$ 18,00';
+      var pMax = (mk && mk['750ml'] != null) ? 'R$ ' + mk['750ml'].toFixed(2).replace('.', ',') : 'R$ 30,00';
       return {
-        answer: '\ud83e\udd64 Milkshakes em copo transparente com tampa bolha!\n\nTradicional: 300ml ' + pMin + ' \u00b7 400ml R$ 20 \u00b7 500ml R$ 22 \u00b7 750ml ' + pMax + '\nTop: 360ml R$ 20 \u00b7 600ml R$ 24\n\n\u2795 Adicional Ovomaltine R$ 3,00!',
+        answer: '\ud83e\udd64 Milkshakes em copo transparente com tampa bolha!\n\nTradicional: 300ml ' + pMin + ' \u00b7 400ml R$ 22 \u00b7 500ml R$ 24 \u00b7 750ml ' + pMax + '\nTop: 360ml R$ 22 \u00b7 600ml R$ 26\n\n\u2795 Adicional Ovomaltine R$ 3,00!',
         linkText: '\ud83e\udd64 Ver card\u00e1pio',
         linkHref: 'encomendas.html',
         chips: ['\ud83c\udf66 Sorvetes', '\ud83e\uded0 A\u00e7a\u00ed', '\ud83c\udf68 Ta\u00e7as']
@@ -244,7 +244,7 @@
 
     function _respEncomendas() {
       return {
-        answer: '\ud83d\udce6 Encomendas e Festas!\n\nO processo \u00e9 simples:\n1\ufe0f\u20e3 Escolha os produtos no site\n2\ufe0f\u20e3 Pague antecipado (Pix, cart\u00e3o ou dinheiro)\n3\ufe0f\u20e3 Retire na loja em 3 dias \u00fateis\n\n\ud83e\udd82 Op\u00e7\u00f5es:\n\ud83c\udf82 Torta de Sorvete R$ 100 (at\u00e9 3 sabores)\n\ud83e\uddc8 Caixa 5L a partir de R$ 100\n\ud83e\uddc8 Caixa 10L a partir de R$ 150\n\ud83c\udf60 Picol\u00e9s atacado (m\u00edn. 100 un.)\n\ud83d\udedc Carrinho para Eventos (consulte)',
+        answer: '\ud83d\udce6 Encomendas e Festas!\n\nO processo \u00e9 simples:\n1\ufe0f\u20e3 Escolha os produtos no site\n2\ufe0f\u20e3 Pague antecipado (Pix, cart\u00e3o ou dinheiro)\n3\ufe0f\u20e3 Retire na loja em 3 dias \u00fateis\n\n\ud83e\udd82 Op\u00e7\u00f5es:\n\ud83c\udf82 Torta de Sorvete R$ 110 (at\u00e9 3 sabores)\n\ud83e\uddc8 Caixa 5L a partir de R$ 115\n\ud83e\uddc8 Caixa 10L a partir de R$ 165\n\ud83c\udf60 Picol\u00e9s atacado (m\u00edn. 100 un.)\n\ud83d\udedc Carrinho para Eventos (consulte)',
         linkText: '\ud83d\udce6 Fazer encomenda online',
         linkHref: 'encomendas.html',
         chips: ['\ud83d\udcac Falar no WhatsApp', '\ud83c\udf66 Ver card\u00e1pio']

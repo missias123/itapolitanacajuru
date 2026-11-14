@@ -2225,7 +2225,7 @@
             return;
         }
         if (item.isPicole) window.abrirModalPicole();
-        else if (item.id === 'torta') window.abrirSaboresSorvete('torta', 100, 3, 'Torta de Sorvete', i);
+        else if (item.id === 'torta' && TORTA_ESTOQUE) window.abrirSaboresSorvete('torta', TORTA_ESTOQUE.preco, TORTA_ESTOQUE.max, 'Torta de Sorvete', i);
         else {
             var p = PRODUTOS.find(x => x.id === item.id);
             window.abrirSaboresSorvete(p.id, p.preco, p.max, p.nome, i);

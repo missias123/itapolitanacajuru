@@ -25,8 +25,10 @@ function add({ id, domain, severity = 'warning', status, detail, evidence = [] }
   results.push({ id, domain, severity, status, detail, evidence });
 }
 
-const adminPage = await request(`${SITE}/admin-painel.html`);
-if (adminPage.ok) {
+async function checkAdminSurface() {
+  const adminPage = await request(`${SITE}/admin-painel.html`);
+  if (!adminPage.ok) return;
+
   const adminNoStore = /no-store/i.test(adminPage.headers['cache-control'] || '');
   const adminNoIndex = /noindex/i.test(adminPage.headers['x-robots-tag'] || '');
   add({
@@ -278,6 +280,7 @@ function writeReports(summary) {
 }
 
 (async () => {
+  await checkAdminSurface();
   checkLocalFiles();
   run('quality-audit', process.execPath, ['scripts/quality-audit.js', '--fail']);
   run('dependency-audit', process.execPath, ['scripts/dependency-audit.js']);

@@ -260,7 +260,20 @@
         produto.preco = registro.preco;
         produto.preço = registro.preco;
         produto.esgotado = registro.disponivel === false;
+        if (grupo === 'caixas_enc' && view.caixas_viagem) {
+          var caixa = String(produto.id || '').match(/^cx(5|10)l_([23])s$/);
+          if (caixa) view.caixas_viagem[caixa[1] + ' Litros (' + caixa[2] + ' sabores)'] = Number(registro.preco);
+        }
       });
+    });
+    ['5', '10'].forEach(function (litros) {
+      var pai = item(master, 'caixas.cx' + litros + 'l');
+      var dois = item(master, 'caixas.cx' + litros + 'l_2s');
+      var tres = item(master, 'caixas.cx' + litros + 'l_3s');
+      if (!pai || !dois || !tres) return;
+      pai.preco_2sabores = Number(dois.preco);
+      pai.preco_3sabores = Number(tres.preco);
+      pai.preco = Math.min(pai.preco_2sabores, pai.preco_3sabores);
     });
 
     // Picolés: grupo e sabores têm SKU próprio; disponibilidade depende só do SKU do produto.
