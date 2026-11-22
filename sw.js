@@ -71,14 +71,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Áudio pode usar respostas parciais (206), que não podem ser salvas no Cache Storage.
-  if (url.pathname === '/media/audio/itapolitana-trilha-20261122.mpeg') {
-    event.respondWith(fetch(request).catch(() =>
-      new Response('Áudio indisponível sem conexão.', { status: 503 })
-    ));
-    return;
-  }
-
   // GitHub API, raw, API Worker e painel admin — Network Only (nunca cachear)
   // Observação: consultas em raw.githubusercontent.com não ficam disponíveis offline no SW.
   if (url.hostname === 'raw.githubusercontent.com' ||
