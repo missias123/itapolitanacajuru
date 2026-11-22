@@ -1,0 +1,99 @@
+.itap-home-music-player {
+  position: fixed;
+  z-index: 620;
+  pointer-events: none;
+}
+
+.itap-home-music-player.is-hidden {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.itap-home-music-player__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  min-width: 96px;
+  max-width: 132px;
+  padding: 0 11px;
+  border: 2px solid #1f1f1f;
+  border-radius: 999px;
+  background: #fbd100;
+  color: #1f1f1f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+  font: 800 13px/1 "Poppins", Arial, sans-serif;
+  letter-spacing: .1px;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.itap-home-music-player__icon {
+  display: inline-block;
+  font: 800 14px/1 Arial, sans-serif;
+}
+
+.itap-home-music-player__label {
+  display: inline-block;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itap-home-music-player__toggle:hover {
+  background: #ffd81f;
+}
+
+.itap-home-music-player__toggle:active {
+  background: #f3ca00;
+}
+
+.itap-home-music-player__toggle:focus-visible {
+  outline: 3px solid #1f1f1f;
+  outline-offset: 2px;
+}
+
+.itap-home-music-player.is-playing .itap-home-music-player__toggle {
+  background: #fbd100;
+}
+
+.itap-home-music-player.is-error .itap-home-music-player__toggle {
+  border-color: #6d0d13;
+  box-shadow: 0 0 0 2px rgba(109, 13, 19, .18), 0 2px 8px rgba(0, 0, 0, .2);
+}
+
+.itap-home-music-player.is-forced .itap-home-music-player__toggle {
+  box-shadow: 0 0 0 2px rgba(31, 31, 31, .3), 0 4px 14px rgba(0, 0, 0, .24);
+}
+
+.itap-home-music-player__live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 360px) {
+  .itap-home-music-player__toggle {
+    min-width: 90px;
+    max-width: 118px;
+    gap: 6px;
+    padding-inline: 10px;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .itap-home-music-player__toggle {
+    transition: none;
+  }
+}
